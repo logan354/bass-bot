@@ -1,0 +1,23 @@
+{
+  "name": "beat-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Block354",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/node-pre-gyp": "^0.3.2",
+    "@discordjs/opus": "^0.5.0",
+    "discord-ytdl-core": "^5.0.3",
+    "discord.js": "^12.5.3",
+    "soundcloud-downloader": "^1.0.0",
+    "spotify-url-info": "^2.2.0",
+    "youtube-sr": "^4.0.7",
+    "ytdl-core": "^4.7.0",
+    "ytpl": "^2.2.1"
+  }
+}
