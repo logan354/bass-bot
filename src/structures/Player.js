@@ -3,7 +3,6 @@ var ytpl = require("ytpl");
 const ytsr = require("youtube-sr").default;
 const spotify = require("spotify-url-info")
 const scdl = require("soundcloud-downloader").default;
-const { error } = require('./Error')
 
 //Player which streams the songs through the bot
 async function player(message, track) {

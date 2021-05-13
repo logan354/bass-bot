@@ -3,7 +3,6 @@ const { createQueue } = require('./structures/Queue')
 const { resolveQueryType, searchTracks } = require('./structures/Search')
 const { handleTrack, handlePlaylist } = require('./structures/Track')
 const { formatTime, util } = require('./structures/Util')
-const { error } = require('./structures/Error')
 
 
 

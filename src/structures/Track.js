@@ -1,5 +1,4 @@
 const { player } = require('./Player')
-const { error } = require('./Error')
 
 //handleTrack handles the input of a track a pushes it to the queue
 async function handleTrack(message, track) {

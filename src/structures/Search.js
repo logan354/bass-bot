@@ -5,7 +5,6 @@ const spotify = require("spotify-url-info")
 const scdl = require("soundcloud-downloader").default;
 const { handleTrack, handlePlaylist } = require('./Track')
 const { formatTime } = require("../structures/Util")
-const { error } = require('./Error')
 
 //resolveQueryType resolves which query the user input is
 function resolveQueryType(url, query) {

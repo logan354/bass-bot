@@ -14,6 +14,8 @@ function formatTime(time) {
     return ret;
 }
 
+
+
 class util {
     static chunk(arr, size) {
         const temp = [];
