@@ -115,6 +115,7 @@ function resume(message) {
 
     serverQueue.playing = true;
     try {
+        console.log('yes')
         serverQueue.connection.dispatcher.resume()
     } catch (ex) {
         serverQueue.voiceChannel.leave()
