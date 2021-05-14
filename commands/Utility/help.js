@@ -17,7 +17,7 @@ module.exports = {
                     color: 'BLACK',
                     author: { name: 'Help Pannel' },
                     fields: [
-                        { name: '🎵 **Music** *[Pre-Alpha]*', value: '\n.\n**Track**\n' + track + '\n.\n**Queue**\n' + queue + '\n.\n' },
+                        { name: '🎵 **Music**', value: '\n.\n**Track**\n' + track + '\n.\n**Queue**\n' + queue + '\n.\n' },
                         { name: '🧰 Utility', value: '\n' + utility },
                     ],
                     timestamp: new Date(),

@@ -9,7 +9,7 @@ async function player(message, track) {
 
     const queue = message.client.queue.get(message.guild.id);
     if (!track) {
-        message.guild.me.voice.channel.leave(); //If you want your bot stay in vc 24/7 remove this line :D
+        message.guild.me.voice.channel.leave();
         message.client.queue.delete(message.guild.id);
         return;
     }
@@ -72,6 +72,18 @@ async function player(message, track) {
         return message.client.emojis.cache.get(id).toString()
     }
     message.channel.send(emoji('832565313739685888') + ' - **Now Playing** `' + track.title + '`')
+
+    if (queue.playing === false) {
+        try {
+            dispatcher.pause()
+        } catch (ex) {
+            queue.voiceChannel.leave()
+            message.client.queue.delete(message.guild.id);
+            console.log(ex)
+            return message.channel.send(`:x: - **Error: Pausing player (Queue has been cleared): Status code: ERR_PAUSE**`);
+        }
+    }
+    
 };
 
 module.exports = { player }
