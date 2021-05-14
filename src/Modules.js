@@ -104,7 +104,7 @@ function resume(message) {
     let voiceChannel = message.member.voice.channel;
     let textChannel = message.channel;
 
-    var serverQueue = message.client.queue.get(message.guild.id);
+    const serverQueue = message.client.queue.get(message.guild.id);
 
     if (serverQueue.playing === true) return message.channel.send(`:x: - **The player is not paused**`);
 
