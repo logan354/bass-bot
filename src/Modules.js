@@ -114,9 +114,9 @@ function resume(message) {
     }
 
     serverQueue.playing = true;
+    serverQueue.connection.dispatcher.resume()
     try {
-        console.log('yes')
-        serverQueue.connection.dispatcher.resume()
+        //serverQueue.connection.dispatcher.resume()
     } catch (ex) {
         serverQueue.voiceChannel.leave()
         message.client.queue.delete(message.guild.id);
