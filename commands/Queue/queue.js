@@ -36,7 +36,7 @@ module.exports = {
         let pageNo = chunked.length;
         if (pageNo === 0) pageNo = 1;
 
-        let totalTime = formatTime((queue.totalTime - queue.tracks[0].duration)) //formatTime function accepts only seconds
+        let totalTime = formatTime((queue.totalTime - queue.tracks[0].duration)) //Input must be seconds
 
         let loopEnabler = '❌';
         let loopQueueEnabler = '❌';

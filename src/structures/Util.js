@@ -72,5 +72,4 @@ class util {
     }
 };
 
-
 module.exports = { formatTime, util }
