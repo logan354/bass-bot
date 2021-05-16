@@ -113,9 +113,9 @@ function resume(message) {
         return message.channel.send(':play_pause: - **Resuming**')
     }
 
-    serverQueue.playing = true;
     try {
         serverQueue.connection.dispatcher.resume()
+        serverQueue.playing = true
     } catch (ex) {
         serverQueue.voiceChannel.leave()
         message.client.queue.delete(message.guild.id);
@@ -143,9 +143,9 @@ function pause(message) {
         return message.channel.send(':play_pause: - **Paused**')
     }
 
-    serverQueue.playing = false;
     try {
         serverQueue.connection.dispatcher.pause()
+        serverQueue.playing = false
     } catch (ex) {
         serverQueue.voiceChannel.leave()
         message.client.queue.delete(message.guild.id);

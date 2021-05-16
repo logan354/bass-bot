@@ -1,4 +1,4 @@
-function formatTime(time) {
+function formatTime(time) { //formatTime function accepts only seconds
     // Hours, minutes and seconds
     var hrs = ~~(time / 3600);
     var mins = ~~((time % 3600) / 60);

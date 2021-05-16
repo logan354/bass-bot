@@ -44,8 +44,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.videoDetails.title,
                 url: trackInfo.videoDetails.video_url,
                 image: trackInfo.videoDetails.thumbnails[0].url,
-                duration: trackInfo.videoDetails.lengthSeconds,
-                durationFormatted: formatTime(trackInfo.videoDetails.lengthSeconds),
+                duration: trackInfo.videoDetails.lengthSeconds, //Time duration must be in or converted to seconds
+                durationFormatted: formatTime(trackInfo.videoDetails.lengthSeconds), //formatTime function accepts only seconds
                 channel: trackInfo.videoDetails.author.name,
                 views: trackInfo.videoDetails.viewCount,
                 requestedBy: message.author,
@@ -81,7 +81,7 @@ async function searchTracks(message, url, query, queryType) {
                     title: video.title,
                     url: video.url,
                     image: video.thumbnails[0].url,
-                    duration: video.durationSec,
+                    duration: video.durationSec, //Time duration must be in or converted to seconds
                     durationFormatted: video.duration,
                     channel: video.author.name,
                     views: null,
@@ -140,8 +140,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.title,
                 url: trackInfo.permalink_url,
                 image: trackInfo.artwork_url,
-                duration: trackInfo.duration / 1000,
-                durationFormatted: formatTime(trackInfo.duration / 1000),
+                duration: trackInfo.duration / 1000, //Time duration must be in or converted to seconds
+                durationFormatted: formatTime(trackInfo.duration / 1000), //formatTime function accepts only seconds
                 channel: trackInfo.publisher_metadata.artist,
                 views: trackInfo.playback_count,
                 requestedBy: message.author,
@@ -196,8 +196,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.title,
                 url: trackInfo.url,
                 image: trackInfo.thumbnail.url,
-                duration: trackInfo.duration,
-                durationFormatted: trackInfo.durationFormatted,
+                duration: trackInfo.duration / 1000, //Time duration must be in or converted to seconds
+                durationFormatted: trackInfo.durationFormatted, 
                 channel: trackInfo.channel.name,
                 views: trackInfo.views,
                 requestedBy: message.author,
