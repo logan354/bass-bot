@@ -1,8 +1,8 @@
 const ytdl = require('discord-ytdl-core');
-var ytpl = require("ytpl");
-const ytsr = require("youtube-sr").default;
-const spotify = require("spotify-url-info")
-const scdl = require("soundcloud-downloader").default;
+var ytpl = require('ytpl');
+const ytsr = require('youtube-sr').default;
+const spotify = require('spotify-url-info')
+const scdl = require('soundcloud-downloader').default;
 
 //Player which streams the songs through the bot
 async function player(message, track) {

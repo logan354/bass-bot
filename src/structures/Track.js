@@ -14,7 +14,7 @@ async function handleTrack(message, track) {
     if (serverQueue.tracks.length > 0) {
 
         serverQueue.tracks.push(track);
-        serverQueue.totalTime += +track.duration; //track.duration prepended with `+` to produce a number from a string
+        serverQueue.totalTime += parseInt(track.duration); //Converts a string to an integer.
 
         return message.channel.send({
             embed: {
@@ -41,7 +41,7 @@ async function handleTrack(message, track) {
 
     //If a not then add the track to the queue
     serverQueue.tracks.push(track);
-    serverQueue.totalTime += +track.duration; //track.duration prepended with `+` to produce a number from a string
+    serverQueue.totalTime += parseInt(track.duration); //Converts a string to an integer.
     
     //Try to play track
     try {

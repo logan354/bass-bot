@@ -1,10 +1,10 @@
 const ytdl = require('discord-ytdl-core');
-var ytpl = require("ytpl");
-const ytsr = require("youtube-sr").default;
-const spotify = require("spotify-url-info")
-const scdl = require("soundcloud-downloader").default;
+var ytpl = require('ytpl');
+const ytsr = require('youtube-sr').default;
+const spotify = require('spotify-url-info')
+const scdl = require('soundcloud-downloader').default;
 const { handleTrack, handlePlaylist } = require('./Track')
-const { formatTime, buildTimeCode, parseMS } = require("../structures/Util")
+const { formatTime } = require("../structures/Util")
 
 //resolveQueryType resolves which query the user input is
 function resolveQueryType(url, query) {

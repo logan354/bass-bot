@@ -11,8 +11,8 @@ function formatTime(time) { //formatTime function accepts only seconds
     }
     ret += "" + mins + ":" + (secs < 10 ? "0" : "");
     ret += "" + secs;
-    return ret;
-}
+    return ret; 
+} 
 
 
 

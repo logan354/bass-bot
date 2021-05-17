@@ -14,9 +14,6 @@ async function join(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    if (message.guild.me.voice.channel) return
-    else {
-
         //Try connect to the voice channel
         try {
             const connection = await voiceChannel.join();
@@ -31,9 +28,9 @@ async function join(message) {
             return message.channel.send(':x: - **Error: Joining voice channel** ' + '`' + voiceChannel.name + '`**: Status code: ERR_JOIN**');
 
         }
-    }
 
     createQueue(message);
+
 }
 
 
@@ -72,7 +69,6 @@ async function play(message, url, query) {
 
     if (message.guild.me.voice.channel);
     else {
-
         //Try connect to the voice channel
         try {
             const connection = await voiceChannel.join();
@@ -87,9 +83,9 @@ async function play(message, url, query) {
             return message.channel.send(':x: - **Error: Joining voice channel** ' + '`' + voiceChannel.name + '`**: Status code: ERR_JOIN**');
 
         }
-    }
 
     createQueue(message);
+    }
 
     queryType = resolveQueryType(url, query)
     searchTracks(message, url, query, queryType)
@@ -114,7 +110,7 @@ function resume(message) {
     }
 
     try {
-        serverQueue.connection.dispatcher.resume(true)
+        serverQueue.connection.dispatcher.resume()
         serverQueue.playing = true
     } catch (ex) {
         serverQueue.voiceChannel.leave()
@@ -153,6 +149,7 @@ function pause(message) {
         return message.channel.send(`:x: - **Error: Pausing player (Queue has been cleared): Status code: ERR_PAUSE**`);
     }
     message.channel.send(':play_pause: - **Paused**')
+
 }
 
 
@@ -165,24 +162,21 @@ function skip(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    if (!serverQueue.connection) return
+    console.log()
 
-    if (!serverQueue.connection.dispatcher) return
+    const voiceChannelSize = voiceChannel.members.filter(m => !m.user.bot).size //Gets the amount of users in the Voice Channel (execpt bots)
 
-    const voiceChannelSize = voiceChannel.members.array().length - 1 //Minus one for the bot
-
-    if (voiceChannelSize > 2) {
+    if (voiceChannelSize > 2) { //Check if the amount of users in the Voice Channel is greater than 2
         const voteAmountDouble = voiceChannelSize * 0.75
         const voteAmount = Math.trunc(voteAmountDouble);
 
-        if (serverQueue.skiplist.includes(message.author.id)) {
+        if (serverQueue.skiplist.includes(message.author.id)) { //If user has already voted then return
             return message.channel.send(':x: - **You already voted to skip the current song** (' + serverQueue.skiplist.length + '/' + voteAmount + ' people)')
         }
 
-        serverQueue.skiplist.push(message.author.id);
+        serverQueue.skiplist.push(message.author.id); //Push the users ID to the skiplist
 
-
-        if (serverQueue.skiplist.length >= voteAmount) {
+        if (serverQueue.skiplist.length >= voteAmount) { //If the skiplist.length >= voteAmount the skip the current track
             try {
                 serverQueue.connection.dispatcher.end()
             } catch (ex) {
@@ -193,11 +187,11 @@ function skip(message) {
             }
             message.channel.send(':fast_forward: - **Skipped**')
         }
-        else return message.channel.send('**Skipping?** (' + serverQueue.skiplist.length + '/' + voteAmount + ' people)')
+        else return message.channel.send('**Skipping?** (' + serverQueue.skiplist.length + '/' + voteAmount + ' people)') //If the skiplist.length < voteAmount then return
 
     }
 
-    else {
+    else { //If the amount of users in the Voice Channel is less than 2 then skip the current track
         try {
             serverQueue.connection.dispatcher.end()
         } catch (ex) {
@@ -208,6 +202,7 @@ function skip(message) {
         }
         message.channel.send(':fast_forward: - **Skipped**')
     }
+
 }
 
 module.exports = { join, disconnect, play, resume, pause, skip }
