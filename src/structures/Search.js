@@ -44,8 +44,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.videoDetails.title,
                 url: trackInfo.videoDetails.video_url,
                 image: trackInfo.videoDetails.thumbnails[0].url,
-                duration: trackInfo.videoDetails.lengthSeconds, //track.duration must be seconds
-                durationFormatted: formatTime(trackInfo.videoDetails.lengthSeconds), //Input must be seconds
+                duration: parseInt(trackInfo.videoDetails.lengthSeconds), //Must be in seconds and converted from a string to an integer.
+                durationFormatted: formatTime(trackInfo.videoDetails.lengthSeconds), //Must be in seconds
                 channel: trackInfo.videoDetails.author.name,
                 views: trackInfo.videoDetails.viewCount,
                 requestedBy: message.author,
@@ -81,8 +81,8 @@ async function searchTracks(message, url, query, queryType) {
                     title: video.title,
                     url: video.url,
                     image: video.thumbnails[0].url,
-                    duration: video.durationSec, //track.duration must be seconds
-                    durationFormatted: video.duration,
+                    duration: parseInt(video.durationSec), //Must be in seconds and converted from a string to an integer.
+                    durationFormatted: video.duration, //Must be in seconds
                     channel: video.author.name,
                     views: null,
                     requestedBy: message.author,
@@ -140,8 +140,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.title,
                 url: trackInfo.permalink_url,
                 image: trackInfo.artwork_url,
-                duration: trackInfo.duration / 1000, //track.duration must be seconds
-                durationFormatted: formatTime(trackInfo.duration / 1000), //Input must be seconds
+                duration: parseInt(trackInfo.duration / 1000), //Must be in seconds and converted from a string to an integer.
+                durationFormatted: formatTime(trackInfo.duration / 1000), //Must be in second
                 channel: trackInfo.publisher_metadata.artist,
                 views: trackInfo.playback_count,
                 requestedBy: message.author,
@@ -196,8 +196,8 @@ async function searchTracks(message, url, query, queryType) {
                 title: trackInfo.title,
                 url: trackInfo.url,
                 image: trackInfo.thumbnail.url,
-                duration: trackInfo.duration / 1000, //track.duration must be seconds
-                durationFormatted: trackInfo.durationFormatted, //Input must be seconds
+                duration: parseInt(trackInfo.duration / 1000), //Must be in seconds and converted from a string to an integer.
+                durationFormatted: trackInfo.durationFormatted, //Must be in seconds
                 channel: trackInfo.channel.name,
                 views: trackInfo.views,
                 requestedBy: message.author,

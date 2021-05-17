@@ -51,7 +51,7 @@ async function player(message, track) {
 
         //Variables that need to be reset
         queue.skiplist = []
-        queue.totalTime -= queue.tracks[0].duration
+        queue.duration -= queue.tracks[0].duration
 
         //Check if queue is loopped or track is loopped
         if (queue.loop === true) {

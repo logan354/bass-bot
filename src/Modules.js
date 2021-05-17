@@ -162,8 +162,6 @@ function skip(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    console.log()
-
     const voiceChannelSize = voiceChannel.members.filter(m => !m.user.bot).size //Gets the amount of users in the Voice Channel (execpt bots)
 
     if (voiceChannelSize > 2) { //Check if the amount of users in the Voice Channel is greater than 2

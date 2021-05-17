@@ -36,7 +36,7 @@ module.exports = {
         let pageNo = chunked.length;
         if (pageNo === 0) pageNo = 1;
 
-        let totalTime = formatTime((queue.totalTime - queue.tracks[0].duration)) //Input must be seconds
+        let queueLength = formatTime((queue.duration - queue.tracks[0].duration)) //Input must be seconds
 
         let loopEnabler = '❌';
         let loopQueueEnabler = '❌';
@@ -60,7 +60,7 @@ module.exports = {
                 .setColor('BLACK')
                 .setDescription('__**Now Playing**__\n' + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + '`' + queue.tracks[0].durationFormatted + '` **|** Requested by: <@' + queue.tracks[0].requestedBy + '>' + '\n\n__**Up Next**__\n' + chunked[0])
                 .addField('Total songs:', '`' + (queue.tracks.length - 1) + '`', true)
-                .addField('Total Length:', '`' + totalTime + '`', true)
+                .addField('Total Length:', '`' + queueLength + '`', true)
                 .addField('Voice Channel', queue.voiceChannel, true)
                 .setFooter('Page 1/' + pageNo + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, message.author.displayAvatarURL());
 

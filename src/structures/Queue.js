@@ -14,7 +14,7 @@ function createQueue(message) {
         loop: false,
         loopQueue: false,
         playing: true,
-        totalTime: 0,
+        duration: 0,
 
     };
 
