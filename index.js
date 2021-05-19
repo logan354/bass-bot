@@ -1,10 +1,10 @@
 //Decleared public variables
-const fs = require('fs');
-const discord = require('discord.js');
+const fs = require("fs");
+const discord = require("discord.js");
 
 const client = new discord.Client({ disableEveryone: false });
 
-client.config = require('./config/bot');
+client.config = require("./config/bot");
 client.emotes = client.config.emojis;
 client.filters = client.config.filters;
 client.commands = new discord.Collection();
@@ -15,8 +15,8 @@ client.queue = new Map();
 let commandCounter = 0;
 
 //Loading all commands
-fs.readdirSync('./commands').forEach(dirs => {
-    const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
+fs.readdirSync("./commands").forEach(dirs => {
+    const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith(".js"));
 
     for (const file of commands) {
         const command = require(`./commands/${dirs}/${file}`);
@@ -27,7 +27,7 @@ fs.readdirSync('./commands').forEach(dirs => {
 });
 
 //Loading message events
-const events = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
 
 for (const file of events) {
     console.log(`Loading discord.js event ${file}`);

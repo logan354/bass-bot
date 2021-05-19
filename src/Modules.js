@@ -1,8 +1,8 @@
-const { player } = require('./structures/Player')
-const { createQueue } = require('./structures/Queue')
-const { resolveQueryType, searchTracks } = require('./structures/Search')
-const { handleTrack, handlePlaylist } = require('./structures/Track')
-const { formatTime, util } = require('./structures/Util')
+const { player } = require("./structures/Player")
+const { createQueue } = require("./structures/Queue")
+const { resolveQueryType, searchTracks } = require("./structures/Search")
+const { handleTrack, handlePlaylist } = require("./structures/Track")
+const { formatTime, util } = require("./structures/Util")
 
 
 
@@ -18,14 +18,13 @@ async function join(message) {
         try {
             const connection = await voiceChannel.join();
             connection.voice.setSelfDeaf(true);
-            //queueConstruct.connection = connection;
-            message.channel.send(`:white_check_mark: - **Successfully joined ` + '`' + voiceChannel.name + '` and bound to** <#' + textChannel.id + '>');
+            message.channel.send(`:white_check_mark: - **Successfully joined ` + "`" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
         } catch (ex) {
             message.client.queue.delete(message.guild.id);
             await voiceChannel.leave();
             console.log(ex)
-            return message.channel.send(':x: - **Error: Joining voice channel** ' + '`' + voiceChannel.name + '`**: Status code: ERR_JOIN**');
+            return message.channel.send(":x: - **Error:** `Joining voice channel " + voiceChannel.name + "`");
 
         }
 
@@ -50,10 +49,10 @@ async function disconnect(message) {
     }
     catch (ex) {
         console.log(ex)
-        return message.channel.send(':x: - **Error: Leaving voice channel** ' + '`' + voiceChannel.name + '`**: Status code: ERR_DISCONNECT**');
+        return message.channel.send(":x: - **Error:** `Leaving voice channel " + voiceChannel.name + "`");
     }
 
-    message.channel.send(':mailbox_with_no_mail: - **Successfully disconnected**');
+    message.channel.send(":mailbox_with_no_mail: - **Successfully disconnected**");
 
 }
 
@@ -73,22 +72,19 @@ async function play(message, url, query) {
         try {
             const connection = await voiceChannel.join();
             connection.voice.setSelfDeaf(true);
-            //queueConstruct.connection = connection;
-            message.channel.send(`:white_check_mark: - **Successfully joined ` + '`' + voiceChannel.name + '` and bound to** <#' + textChannel.id + '>');
+            message.channel.send(`:white_check_mark: - **Successfully joined ` + "`" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
         } catch (ex) {
             message.client.queue.delete(message.guild.id);
             await voiceChannel.leave();
             console.log(ex)
-            return message.channel.send(':x: - **Error: Joining voice channel** ' + '`' + voiceChannel.name + '`**: Status code: ERR_JOIN**');
+            return message.channel.send(":x: - **Error:** `Joining voice channel " + voiceChannel.name + "`");
 
         }
-
-    createQueue(message);
     }
 
-    queryType = resolveQueryType(url, query)
-    searchTracks(message, url, query, queryType)
+    createQueue(message);
+    searchTracks(message, url, query, resolveQueryType(url, query))
     
 }
 
@@ -106,7 +102,7 @@ function resume(message) {
 
     if (serverQueue.tracks.length === 0) {
         serverQueue.playing = true
-        return message.channel.send(':play_pause: - **Resuming**')
+        return message.channel.send(":play_pause: - **Resuming**")
     }
 
     try {
@@ -118,7 +114,7 @@ function resume(message) {
         console.log(ex)
         return message.channel.send(`:x: - **Error: Resuming player (Queue has been cleared): Status code: ERR_RESUME**`);
     }
-    message.channel.send(':play_pause: - **Resuming**')
+    message.channel.send(":play_pause: - **Resuming**")
 
 }
 
@@ -136,7 +132,7 @@ function pause(message) {
 
     if (serverQueue.tracks.length === 0) {
         serverQueue.playing = false
-        return message.channel.send(':play_pause: - **Paused**')
+        return message.channel.send(":play_pause: - **Paused**")
     }
 
     try {
@@ -148,7 +144,7 @@ function pause(message) {
         console.log(ex)
         return message.channel.send(`:x: - **Error: Pausing player (Queue has been cleared): Status code: ERR_PAUSE**`);
     }
-    message.channel.send(':play_pause: - **Paused**')
+    message.channel.send(":play_pause: - **Paused**")
 
 }
 
@@ -169,7 +165,7 @@ function skip(message) {
         const voteAmount = Math.trunc(voteAmountDouble);
 
         if (serverQueue.skiplist.includes(message.author.id)) { //If user has already voted then return
-            return message.channel.send(':x: - **You already voted to skip the current song** (' + serverQueue.skiplist.length + '/' + voteAmount + ' people)')
+            return message.channel.send(":x: - **You already voted to skip the current song** (" + serverQueue.skiplist.length + "/" + voteAmount + " people)")
         }
 
         serverQueue.skiplist.push(message.author.id); //Push the users ID to the skiplist
@@ -183,9 +179,9 @@ function skip(message) {
                 console.log(ex)
                 return message.channel.send(`:x: - **Error: Skipping music (Queue has been cleared): Status code: ERR_SKIP**`);
             }
-            message.channel.send(':fast_forward: - **Skipped**')
+            message.channel.send(":fast_forward: - **Skipped**")
         }
-        else return message.channel.send('**Skipping?** (' + serverQueue.skiplist.length + '/' + voteAmount + ' people)') //If the skiplist.length < voteAmount then return
+        else return message.channel.send("**Skipping?** (" + serverQueue.skiplist.length + "/" + voteAmount + " people)") //If the skiplist.length < voteAmount then return
 
     }
 
@@ -198,7 +194,7 @@ function skip(message) {
             console.log(ex)
             return message.channel.send(`:x: - **Error: Skipping music (Queue has been cleared): Status code: ERR_SKIP**`);
         }
-        message.channel.send(':fast_forward: - **Skipped**')
+        message.channel.send(":fast_forward: - **Skipped**")
     }
 
 }

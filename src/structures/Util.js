@@ -25,7 +25,7 @@ class util {
         return temp;
     }
 
-    static get paginationEmojis() {
+    static get paginationEmojis() { 
         return ["◀", "⛔", "▶"];
     }
 

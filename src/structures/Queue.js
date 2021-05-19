@@ -2,6 +2,7 @@ function createQueue(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
+    //Check if a queue already exsits
     if (serverQueue) return
 
     const queueConstruct = {

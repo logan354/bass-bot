@@ -1,10 +1,11 @@
-const ytdl = require('discord-ytdl-core');
-var ytpl = require('ytpl');
-const ytsr = require('youtube-sr').default;
-const spotify = require('spotify-url-info')
-const scdl = require('soundcloud-downloader').default;
+const ytdl = require("discord-ytdl-core");
+var ytpl = require("ytpl");
+const ytsr = require("youtube-sr").default;
+const spotify = require("spotify-url-info")
+const scdl = require("soundcloud-downloader").default;
 
-//Player which streams the songs through the bot
+
+
 async function player(message, track) {
 
     const queue = message.client.queue.get(message.guild.id);
@@ -25,7 +26,7 @@ async function player(message, track) {
                 stream = await scdl.downloadFormat(track.url, scdl.FORMATS.MP3);
                 streamType = "unknown";
             }
-        } else if (track.url.includes("youtube.com")) {
+        } else if (track.url.includes("youtube.com" || "spotify.com")) {
             stream = await ytdl(track.url, { filter: "audio", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
             streamType = "opus";
             stream.on("error", function (ex) {
@@ -34,7 +35,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(':x: - **Error: Decodeding link/query: Status code: ERR_DECODEDING**');
+                        return message.channel.send(":x: - **Error:** `Playing link/query`");
                     }
                 }
             });
@@ -43,9 +44,12 @@ async function player(message, track) {
         if (queue) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
+            console.log(ex)
+            return message.channel.send(":x: - **Error:** `Playing link/query`")
         }
     }
 
+    //Start the stream and set actions on finish
     queue.connection.on("disconnect", () => message.client.queue.delete(message.guild.id))
     const dispatcher = queue.connection.play(stream, { type: streamType }).on("finish", () => {
 
@@ -66,13 +70,16 @@ async function player(message, track) {
         }
     });
 
+    //Set volume
     dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
+    //Show playing message
     function emoji(id) {
         return message.client.emojis.cache.get(id).toString()
     }
-    message.channel.send(emoji('832565313739685888') + ' - **Now Playing** `' + track.title + '`')
+    message.channel.send(emoji("832565313739685888") + " - **Now Playing** `" + track.title + "`")
 
+    //Pause the stream if queue.playing === false
     if (queue.playing === false) {
         try {
             dispatcher.pause()
@@ -80,10 +87,10 @@ async function player(message, track) {
             queue.voiceChannel.leave()
             message.client.queue.delete(message.guild.id);
             console.log(ex)
-            return message.channel.send(`:x: - **Error: Pausing player (Queue has been cleared): Status code: ERR_PAUSE**`);
+            return message.channel.send(":x: - **Error:** `Pausing player (Queue has been cleared)`");
         }
     }
-    
+
 };
 
 module.exports = { player }
