@@ -55,7 +55,7 @@ async function searchTracks(message, url, query, queryType) {
                 views: trackInfo.videoDetails.viewCount,
                 requestedBy: message.author,
                 isLive: trackInfo.videoDetails.isLiveContent,
-                source: 'youtube',
+                source: "youtube",
             }
 
             if (track.isLive === true || track.duration === 0) {
@@ -94,7 +94,7 @@ async function searchTracks(message, url, query, queryType) {
                     views: null,
                     requestedBy: message.author,
                     isLive: video.isLive,
-                    source: 'youtube',
+                    source: "youtube",
 
                 }
 
@@ -155,7 +155,7 @@ async function searchTracks(message, url, query, queryType) {
                 views: trackInfo.playback_count,
                 requestedBy: message.author,
                 isLive: null,
-                source: 'soundcloud',
+                source: "soundcloud",
             }
 
             handleTrack(message, track)
@@ -184,10 +184,10 @@ async function searchTracks(message, url, query, queryType) {
                 views: null,
                 requestedBy: message.author,
                 isLive: null,
-                source: 'spotify',
+                source: "spotify",
             }
 
-            query = track.channel + ' - ' + track.title;
+            query = track.channel + " - " + track.title;
 
             try {
                 trackInfo = await ytsr.searchOne(query)
@@ -203,7 +203,7 @@ async function searchTracks(message, url, query, queryType) {
                 //track.views = trackInfo.views
                 //track.requestedBy = message.author
                 track.isLive = trackInfo.live
-                track.source = 'youtube'
+                //track.source = "youtube"
 
 
                 if (track.isLive === true || track.duration === 0) {
@@ -244,7 +244,7 @@ async function searchTracks(message, url, query, queryType) {
                 views: trackInfo.views,
                 requestedBy: message.author,
                 isLive: trackInfo.live,
-                source: 'youtube',
+                source: "youtube",
             }
 
             if (track.isLive === true || track.duration === 0) {

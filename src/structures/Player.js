@@ -77,7 +77,9 @@ async function player(message, track) {
     function emoji(id) {
         return message.client.emojis.cache.get(id).toString()
     }
-    message.channel.send(emoji("832565313739685888") + " - **Now Playing** `" + track.title + "`")
+    let emojiID = "844386375338819584";
+    
+    message.channel.send(emoji(emojiID) + " - **Now Playing** `" + track.title + "`")
 
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {

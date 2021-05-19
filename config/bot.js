@@ -28,7 +28,7 @@ module.exports = {
     discord: {
         token: 'ODI5OTM5Nzc5NDQwODY5NDA2.YG_bpg.lxdHnN9C_lgXfp10rE2b0HzHVEg', //process.env.token
         prefix: '.',
-        version: 'v1.0.0-alpha',
+        version: 'v1.0.0-beta',
     },
 
     filters: ['8D', 'gate', 'haas', 'phaser', 'treble', 'tremolo', 'vibrato', 'reverse', 'karaoke', 'flanger', 'mcompand', 'pulsator', 'subboost', 'bassboost', 'vaporwave', 'nightcore', 'normalizer', 'surrounding'],
