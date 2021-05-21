@@ -12,23 +12,24 @@ async function join(message) {
     let voiceChannel = message.member.voice.channel;
     let textChannel = message.channel;
 
+    createQueue(message);
+
     const serverQueue = message.client.queue.get(message.guild.id);
 
         //Try connect to the voice channel
         try {
             const connection = await voiceChannel.join();
             connection.voice.setSelfDeaf(true);
-            message.channel.send(`:white_check_mark: - **Successfully joined ` + "`" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
+            serverQueue.connection = connection;
+            message.channel.send(":white_check_mark: - **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
         } catch (ex) {
             message.client.queue.delete(message.guild.id);
             await voiceChannel.leave();
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Joining voice channel " + voiceChannel.name + "`");
+            return message.channel.send(":x: - **Error:** Joining voice channel " + voiceChannel.name);
 
         }
-
-    createQueue(message);
 
 }
 
@@ -49,7 +50,7 @@ async function disconnect(message) {
     }
     catch (ex) {
         console.log(ex)
-        return message.channel.send(":x: - **Error:** `Leaving voice channel " + voiceChannel.name + "`");
+        return message.channel.send(":x: - **Error:** Leaving voice channel " + voiceChannel.name);
     }
 
     message.channel.send(":mailbox_with_no_mail: - **Successfully disconnected**");
@@ -64,6 +65,8 @@ async function play(message, url, query) {
     let voiceChannel = message.member.voice.channel;
     let textChannel = message.channel;
 
+    createQueue(message);
+
     const serverQueue = message.client.queue.get(message.guild.id);
 
     if (message.guild.me.voice.channel);
@@ -72,18 +75,18 @@ async function play(message, url, query) {
         try {
             const connection = await voiceChannel.join();
             connection.voice.setSelfDeaf(true);
-            message.channel.send(`:white_check_mark: - **Successfully joined ` + "`" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
+            serverQueue.connection = connection;
+            message.channel.send(":white_check_mark: - **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
         } catch (ex) {
             message.client.queue.delete(message.guild.id);
             await voiceChannel.leave();
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Joining voice channel " + voiceChannel.name + "`");
+            return message.channel.send(":x: - **Error:** Joining voice channel " + voiceChannel.name);
 
         }
     }
 
-    createQueue(message);
     searchTracks(message, url, query, resolveQueryType(url, query))
     
 }
@@ -98,7 +101,7 @@ function resume(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    if (serverQueue.playing === true) return message.channel.send(`:x: - **The player is not paused**`);
+    if (serverQueue.playing === true) return message.channel.send(":x: - **The player is not paused**");
 
     if (serverQueue.tracks.length === 0) {
         serverQueue.playing = true
@@ -112,7 +115,7 @@ function resume(message) {
         serverQueue.voiceChannel.leave()
         message.client.queue.delete(message.guild.id);
         console.log(ex)
-        return message.channel.send(`:x: - **Error: Resuming player (Queue has been cleared): Status code: ERR_RESUME**`);
+        return message.channel.send(":x: - **Error:** Resuming player (Queue has been cleared)");
     }
     message.channel.send(":play_pause: - **Resuming**")
 
@@ -128,7 +131,7 @@ function pause(message) {
 
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    if (serverQueue.playing === false) return message.channel.send(`:x: - **The player is already paused**`);
+    if (serverQueue.playing === false) return message.channel.send(":x: - **The player is already paused**");
 
     if (serverQueue.tracks.length === 0) {
         serverQueue.playing = false
@@ -142,7 +145,7 @@ function pause(message) {
         serverQueue.voiceChannel.leave()
         message.client.queue.delete(message.guild.id);
         console.log(ex)
-        return message.channel.send(`:x: - **Error: Pausing player (Queue has been cleared): Status code: ERR_PAUSE**`);
+        return message.channel.send(":x: - **Error:** Pausing player (Queue has been cleared)");
     }
     message.channel.send(":play_pause: - **Paused**")
 
@@ -177,7 +180,7 @@ function skip(message) {
                 serverQueue.voiceChannel.leave()
                 message.client.queue.delete(message.guild.id);
                 console.log(ex)
-                return message.channel.send(`:x: - **Error: Skipping music (Queue has been cleared): Status code: ERR_SKIP**`);
+                return message.channel.send(":x: - **Error:** Skipping music (Queue has been cleared)");
             }
             message.channel.send(":fast_forward: - **Skipped**")
         }
@@ -192,7 +195,7 @@ function skip(message) {
             serverQueue.voiceChannel.leave()
             message.client.queue.delete(message.guild.id);
             console.log(ex)
-            return message.channel.send(`:x: - **Error: Skipping music (Queue has been cleared): Status code: ERR_SKIP**`);
+            return message.channel.send(":x: - **Error:** Skipping music (Queue has been cleared)");
         }
         message.channel.send(":fast_forward: - **Skipped**")
     }

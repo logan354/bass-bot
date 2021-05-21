@@ -35,7 +35,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(":x: - **Error:** `Playing link/query`");
+                        return message.channel.send(":x: - **Error:** Playing link/query: `" + ex.message + "`");
                     }
                 }
             });
@@ -45,7 +45,7 @@ async function player(message, track) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Playing link/query`")
+            return message.channel.send(":x: - **Error:** Playing link/query: `" + ex.message + "`")
         }
     }
 
@@ -78,6 +78,9 @@ async function player(message, track) {
         return message.client.emojis.cache.get(id).toString()
     }
     let emojiID = "844386375338819584";
+    if (track.source === "youtube") emojiID = "844386374143967253";
+    if (track.source === "soundcloud") emojiID = "844386374000836609";
+    if (track.source === "spotify") emojiID = "844386374182633532";
     
     message.channel.send(emoji(emojiID) + " - **Now Playing** `" + track.title + "`")
 
@@ -89,7 +92,7 @@ async function player(message, track) {
             queue.voiceChannel.leave()
             message.client.queue.delete(message.guild.id);
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Pausing player (Queue has been cleared)`");
+            return message.channel.send(":x: - **Error:** Pausing player (Queue has been cleared)");
         }
     }
 

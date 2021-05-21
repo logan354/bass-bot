@@ -52,7 +52,7 @@ class util {
                 if (emoji === this.paginationEmojis[2]) currPage++;
                 currPage = ((currPage % contents.length) + contents.length) % contents.length;
 
-                //For footer on embed
+                //Variables
                 const queue = message.client.queue.get(message.guild.id);
 
                 let loopEnabler = '❌';
@@ -60,7 +60,7 @@ class util {
                 if (queue.loop === true) loopEnabler = '✅';
                 if (queue.loopQueue === true) loopQueueEnabler = '✅';
 
-                const embed = message.embeds[0].setDescription(contents[currPage]).setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, message.author.displayAvatarURL());
+                const embed = message.embeds[0].setDescription(contents[currPage]).setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL());
 
                 message.edit(embed);
 

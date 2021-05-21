@@ -68,8 +68,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            if (ex.message === "Video unavailable") return message.channel.send(":x: - **Could not find that link**");
-            return message.channel.send(":x: - **Error:** `Searching link/query`");
+            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -133,7 +132,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Searching link/query`");
+            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -162,7 +161,7 @@ async function searchTracks(message, url, query, queryType) {
 
         } catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Searching link/query`");
+            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -189,7 +188,6 @@ async function searchTracks(message, url, query, queryType) {
 
             query = track.channel + " - " + track.title;
 
-            try {
                 trackInfo = await ytsr.searchOne(query)
                 if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
 
@@ -216,14 +214,8 @@ async function searchTracks(message, url, query, queryType) {
             }
             catch (ex) {
                 console.log(ex)
-                return message.channel.send(":x: - **Error:** `Searching link/query`");
+                return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
             }
-
-
-        } catch (ex) {
-            console.log(ex)
-            return message.channel.send(":x: - **Error:** `Searching link/query`");
-        }
     }
 
 
@@ -257,7 +249,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** `Searching link/query`");
+            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 

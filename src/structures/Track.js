@@ -8,8 +8,6 @@ async function handleTrack(message, track) {
 
     var serverQueue = message.client.queue.get(message.guild.id);
 
-    if (!serverQueue) return message.channel.send(":x: - **Error:** `Adding track to the queue`");
-
     //If a track is already enqueued then add the track to the queue
     if (serverQueue.tracks.length > 0) {
 
@@ -53,7 +51,7 @@ async function handleTrack(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: - **Error:** `Playing track`");
+        return message.channel.send(":x: - **Error:** Playing link/query");
 
     }
 }
@@ -67,8 +65,6 @@ async function handlePlaylist(message, track) {
     let textChannel = message.channel;
 
     var serverQueue = message.client.queue.get(message.guild.id);
-
-    if (!serverQueue) return message.channel.send(":x: - **Error:** `Adding playlist to the queue`");
 
     //If a serverQueue there is a track already enqueued then add the track to the queue
     if (serverQueue.tracks.length > 0) {
@@ -93,7 +89,7 @@ async function handlePlaylist(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: - **Error:** `Playing track`");
+        return message.channel.send(":x: - **Error:** Playing link/query");
 
     }
 }
