@@ -60,7 +60,14 @@ class util {
                 if (queue.loop === true) loopEnabler = '✅';
                 if (queue.loopQueue === true) loopQueueEnabler = '✅';
 
-                const embed = message.embeds[0].setDescription(contents[currPage]).setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL());
+                var embed;
+                if (currPage === 0) 
+                embed = message.embeds[0].setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + contents[currPage])
+                .setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL());
+                else { 
+                    embed = message.embeds[0].setDescription(contents[currPage])
+                    .setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL()); 
+                }
 
                 message.edit(embed);
 

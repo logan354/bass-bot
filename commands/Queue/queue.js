@@ -72,7 +72,7 @@ module.exports = {
                 if (chunked.length > 1) await util.pagination(queueMsg, message.author, chunked);
             } catch (ex) {
                 console.log(ex)
-                message.channel.send(":x: - **Error:** `Displaying queue`");
+                message.channel.send(":x: - **Error:** Displaying queue");
             }
         }
     }

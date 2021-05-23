@@ -37,7 +37,16 @@ async function searchTracks(message, url, query, queryType) {
     let track, trackInfo;
 
     //Print searching message
-    message.channel.send(":mag_right: - **Searching** `" + query + "`")
+    function emoji(id) {
+        return message.client.emojis.cache.get(id).toString()
+    }
+    let emojiID = "844386375338819584";
+    if (queryType === "youtube-video" || queryType === "youtube-playlist" || queryType === "youtube-video-keywords") emojiID = "844386374143967253";
+    if (queryType === "soundcloud-song") emojiID = "844386374000836609";
+    if (queryType === "spotify-song") emojiID = "844386374182633532";
+
+    message.channel.send(emoji(emojiID) + " - **Searching** `" + query + "`")
+
 
     if (queryType === "youtube-video") {
         try {
@@ -188,34 +197,34 @@ async function searchTracks(message, url, query, queryType) {
 
             query = track.channel + " - " + track.title;
 
-                trackInfo = await ytsr.searchOne(query)
-                if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
+            trackInfo = await ytsr.searchOne(query)
+            if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
 
-                track.title = trackInfo.title
-                track.url = trackInfo.url
-                //track.displayURL = trackInfo.url
-                //track.image = trackInfo.thumbnail.url
-                track.duration = parseInt(trackInfo.duration / 1000) //Must be in seconds and converted from a string to an integer.
-                track.durationFormatted = trackInfo.durationFormatted //Must be in seconds
-                //track.channel = trackInfo.channel.name
-                //track.views = trackInfo.views
-                //track.requestedBy = message.author
-                track.isLive = trackInfo.live
-                //track.source = "youtube"
+            track.title = trackInfo.title
+            track.url = trackInfo.url
+            //track.displayURL = trackInfo.url
+            //track.image = trackInfo.thumbnail.url
+            track.duration = parseInt(trackInfo.duration / 1000) //Must be in seconds and converted from a string to an integer.
+            track.durationFormatted = trackInfo.durationFormatted //Must be in seconds
+            //track.channel = trackInfo.channel.name
+            //track.views = trackInfo.views
+            //track.requestedBy = message.author
+            track.isLive = trackInfo.live
+            //track.source = "youtube"
 
 
-                if (track.isLive === true || track.duration === 0) {
-                    track.durationFormatted = "LIVE"
-                    track.isLive = true
-                }
-
-                handleTrack(message, track)
-
+            if (track.isLive === true || track.duration === 0) {
+                track.durationFormatted = "LIVE"
+                track.isLive = true
             }
-            catch (ex) {
-                console.log(ex)
-                return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
-            }
+
+            handleTrack(message, track)
+
+        }
+        catch (ex) {
+            console.log(ex)
+            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+        }
     }
 
 

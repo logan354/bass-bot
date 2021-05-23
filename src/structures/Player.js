@@ -78,9 +78,6 @@ async function player(message, track) {
         return message.client.emojis.cache.get(id).toString()
     }
     let emojiID = "844386375338819584";
-    if (track.source === "youtube") emojiID = "844386374143967253";
-    if (track.source === "soundcloud") emojiID = "844386374000836609";
-    if (track.source === "spotify") emojiID = "844386374182633532";
     
     message.channel.send(emoji(emojiID) + " - **Now Playing** `" + track.title + "`")
 
