@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { util, formatTime } = require("../../src/structures/Util");
+const { formatTime, util } = require("../../src/Music/structures/Util");
 
 module.exports = {
     name: "queue",
@@ -28,8 +28,6 @@ module.exports = {
 
 
         //Formating the queue
-        //const que = queue.tracks.map((track, i) => `\`${i}.\` | [\`${track.title}\`](${track.displayURL}) - ${track.requestedBy}`).slice(1, queue.tracks.length);
-
         const que = queue.tracks.map((track, i) => "`" + i + ".` " + `[${track.title}](${track.displayURL})\n` + "`" + track.durationFormatted + "` **|** Requested by: <@" + track.requestedBy + ">").slice(1, queue.tracks.length)
 
         const chunked = util.chunk(que, 5).map((x) => x.join("\n\n"));

@@ -1,33 +1,11 @@
 const ytdl = require("discord-ytdl-core");
 var ytpl = require("ytpl");
-const ytsr = require("youtube-sr").default;
-const spotify = require("spotify-url-info")
 const scdl = require("soundcloud-downloader").default;
+const spotify = require("spotify-url-info")
+const ytsr = require("youtube-sr").default;
+
 const { handleTrack, handlePlaylist } = require("./Track")
-const { formatTime } = require("../structures/Util")
-
-
-
-//resolveQueryType resolves which query the user input is
-function resolveQueryType(url, query) {
-
-    //Playlists
-    if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) return "youtube-playlist"
-
-    //if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:playlist\/|\?uri=spotify:playlist:)((\w|-){22})/)) return "spotify-playlist"
-
-    //if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:album\/|\?uri=spotify:album:)((\w|-){22})/)) return "spotify-album"
-
-    //Videos
-    if (url.match(/^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi)) return "youtube-video"
-
-    if (url.match(/^https?:\/\/(soundcloud\.com)\/(.*)$/gi)) return "soundcloud-song"
-
-    if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:track\/|\?uri=spotify:track:)((\w|-){22})/)) return "spotify-song"
-
-    return "youtube-video-keywords"
-
-}
+const { formatTime } = require("./Util")
 
 
 
@@ -45,13 +23,13 @@ async function searchTracks(message, url, query, queryType) {
     if (queryType === "soundcloud-song") emojiID = "844386374000836609";
     if (queryType === "spotify-song") emojiID = "844386374182633532";
 
-    message.channel.send(emoji(emojiID) + " - **Searching** `" + query + "`")
+    message.channel.send(emoji(emojiID) + " **Searching...** :mag_right: `" + query + "`")
 
 
     if (queryType === "youtube-video") {
         try {
             trackInfo = await ytdl.getInfo(url);
-            if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
+            if (!trackInfo) return message.channel.send(":x: **Could not find that link**");
 
             track = {
                 title: trackInfo.videoDetails.title,
@@ -77,7 +55,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -86,7 +64,7 @@ async function searchTracks(message, url, query, queryType) {
     if (queryType === "youtube-playlist") {
         try {
             const playlist = await ytpl(url.split("list=")[1]);
-            if (!playlist) return message.channel.send(":x: - **Could not find that link**");
+            if (!playlist) return message.channel.send(":x: **Could not find that link**");
 
             const videos = await playlist.items;
             for (const video of videos) {
@@ -141,7 +119,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -150,7 +128,7 @@ async function searchTracks(message, url, query, queryType) {
     if (queryType === "soundcloud-song") {
         try {
             trackInfo = await scdl.getInfo(url);
-            if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
+            if (!trackInfo) return message.channel.send(":x: **Could not find that link**");
 
             track = {
                 title: trackInfo.title,
@@ -170,7 +148,7 @@ async function searchTracks(message, url, query, queryType) {
 
         } catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -179,7 +157,7 @@ async function searchTracks(message, url, query, queryType) {
     if (queryType === "spotify-song") {
         try {
             trackInfo = await spotify.getData(url);
-            if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
+            if (!trackInfo) return message.channel.send(":x: **Could not find that link**");
 
             track = {
                 title: trackInfo.name,
@@ -198,7 +176,7 @@ async function searchTracks(message, url, query, queryType) {
             query = track.channel + " - " + track.title;
 
             trackInfo = await ytsr.searchOne(query)
-            if (!trackInfo) return message.channel.send(":x: - **Could not find that link**");
+            if (!trackInfo) return message.channel.send(":x: **Could not find that link**");
 
             track.title = trackInfo.title
             track.url = trackInfo.url
@@ -223,7 +201,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
@@ -232,7 +210,7 @@ async function searchTracks(message, url, query, queryType) {
     if (queryType === "youtube-video-keywords") {
         try {
             trackInfo = await ytsr.searchOne(query)
-            if (!trackInfo) return message.channel.send(":x: - **No results found on YouTube for** `" + query + "`");
+            if (!trackInfo) return message.channel.send(":x: **No results found on YouTube for** `" + query + "`");
 
             track = {
                 title: trackInfo.title,
@@ -258,11 +236,11 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
 
 
 }
 
-module.exports = { resolveQueryType, searchTracks }
+module.exports = { searchTracks }

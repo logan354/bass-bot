@@ -35,7 +35,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(":x: - **Error:** Playing link/query: `" + ex.message + "`");
+                        return message.channel.send(":x: **Error:** Playing link/query: `" + ex.message + "`");
                     }
                 }
             });
@@ -45,7 +45,7 @@ async function player(message, track) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Playing link/query: `" + ex.message + "`")
+            return message.channel.send(":x: **Error:** Playing link/query: `" + ex.message + "`")
         }
     }
 
@@ -79,7 +79,7 @@ async function player(message, track) {
     }
     let emojiID = "844386375338819584";
     
-    message.channel.send(emoji(emojiID) + " - **Now Playing** `" + track.title + "`")
+    message.channel.send(emoji(emojiID) + " **Now Playing** `" + track.title + "`")
 
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {
@@ -89,7 +89,7 @@ async function player(message, track) {
             queue.voiceChannel.leave()
             message.client.queue.delete(message.guild.id);
             console.log(ex)
-            return message.channel.send(":x: - **Error:** Pausing player (Queue has been cleared)");
+            return message.channel.send(":x: **Error:** Pausing player (Queue has been cleared)");
         }
     }
 

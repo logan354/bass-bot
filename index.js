@@ -1,18 +1,18 @@
 //Decleared public variables
 const fs = require("fs");
-const discord = require("discord.js");
+const Discord = require("discord.js");
 
-const client = new discord.Client({ disableEveryone: false });
+const client = new Discord.Client({ disableEveryone: false });
 
-client.config = require("./config/bot");
+client.config = require('./config/bot');
 client.emotes = client.config.emojis;
 client.filters = client.config.filters;
-client.commands = new discord.Collection();
+client.commands = new Discord.Collection();
 
 client.queue = new Map();
-
-
 let commandCounter = 0;
+
+
 
 //Loading all commands
 fs.readdirSync("./commands").forEach(dirs => {

@@ -1,4 +1,5 @@
-function formatTime(time) { //formatTime function accepts only seconds
+//formatTime function accepts only seconds
+function formatTime(time) { 
     // Hours, minutes and seconds
     var hrs = ~~(time / 3600);
     var mins = ~~((time % 3600) / 60);
@@ -16,6 +17,30 @@ function formatTime(time) { //formatTime function accepts only seconds
 
 
 
+//resolveQueryType resolves which query the user input is
+function resolveQueryType(url, query) {
+
+    //Playlists
+    if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) return "youtube-playlist"
+
+    //if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:playlist\/|\?uri=spotify:playlist:)((\w|-){22})/)) return "spotify-playlist"
+
+    //if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:album\/|\?uri=spotify:album:)((\w|-){22})/)) return "spotify-album"
+
+    //Videos
+    if (url.match(/^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi)) return "youtube-video"
+
+    if (url.match(/^https?:\/\/(soundcloud\.com)\/(.*)$/gi)) return "soundcloud-song"
+
+    if (url.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:track\/|\?uri=spotify:track:)((\w|-){22})/)) return "spotify-song"
+
+    return "youtube-video-keywords"
+
+}
+
+
+
+//Splits queue into pages
 class util {
     static chunk(arr, size) {
         const temp = [];
@@ -79,4 +104,6 @@ class util {
     }
 };
 
-module.exports = { formatTime, util }
+
+
+module.exports = { formatTime, resolveQueryType, util }

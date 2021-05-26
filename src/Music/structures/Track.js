@@ -51,7 +51,7 @@ async function handleTrack(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: - **Error:** Playing link/query");
+        return message.channel.send(":x: **Error:** Playing link/query");
 
     }
 }
@@ -89,7 +89,7 @@ async function handlePlaylist(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: - **Error:** Playing link/query");
+        return message.channel.send(":x: **Error:** Playing link/query");
 
     }
 }
