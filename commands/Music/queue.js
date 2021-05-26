@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { formatTime, util } = require("../../src/Music/structures/Util");
+const { formatTime, util } = require("../../src/structures/Util");
 
 module.exports = {
     name: "queue",
