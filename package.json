@@ -16,9 +16,9 @@
     "discord.js": "^12.5.3",
     "ffmpeg-static": "^4.3.0",
     "soundcloud-downloader": "^1.0.0",
-    "spotify-url-info": "^2.2.0",
-    "youtube-sr": "^4.0.7",
-    "ytdl-core": "^4.8.0",
+    "spotify-url-info": "^2.2.3",
+    "youtube-sr": "^4.1.1",
+    "ytdl-core": "^4.8.2",
     "ytpl": "^2.2.1"
   }
 }
