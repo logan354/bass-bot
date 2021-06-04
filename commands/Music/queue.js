@@ -18,7 +18,7 @@ module.exports = {
         //Command Rules
         if (!message.guild.me.voice.channel) return message.channel.send(":x: - **I am not connected to a voice channel.** Type " + "`" + client.config.discord.prefix + "join" + "`" + " to get me in one");
 
-        if (!queue) return message.channel.send(":x: - **Nothing playing in this server**, let's get this party started! :tada:");
+        if (!queue.tracks.length) return message.channel.send(":x: - **Nothing playing in this server**, let's get this party started! :tada:");
 
 
         //Command Permissions
