@@ -1,9 +1,8 @@
-const { disconnect } = require("../../src/Modules");
-
 module.exports = {
     name: "disconnect",
     aliases: ["dc", "leave", "dis"],
     category: "Track",
+    description: "Disconnects the bot from the voice channel it is in.",    
     utilisation: "{prefix}disconnect",
 
     async execute(client, message, args) {
@@ -15,10 +14,10 @@ module.exports = {
         const serverQueue = message.client.queue.get(message.guild.id);
 
         //Command Rules
-        if (!message.guild.me.voice.channel) return message.channel.send(":x: **I am not connected to a voice channel.** Type " + "`" + client.config.discord.prefix + "join" + "`" + " to get me in one");
+        if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.discord.prefix + "join" + "`" + " to get me in one");
 
 
-        disconnect(message);
+        client.player.disconnect(message);
         
     }
 }

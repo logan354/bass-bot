@@ -1,8 +1,9 @@
+//Local functions
 const { player } = require("./Player")
+const { Util } = require("../utils/Util")
 
 //handleTrack handles the input of a track a pushes it to the queue
 async function handleTrack(message, track) {
-
     let voiceChannel = message.member.voice.channel;
     let textChannel = message.channel;
 
@@ -12,14 +13,14 @@ async function handleTrack(message, track) {
     if (serverQueue.tracks.length > 0) {
 
         serverQueue.tracks.push(track);
-        serverQueue.duration += track.duration; 
+        serverQueue.duration += track.duration;
 
         return message.channel.send({
             embed: {
                 color: "BLACK",
                 author: {
                     name: "Added to queue",
-                    icon_url: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif"
+                    icon_url: Util.emojis.player,
                 },
                 description: `**[${track.title}](${track.displayURL})**`,
                 thumbnail: { url: track.image },
@@ -39,8 +40,8 @@ async function handleTrack(message, track) {
 
     //If a not then add the track to the queue
     serverQueue.tracks.push(track);
-    serverQueue.duration += track.duration; 
-    
+    serverQueue.duration += track.duration;
+
     //Try to play track
     try {
         const connection = await voiceChannel.join();
@@ -51,7 +52,7 @@ async function handleTrack(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: **Error:** Playing link/query");
+        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query");
 
     }
 }
@@ -60,7 +61,6 @@ async function handleTrack(message, track) {
 
 //handlePlaylist handles the input of a playlist and pushes it to the queue
 async function handlePlaylist(message, track) {
-
     let voiceChannel = message.member.voice.channel;
     let textChannel = message.channel;
 
@@ -70,14 +70,14 @@ async function handlePlaylist(message, track) {
     if (serverQueue.tracks.length > 0) {
 
         serverQueue.tracks.push(track);
-        serverQueue.duration += track.duration; 
+        serverQueue.duration += track.duration;
         return
-        
+
     }
 
     //If a not then add the track to the queue
     serverQueue.tracks.push(track);
-    serverQueue.duration += track.duration; 
+    serverQueue.duration += track.duration;
 
     //Try to play track
     try {
@@ -89,7 +89,7 @@ async function handlePlaylist(message, track) {
         message.client.queue.delete(message.guild.id);
         await voiceChannel.leave();
         console.log(ex)
-        return message.channel.send(":x: **Error:** Playing link/query");
+        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query");
 
     }
 }

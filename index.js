@@ -2,16 +2,20 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 
+const { Player } = require("./src/Player");
+
+
+//Client variables
 const client = new Discord.Client({ disableEveryone: false });
 
-client.config = require('./config/bot');
+client.config = require("./config/bot");
 client.emotes = client.config.emojis;
-client.filters = client.config.filters;
 client.commands = new Discord.Collection();
 
+client.player = new Player();
 client.queue = new Map();
-let commandCounter = 0;
 
+let commandCounter = 0;
 
 
 //Loading all commands
@@ -26,6 +30,7 @@ fs.readdirSync("./commands").forEach(dirs => {
     };
 });
 
+
 //Loading message events
 const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
 
@@ -34,10 +39,11 @@ for (const file of events) {
     const event = require(`./events/${file}`);
     client.on(file.split(".")[0], event.bind(null, client));
 };
-//----------------------------------------------------------------------------
+
 
 //Export commandCounter
 module.exports = { commandCounter }
+
 
 //Login to Discord API
 client.login(client.config.discord.token);

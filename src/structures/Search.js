@@ -1,29 +1,26 @@
+//Web functions
 const ytdl = require("discord-ytdl-core");
 var ytpl = require("ytpl");
 const scdl = require("soundcloud-downloader").default;
 const spotify = require("spotify-url-info")
 const ytsr = require("youtube-sr").default;
 
+//Local functions
 const { handleTrack, handlePlaylist } = require("./Track")
-const { formatTime } = require("./Util")
-
-
+const { Util } = require("../utils/Util")
 
 //searchTracks which searchs for the link/query on Youtube, Spotify or Soundcloud
 async function searchTracks(message, url, query, queryType) {
-
     let track, trackInfo;
 
     //Print searching message
-    function emoji(id) {
-        return message.client.emojis.cache.get(id).toString()
-    }
-    let emojiID = "844386375338819584";
-    if (queryType === "youtube-video" || queryType === "youtube-playlist" || queryType === "youtube-video-keywords") emojiID = "844386374143967253";
-    if (queryType === "soundcloud-song") emojiID = "844386374000836609";
-    if (queryType === "spotify-song") emojiID = "844386374182633532";
+    let searchEmoji;
+    if (queryType === "youtube-video" || queryType === "youtube-playlist" || queryType === "youtube-video-keywords") searchEmoji = Util.emojis.youtube;
+    if (queryType === "soundcloud-song") searchEmoji = Util.emojis.soundcloud;
+    if (queryType === "spotify-song") searchEmoji = Util.emojis.spotify;
 
-    message.channel.send(emoji(emojiID) + " **Searching...** :mag_right: `" + query + "`")
+    message.channel.send(searchEmoji + " **Searching...** :mag_right: `" + query + "`")
+
 
 
     if (queryType === "youtube-video") {
@@ -37,7 +34,7 @@ async function searchTracks(message, url, query, queryType) {
                 displayURL: trackInfo.videoDetails.video_url,
                 image: trackInfo.videoDetails.thumbnails[0].url,
                 duration: parseInt(trackInfo.videoDetails.lengthSeconds), //Must be in seconds and converted from a string to an integer.
-                durationFormatted: formatTime(trackInfo.videoDetails.lengthSeconds), //Must be in seconds
+                durationFormatted: Util.formatTime(trackInfo.videoDetails.lengthSeconds), //Must be in seconds
                 channel: trackInfo.videoDetails.author.name,
                 views: trackInfo.videoDetails.viewCount,
                 requestedBy: message.author,
@@ -136,7 +133,7 @@ async function searchTracks(message, url, query, queryType) {
                 displayURL: trackInfo.permalink_url,
                 image: trackInfo.artwork_url,
                 duration: parseInt(trackInfo.duration / 1000), //Must be in seconds and converted from a string to an integer.
-                durationFormatted: formatTime(trackInfo.duration / 1000), //Must be in seconds
+                durationFormatted: Util.formatTime(trackInfo.duration / 1000), //Must be in seconds
                 channel: trackInfo.publisher_metadata.artist,
                 views: trackInfo.playback_count,
                 requestedBy: message.author,
@@ -165,7 +162,7 @@ async function searchTracks(message, url, query, queryType) {
                 displayURL: trackInfo.external_urls.spotify,
                 image: trackInfo.album.images[0].url,
                 duration: parseInt(trackInfo.duration_ms / 1000), //Must be in seconds and converted from a string to an integer.
-                durationFormatted: formatTime(trackInfo.duration_ms / 1000), //Must be in seconds
+                durationFormatted: Util.formatTime(trackInfo.duration_ms / 1000), //Must be in seconds
                 channel: trackInfo.artists[0].name,
                 views: null,
                 requestedBy: message.author,
@@ -239,8 +236,6 @@ async function searchTracks(message, url, query, queryType) {
             return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
         }
     }
-
-
 }
 
 module.exports = { searchTracks }

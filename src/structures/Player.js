@@ -1,13 +1,14 @@
+//Web functions
 const ytdl = require("discord-ytdl-core");
 var ytpl = require("ytpl");
-const ytsr = require("youtube-sr").default;
-const spotify = require("spotify-url-info")
 const scdl = require("soundcloud-downloader").default;
+const spotify = require("spotify-url-info")
+const ytsr = require("youtube-sr").default;
 
-
+//Local functions
+const { Util } = require("../utils/Util")
 
 async function player(message, track) {
-
     const queue = message.client.queue.get(message.guild.id);
     if (!track) {
         message.guild.me.voice.channel.leave();
@@ -35,7 +36,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(":x: **Error:** Playing link/query: `" + ex.message + "`");
+                        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query: `" + ex.message + "`");
                     }
                 }
             });
@@ -45,7 +46,7 @@ async function player(message, track) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex)
-            return message.channel.send(":x: **Error:** Playing link/query: `" + ex.message + "`")
+            return message.channel.send(Util.emojis.error + " **Error:** Playing link/query: `" + ex.message + "`")
         }
     }
 
@@ -74,12 +75,7 @@ async function player(message, track) {
     dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
     //Show playing message
-    function emoji(id) {
-        return message.client.emojis.cache.get(id).toString()
-    }
-    let emojiID = "844386375338819584";
-    
-    message.channel.send(emoji(emojiID) + " **Now Playing** `" + track.title + "`")
+    message.channel.send(Util.emojis.playerFrozen + " **Now Playing** `" + track.title + "`")
 
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {
@@ -89,10 +85,9 @@ async function player(message, track) {
             queue.voiceChannel.leave()
             message.client.queue.delete(message.guild.id);
             console.log(ex)
-            return message.channel.send(":x: **Error:** Pausing player (Queue has been cleared)");
+            return message.channel.send(Util.emojis.error + " **Error:** Pausing player (Queue has been cleared)");
         }
     }
-
-};
+}
 
 module.exports = { player }

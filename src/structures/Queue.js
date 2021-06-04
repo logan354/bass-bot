@@ -1,9 +1,7 @@
 function createQueue(message) {
-
     const serverQueue = message.client.queue.get(message.guild.id);
 
-    //Check if a queue already exsits
-    if (serverQueue) return
+    if (serverQueue) return //Check if a queue already exsits
 
     const queueConstruct = {
         textChannel: message.channel,
@@ -20,7 +18,6 @@ function createQueue(message) {
     };
 
     message.client.queue.set(message.guild.id, queueConstruct);
-
 }
 
 module.exports = { createQueue }
