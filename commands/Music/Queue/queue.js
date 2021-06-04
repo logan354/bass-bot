@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
-const { Util } = require("../../src/utils/Util");
-const { Pagination } = require("../../src/utils/Pagination")
+const { Util } = require("../../../src/utils/Util");
+const { Pagination } = require("../../../src/utils/Pagination")
 
 module.exports = {
     name: "queue",

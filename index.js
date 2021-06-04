@@ -18,7 +18,7 @@ client.queue = new Map();
 let commandCounter = 0;
 
 
-//Loading all commands
+//Loading general commands
 fs.readdirSync("./commands").forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith(".js"));
 
@@ -30,6 +30,17 @@ fs.readdirSync("./commands").forEach(dirs => {
     };
 });
 
+//Loading music commands
+fs.readdirSync("./commands/Music").forEach(dirs => {
+    const commands = fs.readdirSync(`./commands/Music/${dirs}`).filter(files => files.endsWith(".js"));
+
+    for (const file of commands) {
+        const command = require(`./commands/Music/${dirs}/${file}`);
+        console.log(`Loading command ${file}`);
+        commandCounter += 1
+        client.commands.set(command.name.toLowerCase(), command);
+    };
+});
 
 //Loading message events
 const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
