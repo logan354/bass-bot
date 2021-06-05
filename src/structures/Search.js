@@ -95,7 +95,7 @@ async function searchTracks(message, url, query, queryType) {
                     color: "BLACK",
                     author: {
                         name: "Playlist added to queue",
-                        icon_url: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif"
+                        icon_url: Util.emojis.player
                     },
                     description: `**[${playlist.title}](${playlist.url})**`,
                     thumbnail: { url: playlist.thumbnails[0].url },
