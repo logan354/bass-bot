@@ -42,18 +42,18 @@ class Pagination {
                 //Variables
                 const queue = message.client.queue.get(message.guild.id);
 
-                let loopEnabler = '❌';
-                let loopQueueEnabler = '❌';
-                if (queue.loop === true) loopEnabler = '✅';
-                if (queue.loopQueue === true) loopQueueEnabler = '✅';
+                let loopEnabler = "❌";
+                let loopQueueEnabler = "❌";
+                if (queue.loop === true) loopEnabler = "✅";
+                if (queue.loopQueue === true) loopQueueEnabler = "✅";
 
                 var embed;
                 if (currPage === 0)
                     embed = message.embeds[0].setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + contents[currPage])
-                        .setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL());
+                        .setFooter("Page " + (currPage + 1) + "/" + contents.length + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, author.displayAvatarURL());
                 else {
                     embed = message.embeds[0].setDescription(contents[currPage])
-                        .setFooter('Page ' + (currPage + 1) + '/' + contents.length + ' | Loop: ' + loopEnabler + ' | Queue Loop: ' + loopQueueEnabler, author.displayAvatarURL());
+                        .setFooter("Page " + (currPage + 1) + "/" + contents.length + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, author.displayAvatarURL());
                 }
 
                 message.edit(embed);
