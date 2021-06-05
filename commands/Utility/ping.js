@@ -1,9 +1,9 @@
 module.exports = {
-    name: 'ping',
+    name: "ping",
     aliases: [],
-    category: 'Utility',
+    category: "Utility",
     description: "Checks the bot's response time to Discord.",
-    utilisation: '{prefix}ping',
+    utilisation: "{prefix}ping",
 
     execute(client, message) {
         message.channel.send(client.emotes.ping + " Ping: **" + client.ws.ping + "ms**");
