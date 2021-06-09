@@ -101,6 +101,8 @@ class Player {
 
         try {
             serverQueue.connection.dispatcher.resume()
+            serverQueue.connection.dispatcher.pause()
+            serverQueue.connection.dispatcher.resume()
             serverQueue.playing = true
         } catch (ex) {
             serverQueue.voiceChannel.leave()
