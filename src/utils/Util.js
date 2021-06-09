@@ -45,7 +45,8 @@ class Util {
         error: "<:Error:850228860162277426>",
 
         //Music emojis
-        logo: "<:Logo:850228524736577576>",
+        logo: "<:Logo:850649409334280202>",
+        smallLogo: "<:SmallLogo:850228524736577576>",
         player: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif",
         playerFrozen: "<:PlayerFrozen:844386375338819584>",
         youtube: "<:Youtube:844386374143967253>",
@@ -57,6 +58,9 @@ class Util {
         resume: ":play_pause:",
         pause: ":pause_button:",
         skip: ":track_next:",
+        loop: ":repeat_one:",
+        loopQueue: ":repeat:",
+        shuffle: ":twisted_rightwards_arrows:",
     }
 }
 

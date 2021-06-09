@@ -53,22 +53,24 @@ async function player(message, track) {
     //Start the stream and set actions on finish
     queue.connection.on("disconnect", () => message.client.queue.delete(message.guild.id))
     const dispatcher = queue.connection.play(stream, { type: streamType }).on("finish", () => {
-
-        //Variables that need to be reset
-        queue.skiplist = []
-        queue.duration -= queue.tracks[0].duration
-
+        
         //Check if queue is loopped or track is loopped
         if (queue.loop === true) {
             player(message, queue.tracks[0]);
         }
-        else {
+        else if (queue.loopQueue === true) {
             const shiffed = queue.tracks.shift();
-            if (queue.loopQueue === true) {
-                queue.tracks.push(shiffed);
-            }
+            queue.tracks.push(shiffed);
             player(message, queue.tracks[0]);
         }
+        else {
+            //Variables that need to be reset
+            queue.skiplist = []
+            queue.duration -= queue.tracks[0].duration
+            queue.tracks.shift();
+            player(message, queue.tracks[0]);
+        }
+
     });
 
     //Set volume

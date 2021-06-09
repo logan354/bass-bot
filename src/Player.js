@@ -186,7 +186,66 @@ class Player {
             }
             message.channel.send(Util.emojis.skip + " **Skipped**")
         }
+    }
 
+
+
+    loop(message) {
+        //Variables
+        let voiceChannel = message.member.voice.channel;
+        let textChannel = message.channel;
+
+        const serverQueue = message.client.queue.get(message.guild.id);
+
+        if (serverQueue.loop === true) {
+            serverQueue.loop = false
+            return message.channel.send(Util.emojis.loop + " **Disabled**")
+        }
+        else {
+            serverQueue.loop = true
+            return message.channel.send(Util.emojis.loop + " **Enabled**")
+        }
+    }
+
+
+
+    loopQueue(message) {
+        //Variables
+        let voiceChannel = message.member.voice.channel;
+        let textChannel = message.channel;
+
+        const serverQueue = message.client.queue.get(message.guild.id);
+
+        if (serverQueue.loopQueue === true) {
+            serverQueue.loopQueue = false
+            return message.channel.send(Util.emojis.loopQueue + " **Disabled**")
+        }
+        else {
+            serverQueue.loopQueue = true
+            return message.channel.send(Util.emojis.loopQueue + " **Enabled**")
+        }
+    }
+
+
+
+    shuffle(message) { 
+        //Variables
+        let voiceChannel = message.member.voice.channel;
+        let textChannel = message.channel;
+
+        const serverQueue = message.client.queue.get(message.guild.id);
+
+        //Current shuffle system taken from discord-player
+        const currentTrack = serverQueue.tracks.shift();
+
+        for (let i = serverQueue.tracks.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [serverQueue.tracks[i], serverQueue.tracks[j]] = [serverQueue.tracks[j], serverQueue.tracks[i]];
+        }
+
+        serverQueue.tracks.unshift(currentTrack);
+
+        message.channel.send(Util.emojis.shuffle + " **Shuffled**")
     }
 }
 
