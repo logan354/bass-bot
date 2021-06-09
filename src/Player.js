@@ -100,7 +100,8 @@ class Player {
         }
 
         try {
-            serverQueue.connection.dispatcher.resume()
+            //This is a bug in discord.js#5300
+            serverQueue.connection.dispatcher.resume() 
             serverQueue.connection.dispatcher.pause()
             serverQueue.connection.dispatcher.resume()
             serverQueue.playing = true
