@@ -18,13 +18,12 @@ class Player {
             const connection = await voiceChannel.join();
             connection.voice.setSelfDeaf(true);
             serverQueue.connection = connection;
+            Util.cooldown(message);
             message.channel.send(Util.emojis.success + " **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
         } catch (ex) {
-            message.client.queue.delete(message.guild.id);
-            await voiceChannel.leave();
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Joining voice channel " + voiceChannel.name);
+            return message.channel.send(Util.emojis.error + " **Error:** JOINING " + voiceChannel.name);
 
         }
     }
@@ -45,7 +44,7 @@ class Player {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Leaving voice channel " + voiceChannel.name);
+            return message.channel.send(Util.emojis.error + " **Error:** LEAVING " + voiceChannel.name);
         }
 
         message.channel.send(Util.emojis.disconnect + " **Successfully disconnected**");
@@ -69,13 +68,12 @@ class Player {
                 const connection = await voiceChannel.join();
                 connection.voice.setSelfDeaf(true);
                 serverQueue.connection = connection;
+                Util.cooldown(message);
                 message.channel.send(Util.emojis.success + " **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
 
             } catch (ex) {
-                message.client.queue.delete(message.guild.id);
-                await voiceChannel.leave();
                 console.log(ex)
-                return message.channel.send(Util.emojis.error + " **Error:** Joining voice channel " + voiceChannel.name);
+                return message.channel.send(Util.emojis.error + " **Error:** JOINING " + voiceChannel.name);
 
             }
         }
@@ -101,15 +99,13 @@ class Player {
 
         try {
             //This is a bug in discord.js#5300
-            serverQueue.connection.dispatcher.resume() 
+            serverQueue.connection.dispatcher.resume()
             serverQueue.connection.dispatcher.pause()
             serverQueue.connection.dispatcher.resume()
             serverQueue.playing = true
         } catch (ex) {
-            serverQueue.voiceChannel.leave()
-            message.client.queue.delete(message.guild.id);
-            console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Resuming player (Queue has been cleared)");
+            console.log(ex);
+            return message.channel.send(Util.emojis.error + " **Error:** RESUMING");
         }
         message.channel.send(Util.emojis.resume + " **Resuming**")
     }
@@ -133,11 +129,10 @@ class Player {
         try {
             serverQueue.connection.dispatcher.pause()
             serverQueue.playing = false
+            Util.cooldown(message);
         } catch (ex) {
-            serverQueue.voiceChannel.leave()
-            message.client.queue.delete(message.guild.id);
-            console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Pausing player (Queue has been cleared)");
+            console.log(ex);
+            return message.channel.send(Util.emojis.error + " **Error:** PAUSING");
         }
         message.channel.send(Util.emojis.pause + " **Paused**")
     }
@@ -167,10 +162,8 @@ class Player {
                 try {
                     serverQueue.connection.dispatcher.end()
                 } catch (ex) {
-                    serverQueue.voiceChannel.leave()
-                    message.client.queue.delete(message.guild.id);
-                    console.log(ex)
-                    return message.channel.send(Util.emojis.error + " **Error:** Skipping music (Queue has been cleared)");
+                    console.log(ex);
+                    return message.channel.send(Util.emojis.error + " **Error:** SKIPPING");
                 }
                 message.channel.send(Util.emojis.skip + " **Skipped**")
             }
@@ -182,10 +175,8 @@ class Player {
             try {
                 serverQueue.connection.dispatcher.end()
             } catch (ex) {
-                serverQueue.voiceChannel.leave()
-                message.client.queue.delete(message.guild.id);
-                console.log(ex)
-                return message.channel.send(Util.emojis.error + " **Error:** Skipping music (Queue has been cleared)");
+                console.log(ex);
+                return message.channel.send(Util.emojis.error + " **Error:** SKIPPING");
             }
             message.channel.send(Util.emojis.skip + " **Skipped**")
         }
@@ -231,7 +222,7 @@ class Player {
 
 
 
-    shuffle(message) { 
+    shuffle(message) {
         //Variables
         let voiceChannel = message.member.voice.channel;
         let textChannel = message.channel;

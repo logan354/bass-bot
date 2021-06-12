@@ -39,6 +39,7 @@ class Util {
 
 
 
+    //Global emojis for music funtions
     static emojis = {
         //General emojis
         success: "<:Success:850228860117319700>",
@@ -61,6 +62,38 @@ class Util {
         loop: ":repeat_one:",
         loopQueue: ":repeat:",
         shuffle: ":twisted_rightwards_arrows:",
+    }
+
+
+
+    //Cooldown timer that is applied to functions that let the bot join the voice channel or that stop music from playing
+    static cooldown(message) {
+        //Variables
+        let voiceChannel = message.member.voice.channel;
+        let textChannel = message.channel;
+
+        const serverQueue = message.client.queue.get(message.guild.id);
+
+        const serverCooldown = message.client.cooldownTimeout.get(message.guild.id);
+
+        if (serverCooldown) {
+            clearTimeout(serverCooldown);
+            message.client.cooldownTimeout.delete(message.guild.id);
+        }
+
+         var timeout = setTimeout(async function() {
+            if (voiceChannel.members.filter(m => !m.user.bot).size === 0 || serverQueue.tracks.length === 0 || serverQueue.playing === false) {
+            try {
+                message.client.queue.delete(message.guild.id);
+                await voiceChannel.leave();
+            }
+            catch (ex) {
+                console.log(ex)
+            }
+        }
+        }, 300000) //5 minutes
+
+        message.client.cooldownTimeout.set(message.guild.id, timeout)
     }
 }
 

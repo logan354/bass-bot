@@ -11,8 +11,7 @@ const { Util } = require("../utils/Util")
 async function player(message, track) {
     const queue = message.client.queue.get(message.guild.id);
     if (!track) {
-        message.guild.me.voice.channel.leave();
-        message.client.queue.delete(message.guild.id);
+        Util.cooldown(message);
         return;
     }
 
@@ -36,7 +35,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query: `" + ex.message + "`");
+                        return message.channel.send(Util.emojis.error + " **Error:** PLAYING: `" + ex.message + "`");
                     }
                 }
             });
@@ -46,14 +45,14 @@ async function player(message, track) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Playing link/query: `" + ex.message + "`")
+            return message.channel.send(Util.emojis.error + " **Error:** PLAYING: `" + ex.message + "`")
         }
     }
 
     //Start the stream and set actions on finish
     queue.connection.on("disconnect", () => message.client.queue.delete(message.guild.id))
     const dispatcher = queue.connection.play(stream, { type: streamType }).on("finish", () => {
-        
+
         //Check if queue is loopped or track is loopped
         if (queue.loop === true) {
             player(message, queue.tracks[0]);
@@ -83,11 +82,10 @@ async function player(message, track) {
     if (queue.playing === false) {
         try {
             dispatcher.pause()
+            Util.cooldown(message);
         } catch (ex) {
-            queue.voiceChannel.leave()
-            message.client.queue.delete(message.guild.id);
-            console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** Pausing player (Queue has been cleared)");
+            console.log(ex);
+            return message.channel.send(Util.emojis.error + " **Error:** PAUSING");
         }
     }
 }

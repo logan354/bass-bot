@@ -29,7 +29,7 @@ async function handleTrack(message, track) {
 
                     { name: "Channel", value: track.channel, inline: true },
                     { name: "Song Duration", value: track.durationFormatted, inline: true },
-                    //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
+                    //{ name: "Estimated time until QUEUEING", value: "?", inline: true }, //Not Accurate
 
                     { name: "Position in queue", value: serverQueue.tracks.length - 1, inline: true },
                     { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy.id + ">" }
@@ -49,10 +49,8 @@ async function handleTrack(message, track) {
         serverQueue.connection = connection;
         player(message, serverQueue.tracks[0]);
     } catch (ex) {
-        message.client.queue.delete(message.guild.id);
-        await voiceChannel.leave();
-        console.log(ex)
-        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query");
+        console.log(ex);
+        return message.channel.send(Util.emojis.error + " **Error:** QUEUEING");
 
     }
 }
@@ -86,10 +84,8 @@ async function handlePlaylist(message, track) {
         serverQueue.connection = connection;
         player(message, serverQueue.tracks[0]);
     } catch (ex) {
-        message.client.queue.delete(message.guild.id);
-        await voiceChannel.leave();
-        console.log(ex)
-        return message.channel.send(Util.emojis.error + " **Error:** Playing link/query");
+        console.log(ex);
+        return message.channel.send(Util.emojis.error + " **Error:** QUEUEING");
 
     }
 }

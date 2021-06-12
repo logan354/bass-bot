@@ -52,7 +52,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** SEARCHING: `" + ex.message + "`");
         }
     }
 
@@ -116,7 +116,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** SEARCHING: `" + ex.message + "`");
         }
     }
 
@@ -145,7 +145,7 @@ async function searchTracks(message, url, query, queryType) {
 
         } catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** SEARCHING: `" + ex.message + "`");
         }
     }
 
@@ -198,7 +198,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** SEARCHING: `" + ex.message + "`");
         }
     }
 
@@ -233,7 +233,7 @@ async function searchTracks(message, url, query, queryType) {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(":x: **Error:** Searching link/query: `" + ex.message + "`");
+            return message.channel.send(":x: **Error:** SEARCHING: `" + ex.message + "`");
         }
     }
 }

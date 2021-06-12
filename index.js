@@ -14,6 +14,7 @@ client.commands = new Discord.Collection();
 
 client.player = new Player();
 client.queue = new Map();
+client.cooldownTimeout = new Map();
 
 let commandCounter = 0;
 

@@ -9,7 +9,6 @@ class Pagination {
 
 
 
-
     static get paginationEmojis() {
         return ["◀", "⛔", "▶"];
     }
