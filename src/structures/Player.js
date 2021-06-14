@@ -70,6 +70,8 @@ async function player(message, track) {
             player(message, queue.tracks[0]);
         }
 
+        Util.cooldown(message);
+
     });
 
     //Set volume

@@ -1,6 +1,6 @@
 {
   "name": "beat-bot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "Block354",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/node-pre-gyp": "^0.3.2",
-    "@discordjs/opus": "^0.5.0",
+    "@discordjs/node-pre-gyp": "^0.4.0",
+    "@discordjs/opus": "^0.5.3",
     "discord-ytdl-core": "^5.0.3",
     "discord.js": "^12.5.3",
     "ffmpeg-static": "^4.3.0",

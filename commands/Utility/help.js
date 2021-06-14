@@ -1,3 +1,5 @@
+const { Util } = require("../../src/utils/Util");
+
 module.exports = {
     name: "help",
     aliases: ["h"],
@@ -16,12 +18,12 @@ module.exports = {
             message.channel.send({
                 embed: {
                     color: "BLACK",
-                    author: { name: "Help Pannel" },
+                    title: "Help Pannel",
                     fields: [
-                        { name: "🎵 **Music**", value: "\n.\n**Track**\n" + track + "\n.\n**Queue**\n" + queue + "\n.\n" },
-                        { name: "🧰 Utility", value: "\n" + utility },
+                        { name: Util.emojis.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
+                        { name: client.emotes.utility + " **Utility**", value: "\n" + utility },
                     ],
-                    timestamp: new Date(),
+                    thumbnail: { url: client.config.discord.smallLogo }
                 },
             });
         } else {
@@ -32,7 +34,7 @@ module.exports = {
             message.channel.send({
                 embed: {
                     color: "BLACK",
-                    author: { name: "Help Pannel" },
+                    title: "Help Pannel",
                     fields: [
                         { name: "Name", value: command.name, inline: true },
                         { name: "Category", value: command.category, inline: true },
@@ -40,7 +42,6 @@ module.exports = {
                         { name: "Description", value: command.description, inline: true },
                         { name: "Utilisation", value: command.utilisation.replace("{prefix}", client.config.discord.prefix), inline: true },
                     ],
-                    timestamp: new Date(),
                     description: "Find information on the command provided.\nMandatory arguments `[]`, optional arguments `<>`.",
                 }
             });

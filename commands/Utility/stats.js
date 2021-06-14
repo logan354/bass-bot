@@ -20,7 +20,6 @@ module.exports = {
                     { name: ":pencil: Bot Information", value: `Creator: **Block354#3452**\nVersion: **${pack.version}**\nLines of Code: **?**\nNumber of Commands: **${commandCounter}**` },
                     { name: ":desktop: Hosting Statistics", value: `Service: **Heroku**\nRegion: **United States**\nStack: **heroku-20**\nFramework: **Node.js**\nDiscord.js: **v${pack.dependencies["discord.js"].split("^")[1]}**` }
                 ],
-                timestamp: new Date(),
             },
 
         });

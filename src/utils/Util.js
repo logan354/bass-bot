@@ -62,11 +62,14 @@ class Util {
         loop: ":repeat_one:",
         loopQueue: ":repeat:",
         shuffle: ":twisted_rightwards_arrows:",
+
+        //Util emojis
+        cooldown: ":zzz:",
     }
 
 
 
-    //Cooldown timer that is applied to functions that let the bot join the voice channel or that stop music from playing
+    //Cooldown timer that is applied to functions that let the bot join the voice channel or that interfere with the music playing
     static cooldown(message) {
         //Variables
         let voiceChannel = message.member.voice.channel;
@@ -81,19 +84,23 @@ class Util {
             message.client.cooldownTimeout.delete(message.guild.id);
         }
 
-         var timeout = setTimeout(async function() {
-            if (voiceChannel.members.filter(m => !m.user.bot).size === 0 || serverQueue.tracks.length === 0 || serverQueue.playing === false) {
-            try {
-                message.client.queue.delete(message.guild.id);
-                await voiceChannel.leave();
-            }
-            catch (ex) {
-                console.log(ex)
-            }
-        }
-        }, 300000) //5 minutes
+        if (message.guild.me.voice.channel) {
+            var timeout = setTimeout(async function () {
+                if (voiceChannel.members.filter(m => !m.user.bot).size === 0 || serverQueue.tracks.length === 0 || serverQueue.playing === false) {
+                    try {
+                        message.client.queue.delete(message.guild.id);
+                        await voiceChannel.leave();
+                        message.channel.send(Util.emojis.cooldown + " **Left the voice channel due to inactivity**")
+                    }
+                    catch (ex) {
+                        console.log(ex)
+                    }
+                }
+            }, 600000) //10 minutes
 
-        message.client.cooldownTimeout.set(message.guild.id, timeout)
+            message.client.cooldownTimeout.set(message.guild.id, timeout)
+
+        }
     }
 }
 
