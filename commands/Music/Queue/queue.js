@@ -50,7 +50,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setAuthor("Queue for " + message.guild.name, Util.emojis.player)
                 .setColor("BLACK")
-                .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">")
+                .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].displayURL})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">")
                 .addField("Voice Channel", queue.voiceChannel, true)
                 .setFooter("Page 1/" + pageNo + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, message.author.displayAvatarURL());
             message.channel.send(embed)
@@ -60,7 +60,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setAuthor("Queue for " + message.guild.name, Util.emojis.player)
                 .setColor("BLACK")
-                .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + chunked[0])
+                .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].displayURL})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + chunked[0])
                 .addField("Total songs:", "`" + (queue.tracks.length - 1) + "`", true)
                 .addField("Total Length:", "`" + queueLength + "`", true)
                 .addField("Voice Channel", queue.voiceChannel, true)
@@ -72,7 +72,7 @@ module.exports = {
                 if (chunked.length > 1) await Pagination.pagination(queueMsg, message.author, chunked);
             } catch (ex) {
                 console.log(ex)
-                message.channel.send(":x: - **Error:** Displaying queue");
+                message.channel.send(client.emotes.error + " **Error:** `Displaying`");
             }
         }
     }

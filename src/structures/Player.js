@@ -35,7 +35,7 @@ async function player(message, track) {
                         queue.tracks.shift();
                         player(message, queue.tracks[0]);
                         console.log(ex)
-                        return message.channel.send(Util.emojis.error + " **Error:** PLAYING: `" + ex.message + "`");
+                        return message.channel.send(Util.emojis.error + " **Error: Playing:** `" + ex.message + "`");
                     }
                 }
             });
@@ -45,7 +45,7 @@ async function player(message, track) {
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** PLAYING: `" + ex.message + "`")
+            return message.channel.send(Util.emojis.error + " **Error: Playing:** `" + ex.message + "`")
         }
     }
 
@@ -87,7 +87,7 @@ async function player(message, track) {
             Util.cooldown(message);
         } catch (ex) {
             console.log(ex);
-            return message.channel.send(Util.emojis.error + " **Error:** PAUSING");
+            return message.channel.send(Util.emojis.error + " **Error:** `Pausing`");
         }
     }
 }

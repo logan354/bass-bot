@@ -50,7 +50,7 @@ async function handleTrack(message, track) {
         player(message, serverQueue.tracks[0]);
     } catch (ex) {
         console.log(ex);
-        return message.channel.send(Util.emojis.error + " **Error:** QUEUEING");
+        return message.channel.send(Util.emojis.error + " **Error:** `Queueing`");
 
     }
 }
@@ -85,7 +85,7 @@ async function handlePlaylist(message, track) {
         player(message, serverQueue.tracks[0]);
     } catch (ex) {
         console.log(ex);
-        return message.channel.send(Util.emojis.error + " **Error:** QUEUEING");
+        return message.channel.send(Util.emojis.error + " **Error:** `Queueing`");
 
     }
 }

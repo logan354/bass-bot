@@ -23,7 +23,7 @@ class Player {
 
         } catch (ex) {
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** JOINING " + voiceChannel.name);
+            return message.channel.send(Util.emojis.error + " **Error: Joining:** `" + voiceChannel.name + "`");
 
         }
     }
@@ -44,7 +44,7 @@ class Player {
         }
         catch (ex) {
             console.log(ex)
-            return message.channel.send(Util.emojis.error + " **Error:** LEAVING " + voiceChannel.name);
+            return message.channel.send(Util.emojis.error + " **Error: Leaving:** `" + voiceChannel.name + "`");
         }
 
         message.channel.send(Util.emojis.disconnect + " **Successfully disconnected**");
@@ -73,7 +73,7 @@ class Player {
 
             } catch (ex) {
                 console.log(ex)
-                return message.channel.send(Util.emojis.error + " **Error:** JOINING " + voiceChannel.name);
+                return message.channel.send(Util.emojis.error + " **Error: Joining:** `" + voiceChannel.name + "`");
 
             }
         }
@@ -105,7 +105,7 @@ class Player {
             serverQueue.playing = true
         } catch (ex) {
             console.log(ex);
-            return message.channel.send(Util.emojis.error + " **Error:** RESUMING");
+            return message.channel.send(Util.emojis.error + " **Error:** `Resuming`");
         }
         message.channel.send(Util.emojis.resume + " **Resuming**")
     }
@@ -132,7 +132,7 @@ class Player {
             Util.cooldown(message);
         } catch (ex) {
             console.log(ex);
-            return message.channel.send(Util.emojis.error + " **Error:** PAUSING");
+            return message.channel.send(Util.emojis.error + " **Error:** `Pausing`");
         }
         message.channel.send(Util.emojis.pause + " **Paused**")
     }
@@ -163,7 +163,7 @@ class Player {
                     serverQueue.connection.dispatcher.end()
                 } catch (ex) {
                     console.log(ex);
-                    return message.channel.send(Util.emojis.error + " **Error:** SKIPPING");
+                    return message.channel.send(Util.emojis.error + " **Error:** `Skipping`");
                 }
                 message.channel.send(Util.emojis.skip + " **Skipped**")
             }
@@ -176,7 +176,7 @@ class Player {
                 serverQueue.connection.dispatcher.end()
             } catch (ex) {
                 console.log(ex);
-                return message.channel.send(Util.emojis.error + " **Error:** SKIPPING");
+                return message.channel.send(Util.emojis.error + " **Error:** `Skipping`");
             }
             message.channel.send(Util.emojis.skip + " **Skipped**")
         }
