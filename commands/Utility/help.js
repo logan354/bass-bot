@@ -18,7 +18,7 @@ module.exports = {
             message.channel.send({
                 embed: {
                     color: "BLACK",
-                    title: "Help Pannel",
+                    title: "Help Panel",
                     fields: [
                         { name: Util.emojis.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
                         { name: client.emotes.utility + " **Utility**", value: "\n" + utility },
@@ -34,7 +34,7 @@ module.exports = {
             message.channel.send({
                 embed: {
                     color: "BLACK",
-                    title: "Help Pannel",
+                    title: "Help Panel",
                     fields: [
                         { name: "Name", value: command.name, inline: true },
                         { name: "Category", value: command.category, inline: true },
