@@ -1,5 +1,3 @@
-const { Util } = require("../../src/utils/Util")
-
 module.exports = {
     name: "invite",
     aliases: ["links"],

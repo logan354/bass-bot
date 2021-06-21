@@ -15,6 +15,7 @@ module.exports = {
             embed: {
                 color: "BLACK",
                 author: { name: "-- Bass's Stats --" },
+                thumbnail: { url: client.config.discord.logo },
                 fields: [
                     { name: ":joystick: Bot Statistics", value: `Servers: **${client.guilds.cache.size}**\nUsers: **${client.users.cache.size}**\nChannels: **${client.channels.cache.size}**` },
                     { name: ":pencil: Bot Information", value: `Creator: **Block354#3452**\nVersion: **${pack.version}**\nLines of Code: **?**\nNumber of Commands: **${commandCounter}**` },

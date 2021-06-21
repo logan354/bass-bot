@@ -10,9 +10,9 @@ module.exports = {
     execute(client, message, args) {
         if (!args[0]) {
             //Music
-            const track = message.client.commands.filter(x => x.category == "Track").map((x) => "`" + x.name + "`").join(", "); //./commands/music/song
-            const queue = message.client.commands.filter(x => x.category == "Queue").map((x) => "`" + x.name + "`").join(", "); //./commands/music/queue
-            const utility = message.client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`").join(", "); //./commands/music/premium          
+            const track = message.client.commands.filter(x => x.category == "Track").map((x) => "`" + x.name + "`").join(", "); //./commands/Music/Track
+            const queue = message.client.commands.filter(x => x.category == "Queue").map((x) => "`" + x.name + "`").join(", "); //./commands/Music/Queue
+            const utility = message.client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`").join(", "); //./commands/Utility         
             
 
             message.channel.send({
