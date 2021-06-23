@@ -43,10 +43,15 @@ fs.readdirSync("./commands/Music").forEach(dirs => {
     };
 });
 
-<<<<<<< Updated upstream
+//Loading message events
+const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
 
-=======
->>>>>>> Stashed changes
+for (const file of events) {
+    console.log(`Loading discord.js event ${file}`);
+    const event = require(`./events/${file}`);
+    client.on(file.split(".")[0], event.bind(null, client));
+};
+
 
 //Export commandCounter
 module.exports = { commandCounter }
