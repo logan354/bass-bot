@@ -43,7 +43,10 @@ fs.readdirSync("./commands/Music").forEach(dirs => {
     };
 });
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 //Export commandCounter
 module.exports = { commandCounter }
