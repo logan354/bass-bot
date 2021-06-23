@@ -75,7 +75,7 @@ async function player(message, track) {
     });
 
     //Set volume
-    dispatcher.setVolumeLogarithmic(queue.volume / 100)
+    dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
     //Show playing message
     message.channel.send(Util.emojis.playerFrozen + " **Now Playing** `" + track.title + "`")
