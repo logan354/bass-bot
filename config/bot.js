@@ -15,7 +15,7 @@ module.exports = {
         logo: "https://cdn.discordapp.com/emojis/850649409334280202.png?v=1",
         smallLogo: "https://cdn.discordapp.com/emojis/850228524736577576.png?v=1",
         aiLogo: "https://cdn.discordapp.com/attachments/784280190489985047/853831696512581672/Ai.png",
-        communityLogo: "https://cdn.discordapp.com/attachments/784280190489985047/852123533504020510/Bot_Invite.png",
+        communityLogo: "https://cdn.discordapp.com/attachments/784280190489985047/852123533504020510/Bot_Invite.png"
     },
 
     emojis: {
@@ -24,5 +24,26 @@ module.exports = {
         error: "<:Error:850228860162277426>",
         ping: ":signal_strength:",
         utility: ":tools:",
+
+        //Music emojis
+        logo: "<:BassLogo:850649409334280202>",
+        smallLogo: "<:BassSmallLogo:850228524736577576>",
+        player: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif",
+        playerFrozen: "<:PlayerFrozen:844386375338819584>",
+        youtube: "<:Youtube:844386374143967253>",
+        soundcloud: "<:Soundcloud:844386374000836609>",
+        spotify: "<:Spotify:844386374182633532>",
+
+        //Function emojis
+        disconnect: ":mailbox_with_no_mail:",
+        resume: ":play_pause:",
+        pause: ":pause_button:",
+        skip: ":track_next:",
+        loop: ":repeat_one:",
+        loopQueue: ":repeat:",
+        shuffle: ":twisted_rightwards_arrows:",
+
+        //Util emojis
+        cooldown: ":zzz:"
     }
 }

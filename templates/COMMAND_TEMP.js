@@ -2,7 +2,7 @@
 let voiceChannel = message.member.voice.channel;
 let textChannel = message.channel;
 
-const serverQueue = message.client.queue.get(message.guild.id);
+const serverQueue = client.queues.get(message.guild.id);
 
 //Command Rules
 if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
@@ -17,8 +17,8 @@ if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid usag
 
 //Command Permissions
 const permissions = voiceChannel.permissionsFor(message.client.user);
-if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`")
-if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`")
+if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`");
+if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`");
 
 //Other
-message.channel.send(":construction_site: **Command still under construction**")
+message.channel.send(":construction_site: **Command still under construction**");

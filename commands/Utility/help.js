@@ -1,5 +1,3 @@
-const { Util } = require("../../src/utils/Util");
-
 module.exports = {
     name: "help",
     aliases: ["h"],
@@ -20,7 +18,7 @@ module.exports = {
                     color: "BLACK",
                     title: "Help Panel",
                     fields: [
-                        { name: Util.emojis.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
+                        { name: client.emotes.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
                         { name: client.emotes.utility + " **Utility**", value: "\n" + utility },
                     ],
                     thumbnail: { url: client.config.discord.smallLogo }

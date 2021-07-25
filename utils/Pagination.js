@@ -1,4 +1,4 @@
-class Pagination {
+module.exports = class Pagination {
     static chunk(arr, size) {
         const temp = [];
         for (let i = 0; i < arr.length; i += size) {
@@ -7,13 +7,9 @@ class Pagination {
         return temp;
     }
 
-
-
     static get paginationEmojis() {
         return ["◀", "⛔", "▶"];
     }
-
-
 
     static async pagination(message, author, contents, init = true, currPage = 0) {
         if (init) for (const emoji of this.paginationEmojis) await message.react(emoji);
@@ -38,17 +34,16 @@ class Pagination {
                 if (emoji === this.paginationEmojis[2]) currPage++;
                 currPage = ((currPage % contents.length) + contents.length) % contents.length;
 
-                //Variables
-                const queue = message.client.queue.get(message.guild.id);
+                const serverQueue = message.client.queues.get(message.guild.id);
 
                 let loopEnabler = "❌";
                 let loopQueueEnabler = "❌";
-                if (queue.loop === true) loopEnabler = "✅";
-                if (queue.loopQueue === true) loopQueueEnabler = "✅";
+                if (serverQueue.loop === true) loopEnabler = "✅";
+                if (serverQueue.loopQueue === true) loopQueueEnabler = "✅";
 
                 var embed;
                 if (currPage === 0)
-                    embed = message.embeds[0].setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + contents[currPage])
+                    embed = message.embeds[0].setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + contents[currPage])
                         .setFooter("Page " + (currPage + 1) + "/" + contents.length + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, author.displayAvatarURL());
                 else {
                     embed = message.embeds[0].setDescription(contents[currPage])
@@ -64,5 +59,3 @@ class Pagination {
             });
     }
 }
-
-module.exports = { Pagination }

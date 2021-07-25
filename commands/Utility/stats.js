@@ -1,4 +1,4 @@
-const pack = require("../../package.json")
+const pack = require("../../package.json");
 
 module.exports = {
     name: "stats",
@@ -8,8 +8,7 @@ module.exports = {
     utilisation: "{prefix}stats",
 
     execute(client, message) {
-
-        const { commandCounter } = require("../../");
+        const { commandCounter }  = require("../../");
 
         message.channel.send({
             embed: {
