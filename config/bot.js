@@ -41,9 +41,6 @@ module.exports = {
         skip: ":track_next:",
         loop: ":repeat_one:",
         loopQueue: ":repeat:",
-        shuffle: ":twisted_rightwards_arrows:",
-
-        //Util emojis
-        cooldown: ":zzz:"
+        shuffle: ":twisted_rightwards_arrows:"
     }
 }

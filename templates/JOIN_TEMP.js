@@ -11,6 +11,7 @@ try {
     const connection = await voiceChannel.join();
     serverQueue.connection = connection;
     connection.voice.setSelfDeaf(true);
+    handleEndCooldown(message);
 } catch (ex) {
     console.log(ex);
     return message.channel.send(client.emotes.error + " **Error: Joining:** `" + voiceChannel.name + "`");

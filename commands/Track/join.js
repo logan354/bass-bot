@@ -1,3 +1,4 @@
+const { handleEndCooldown } = require("../../structures/Cooldowns");
 const Queue = require("../../structures/Queue");
 
 module.exports = {
@@ -27,6 +28,7 @@ module.exports = {
             const connection = await voiceChannel.join();
             serverQueue.connection = connection;
             connection.voice.setSelfDeaf(true);
+            handleEndCooldown(message);
         } catch (ex) {
             console.log(ex);
             return message.channel.send(client.emotes.error + " **Error: Joining:** `" + voiceChannel.name + "`");
