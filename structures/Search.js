@@ -26,7 +26,7 @@ function resolveQueryType(query) {
 }
 
 async function handleTrack(message, track) {
-    var serverQueue = message.client.queues.get(message.guild.id);
+    let serverQueue = message.client.queues.get(message.guild.id);
 
     if (serverQueue.tracks.length > 0) {
         serverQueue.tracks.push(track);
@@ -249,7 +249,7 @@ async function searchTracks(message, query) {
         case "youtube-video-keywords": {
             try {
                 trackInfo = await ytsr.searchOne(query);
-                if (!trackInfo) message.channel.send(message.client.emotes.error + " **No results found on YouTube for** `" + query + "`");
+                if (!trackInfo) return message.channel.send(message.client.emotes.error + " **No results found on YouTube for** `" + query + "`");
 
                 track = {
                     title: trackInfo.title,
