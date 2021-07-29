@@ -40,14 +40,12 @@ async function handleTrack(message, track) {
                 },
                 description: `**[${track.title}](${track.url})**`,
                 thumbnail: { url: track.thumbnail },
-
                 fields: [
-
                     { name: "Channel", value: track.channel, inline: true },
                     { name: "Song Duration", value: track.durationFormatted, inline: true },
                     //{ name: "Estimated time until QUEUEING", value: "?", inline: true }, //Not Accurate
-
                     { name: "Position in queue", value: serverQueue.tracks.length - 1, inline: true },
+
                     { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy.id + ">" }
                 ],
             },

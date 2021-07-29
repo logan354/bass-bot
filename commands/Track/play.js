@@ -1,3 +1,4 @@
+const resume = require("./resume");
 const { handleEndCooldown } = require("../../structures/Cooldowns");
 const Queue = require("../../structures/Queue");
 const { searchTracks } = require("../../structures/Search");
@@ -20,16 +21,13 @@ module.exports = {
 
         if (!message.guild.me.voice.channel) if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid usage:** " + "`" + client.config.discord.prefix + "play [Link or query]" + "`");
 
-        if (!args[0]) {
-            //resume
-            return;
-        }
+        if (!args[0]) return resume.execute(client, message, args);
 
         const permissions = voiceChannel.permissionsFor(message.client.user);
         if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`");
         if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`");
 
-        if (!message.guild.me.voice.channel) {
+        if (!message.guild.me.voice.channel || !serverQueue) {
             if (!serverQueue) {
                 serverQueue = new Queue(message);
                 client.queues.set(message.guild.id, serverQueue);
