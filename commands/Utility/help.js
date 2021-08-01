@@ -11,7 +11,6 @@ module.exports = {
             const queue = message.client.commands.filter(x => x.category == "Queue").map((x) => "`" + x.name + "`").join(", "); //./commands/Queue
             const utility = message.client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`").join(", "); //./commands/Utility         
             
-
             message.channel.send({
                 embed: {
                     color: "BLACK",

@@ -29,10 +29,9 @@ module.exports = {
                 description: `**[${queue.tracks[0].title}](${queue.tracks[0].url})**`,
                 thumbnail: { url: queue.tracks[0].thumbnail },
                 fields: [
-                    { name: "\u200B", value: createProgressBar(message) },
-                    
+                    { name: "Time", value: createProgressBar(message) },
                     { name: "Channel", value: queue.tracks[0].channel, inline: true },
-                    { name: "Song Duration", value: queue.tracks[0].durationFormatted, inline: true },
+                    { name: "Song Duration", value: "`" + queue.tracks[0].durationFormatted + "`", inline: true },
                     { name: "Views", value: queue.tracks[0].views, inline: true },
 
                     { name: "\u200B", value: "**Requested by:** " + "<@" + queue.tracks[0].requestedBy.id + ">" }

@@ -37,7 +37,7 @@ module.exports = {
                 .setAuthor("Queue for " + message.guild.name, client.emotes.player)
                 .setColor("BLACK")
                 .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">")
-                .addField("Voice Channel", queue.voiceChannel, true)
+                .addField("Voice Channel", message.guild.me.voice.channel, true)
                 .setFooter("Page 1/" + pageNo + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, message.author.displayAvatarURL());
             message.channel.send(embed);
         } else {
@@ -47,7 +47,7 @@ module.exports = {
                 .setDescription("__**Now Playing**__\n" + `[${queue.tracks[0].title}](${queue.tracks[0].url})\n` + "`" + queue.tracks[0].durationFormatted + "` **|** Requested by: <@" + queue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + chunked[0])
                 .addField("Total songs:", "`" + (queue.tracks.length - 1) + "`", true)
                 .addField("Total Length:", "`" + formatDuration(parseInt(queue.duration())) + "`", true)
-                .addField("Voice Channel", queue.voiceChannel, true)
+                .addField("Voice Channel", message.guild.me.voice.channel, true)
                 .setFooter("Page 1/" + pageNo + " | Loop: " + loopEnabler + " | Queue Loop: " + loopQueueEnabler, message.author.displayAvatarURL());
 
             try {
