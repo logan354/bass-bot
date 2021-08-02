@@ -3,21 +3,21 @@ const scdl = require("soundcloud-downloader").default;
 
 const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 
-async function player(message, track) {
+async function player(message, track, seek) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
 
     if (!track) return;
 
     try {
-        if (track.streamURL.includes("soundcloud.com")) {
+        if (track.source === "soundcloud") {
             try {
                 stream = await scdl.downloadFormat(track.streamURL, scdl.FORMATS.OPUS);
             } catch (ex) {
                 stream = await scdl.downloadFormat(track.streamURL, scdl.FORMATS.MP3);
                 streamType = "unknown";
             }
-        } else if (track.streamURL.includes("youtube.com" || "spotify.com")) {
+        } else if (track.source === "youtube.com" || "spotify.com") {
             stream = await ytdl(track.streamURL, { filter: "audio", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
             streamType = "opus";
             stream.on("error", function (ex) {

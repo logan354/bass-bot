@@ -55,6 +55,10 @@ module.exports = class Queue {
      * Duration of this queue
      */
     duration() {
-        return this.tracks.map((x) => x.duration);
+        let totalDuration = 0;
+        for (let i = 0; i < this.tracks.length; i++) {
+            totalDuration += this.tracks[i].duration; 
+        }
+        return totalDuration;
     }
 }

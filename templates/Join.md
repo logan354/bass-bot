@@ -1,3 +1,6 @@
+# Join Structure
+
+```js
 let voiceChannel = message.member.voice.channel;
 let textChannel = message.channel;
 let serverQueue = client.queues.get(message.guild.id);
@@ -17,3 +20,4 @@ try {
     return message.channel.send(client.emotes.error + " **Error: Joining:** `" + voiceChannel.name + "`");
 }
 message.channel.send(client.emotes.success + " **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
+```

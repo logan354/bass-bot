@@ -1,4 +1,4 @@
-const { formatDuration } = require("./Duration");
+const { formatDuration } = require("./Formatting");
 
 function createProgressBar(message) {
     const queue = message.client.queues.get(message.guild.id);

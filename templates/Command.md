@@ -1,10 +1,19 @@
-//Variables
+# Command Structure
+
+Commands should be structured as follows: 
+
+1. Global variables, e.g voiceChannel, textChannel or serverQueue.
+2. Command boundarys, requirements the user must meet to execute the command.
+3. Command permissions, permissions users need to execute the command.
+4. Other, message the user may need to know.
+5. The executable command itself.
+
+```js
 let voiceChannel = message.member.voice.channel;
 let textChannel = message.channel;
 
 const serverQueue = client.queues.get(message.guild.id);
 
-//Command Rules
 if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
 if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.discord.prefix + "join" + "`" + " to get me in one");
@@ -15,10 +24,9 @@ if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error 
 
 if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid usage:** " + "`" + client.config.discord.prefix + "play [Link or query]" + "`");
 
-//Command Permissions
 const permissions = voiceChannel.permissionsFor(message.client.user);
 if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`");
 if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`");
 
-//Other
 message.channel.send(":construction_site: **Command still under construction**");
+```

@@ -3,7 +3,7 @@ const YouTube = require("youtube-sr").default;
 const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
 
-const { formatDuration } = require("../utils/Duration");
+const { formatDuration } = require("../utils/Formatting");
 const { player } = require("./Player");
 
 function resolveQueryType(query) {
@@ -210,9 +210,9 @@ async function searchTracks(message, query) {
 
         case "soundcloud-song": {
             try {
-                trackInfo = await scdl.getInfo(url);
+                trackInfo = await scdl.getInfo(query);
                 if (!trackInfo) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
-                console.log(trackInfo)
+
                 track = {
                     title: trackInfo.title,
                     url: trackInfo.permalink_url,

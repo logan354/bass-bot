@@ -21,13 +21,14 @@ module.exports = {
         if (voiceChannelSize > 1) if (!message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send(client.emotes.error + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
         if (!isNaN(args[0])) {
-            for (let i = 0; i < parseInt(args[0]); i++) {
-                try {
-                    serverQueue.connection.dispatcher.end();
-                } catch (ex) {
-                    console.log(ex);
-                    return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
-                }
+            for (let i = 0; i < parseInt(args[0]) - 1; i++) {
+                serverQueue.tracks.shift();
+            }
+            try {
+                serverQueue.connection.dispatcher.end();
+            } catch (ex) {
+                console.log(ex);
+                return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
             }
             return message.channel.send(client.emotes.skip + " **Skipped " + args[0] + " songs**");
         }

@@ -1,4 +1,5 @@
 const pack = require("../../package.json");
+const { formatFormalTime } = require("../../utils/Formatting");
 
 module.exports = {
     name: "stats",
@@ -9,6 +10,7 @@ module.exports = {
 
     execute(client, message) {
         const { commandCounter }  = require("../../");
+        let availableMemory = 512;
 
         message.channel.send({
             embed: {
@@ -18,7 +20,7 @@ module.exports = {
                 fields: [
                     { name: ":joystick: Bot Statistics", value: `Servers: **${client.guilds.cache.size}**\nUsers: **${client.users.cache.size}**\nChannels: **${client.channels.cache.size}**` },
                     { name: ":pencil: Bot Information", value: `Creator: **Block354#3452**\nVersion: **${pack.version}**\nLines of Code: **?**\nNumber of Commands: **${commandCounter}**` },
-                    { name: ":desktop: Hosting Statistics", value: `Service: **Heroku**\nRegion: **United States**\nStack: **heroku-20**\nFramework: **Node.js**\nDiscord.js: **v${pack.dependencies["discord.js"].split("^")[1]}**` }
+                    { name: ":desktop: Hosting Statistics", value: `Memory Usage: **${Math.trunc((process.memoryUsage().heapTotal / (availableMemory * 1000000)) * 100)}% (${availableMemory}mb)**\nUptime: **${formatFormalTime(client.uptime)}**\nDiscord.js: **v${pack.dependencies["discord.js"].split("^")[1]}**\nOperating System: **${process.platform}**` }
                 ],
             },
 
