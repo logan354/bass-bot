@@ -11,26 +11,22 @@ async function player(message, track, seek) {
 
     try {
         if (track.source === "soundcloud") {
-            try {
-                stream = await scdl.downloadFormat(track.streamURL, scdl.FORMATS.OPUS);
-            } catch (ex) {
-                stream = await scdl.downloadFormat(track.streamURL, scdl.FORMATS.MP3);
-                streamType = "unknown";
-            }
+            stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), { filter: track.isLive ? "audio" : "audioonly", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true });
+            streamType = "opus";
         } else if (track.source === "youtube" || "spotify") {
             stream = await ytdl(track.streamURL, { filter: track.isLive ? "audio" : "audioonly", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
             streamType = "opus";
-            stream.on("error", function (ex) {
-                if (ex) {
-                    if (queue) {
-                        queue.tracks.shift();
-                        player(message, queue.tracks[0]);
-                        console.log(ex);
-                        return message.channel.send(message.client.emotes.error + " **Error: Playing:** `" + ex.message + "`");
-                    }
-                }
-            });
         }
+        stream.on("error", function (ex) {
+            if (ex) {
+                if (queue) {
+                    queue.tracks.shift();
+                    player(message, queue.tracks[0]);
+                    console.log(ex);
+                    return message.channel.send(message.client.emotes.error + " **Error: Playing:** `" + ex.message + "`");
+                }
+            }
+        });
     } catch (ex) {
         if (queue) {
             queue.tracks.shift();
