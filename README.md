@@ -6,9 +6,9 @@ The best music bot for Discord. With the highest quality audio and support for Y
 
 ## Features
 
+- ✅ Build on Discord.js v12
 - ✅ Supports YouTube, Spotify and Soundcloud
-- ✅ High quality audio 
-- ✅ Opus audio codec
+- ✅ High quality audio (Opus codec)
 - ✅ Cooldowns and timeouts
 
 ## Commands
