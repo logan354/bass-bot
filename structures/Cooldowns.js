@@ -1,5 +1,5 @@
 function handleEmptyCooldown(client, oldState) {
-    const serverCooldown = client.cooldowns.has("empty-" + oldState.guild.id || "end-" + oldState.guild.id || "stop-" + oldState.guild.id);
+    const serverCooldown = client.cooldowns.get("empty-" + oldState.guild.id || "end-" + oldState.guild.id || "stop-" + oldState.guild.id);
     let voiceChannel = oldState.guild.me.voice.channel;
 
     if (serverCooldown) {

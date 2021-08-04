@@ -1,3 +1,6 @@
+const { player } = require("../../structures/Player");
+const { parseDuration, formatDuration } = require("../../utils/Formatting");
+
 module.exports = {
     name: "seek",
     aliases: [],
@@ -18,5 +21,13 @@ module.exports = {
         if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid usage:** `" + client.config.discord.prefix + "seek [Time in seconds]`");
 
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
+
+        console.log(parseDuration(args[0]));
+
+        //     let seekAmount = parseInt(args[0]); //Number must be in seconds
+        //     if (args[0].includes(":")) seekAmount = parseDuration(args[0]); //Number must be in seconds
+        //     player(message, serverQueue.tracks[0], seekAmount);
+        //     //return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(seekAmount * 1000) + "`");
+        // return message.channel.send(client.emotes.error + " **Invalid format:**, Example formats:\n\n`0:30` `1:30` `2:15` `5:20`")
     }
 }

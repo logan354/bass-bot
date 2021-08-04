@@ -41,6 +41,7 @@ module.exports = {
         skip: ":track_next:",
         loop: ":repeat_one:",
         loopQueue: ":repeat:",
-        shuffle: ":twisted_rightwards_arrows:"
+        shuffle: ":twisted_rightwards_arrows:",
+        seek: ":fast_forward:"
     }
 }

@@ -17,8 +17,8 @@ async function player(message, track, seek) {
                 stream = await scdl.downloadFormat(track.streamURL, scdl.FORMATS.MP3);
                 streamType = "unknown";
             }
-        } else if (track.source === "youtube.com" || "spotify.com") {
-            stream = await ytdl(track.streamURL, { filter: "audio", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
+        } else if (track.source === "youtube" || "spotify") {
+            stream = await ytdl(track.streamURL, { filter: track.isLive ? "audio" : "audioonly", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
             streamType = "opus";
             stream.on("error", function (ex) {
                 if (ex) {
