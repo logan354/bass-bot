@@ -1,7 +1,5 @@
 # Command Structure
 
-Commands should be structured as follows: 
-
 1. Global variables, e.g voiceChannel, textChannel or serverQueue.
 2. Command boundarys, requirements the user must meet to execute the command.
 3. Command permissions, permissions users need to execute the command.

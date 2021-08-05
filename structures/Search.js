@@ -182,7 +182,7 @@ async function searchTracks(message, query) {
                 trackInfo = await YouTube.searchOne(query);
                 if (!trackInfo) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                //track.title = trackInfo.title;
+                track.title = query;
                 //track.url = trackInfo.url;
                 track.streamURL = trackInfo.url
                 //track.thumbnail = trackInfo.thumbnail.url

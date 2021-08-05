@@ -3,18 +3,25 @@ const scdl = require("soundcloud-downloader").default;
 
 const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 
-async function player(message, track, seek) {
+async function player(message, track, seekTime) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
+    let streamOptions = {
+        filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
+        quality: "highestaudio",
+        highWaterMark: 1 << 25,
+        opusEncoded: true,
+        seek: seekTime / 1000
+    }
 
     if (!track) return;
 
     try {
         if (track.source === "soundcloud") {
-            stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), { filter: track.isLive ? "audio" : "audioonly", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true });
+            stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), streamOptions);
             streamType = "opus";
         } else if (track.source === "youtube" || "spotify") {
-            stream = await ytdl(track.streamURL, { filter: track.isLive ? "audio" : "audioonly", quality: "highestaudio", highWaterMark: 1 << 25, opusEncoded: true }); //filter: audioonly does not work with livestreams
+            stream = await ytdl(track.streamURL, streamOptions); 
             streamType = "opus";
         }
         stream.on("error", function (ex) {
