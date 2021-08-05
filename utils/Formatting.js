@@ -36,24 +36,6 @@ function formatFormalTime(milliseconds) {
 }
 
 function parseDuration(time) {
-  if (time.includes(":")) {
-    let args = time.split(":");
-    let dur = 0;
-
-    switch (args.length) {
-      case 3:
-        dur = parseInt(args[0]) * 60 * 60 * 1000 + parseInt(args[1]) * 60 * 1000 + parseInt(args[2]) * 1000;
-        break;
-      case 2:
-        dur = parseInt(args[0]) * 60 * 1000 + parseInt(args[1]) * 1000;
-        break;
-      default:
-        dur = parseInt(args[0]) * 1000;
-    }
-
-    return dur;
-  }
-
   const numberFormat = /^\d+$/;
   const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
   const timeUnits = {
@@ -71,8 +53,8 @@ function parseDuration(time) {
    * @param {number|string} time
    * @returns {number}
    */
-  if (typeof time === 'number') { return time; }
-  if (numberFormat.test(time)) { return +time; }
+  if (typeof time === 'number') { return time * 1000; }
+  if (numberFormat.test(time)) { return +time * 1000; }
   const firstFormat = timeFormat.exec(time);
   if (firstFormat) {
     return (+(firstFormat[1] || 0) * timeUnits.h) +

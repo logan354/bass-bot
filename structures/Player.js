@@ -70,7 +70,7 @@ async function player(message, track, seekTime) {
     dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
     //Show playing message
-    message.channel.send(message.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
+    if (!streamOptions.seek) message.channel.send(message.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
 
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {

@@ -22,12 +22,16 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
-        console.log(parseDuration(args[0]));
+        let time = args[0];
 
-        //     let seekAmount = parseInt(args[0]); //Number must be in seconds
-        //     if (args[0].includes(":")) seekAmount = parseDuration(args[0]); //Number must be in seconds
-        //     player(message, serverQueue.tracks[0], seekAmount);
-        //     //return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(seekAmount * 1000) + "`");
-        // return message.channel.send(client.emotes.error + " **Invalid format:**, Example formats:\n\n`0:30` `1:30` `2:15` `5:20`")
+        if (parseInt(time) === 0) {
+            player(message, serverQueue.tracks[0], time);
+            return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
+        }
+
+        time = parseDuration(time); //Returns in milliseconds
+        if (time === 0) return message.channel.send(client.emotes.error + " **Invalid format:** Example formats:\n\n`0:30` `1:30` `2:15` `5:20`");
+        player(message, serverQueue.tracks[0], time);
+        message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
     }
 }
