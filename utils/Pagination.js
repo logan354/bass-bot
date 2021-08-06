@@ -1,4 +1,10 @@
 module.exports = class Pagination {
+    /**
+     * Creates queue chunks
+     * @param {Map} arr Queue map
+     * @param {number} size 
+     * @returns {Array} Queue chunks
+     */
     static chunk(arr, size) {
         const temp = [];
         for (let i = 0; i < arr.length; i += size) {
@@ -7,10 +13,21 @@ module.exports = class Pagination {
         return temp;
     }
 
+    /**
+     * Gets emojis for pagination
+     */
     static get paginationEmojis() {
         return ["◀", "⛔", "▶"];
     }
 
+    /**
+     * Creates queue pages
+     * @param {object} message Discord.js message object
+     * @param {object} author User from discord.js message object
+     * @param {Array} contents Queue chunks
+     * @param {boolean} init If init or not
+     * @param {number} currPage Page user is on 
+     */
     static async pagination(message, author, contents, init = true, currPage = 0) {
         if (init) for (const emoji of this.paginationEmojis) await message.react(emoji);
 

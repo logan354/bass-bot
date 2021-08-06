@@ -6,6 +6,11 @@ const scdl = require("soundcloud-downloader").default;
 const { formatDuration } = require("../utils/Formatting");
 const { player } = require("./Player");
 
+/**
+ * Resolves query type
+ * @param {string} query User query
+ * @returns {string} Query type
+ */
 function resolveQueryType(query) {
     //Playlists
     if (query.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) return "youtube-playlist";
@@ -20,6 +25,11 @@ function resolveQueryType(query) {
     return "youtube-video-keywords";
 }
 
+/**
+ * Handles tracks
+ * @param {object} message Discord.js message object
+ * @param {object} track Track info
+ */
 async function handleTrack(message, track) {
     const serverQueue = message.client.queues.get(message.guild.id);
 
@@ -51,6 +61,11 @@ async function handleTrack(message, track) {
     player(message, serverQueue.tracks[0]);
 }
 
+/**
+ * Searchs for the query on Youtube, Spotify or Soundcloud
+ * @param {object} message Discord.js message object
+ * @param {string} query User query
+ */
 async function searchTracks(message, query) {
     let track, trackInfo, queryType;
     const serverQueue = message.client.queues.get(message.guild.id);

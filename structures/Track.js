@@ -1,4 +1,7 @@
 module.exports = class Track {
+    /**
+     * Track constructer
+     */
     constructor() {
         /**
          * Title of this track

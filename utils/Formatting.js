@@ -1,8 +1,22 @@
+const numberFormat = /^\d+$/;
+const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
+const timeUnits = {
+  ms: 1,
+  s: 1000,
+  m: 60000,
+  h: 3600000,
+};
+
 const formatInt = int => {
   if (int < 10) return `0${int}`;
   return `${int}`;
 }
 
+/**
+ * Formats milliseconds to a formatted time e.g 0:30, 1:30, 2:15, 5:20
+ * @param {number} milliseconds 
+ * @returns {string} Formatted time
+ */
 function formatDuration(milliseconds) {
   if (!milliseconds || !parseInt(milliseconds)) return "0:00";
   const seconds = Math.floor(milliseconds % 60000 / 1000);
@@ -17,6 +31,11 @@ function formatDuration(milliseconds) {
   return `0:${formatInt(seconds)}`;
 }
 
+/**
+ * Formats milliseconds to formal time e.g 3 hours 2 minutes 30 seconds
+ * @param {number} milliseconds 
+ * @returns {string} Formal time
+ */
 function formatFormalTime(milliseconds) {
   if (!milliseconds || !parseInt(milliseconds)) return undefined;
   const seconds = Math.floor(milliseconds % 60000 / 1000);
@@ -35,24 +54,15 @@ function formatFormalTime(milliseconds) {
   return `${seconds} seconds`;
 }
 
+/**
+  * Converts human friendly time to milliseconds. Supports the format
+  * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
+  * And 0ms, 0s, 0m, 0h, and together 1m1s.
+  *
+  * @param {number|string} time
+  * @returns {number} Milliseconds
+  */
 function parseDuration(time) {
-  const numberFormat = /^\d+$/;
-  const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
-  const timeUnits = {
-    ms: 1,
-    s: 1000,
-    m: 60000,
-    h: 3600000,
-  };
-
-  /**
-   * Converts human friendly time to milliseconds. Supports the format
-   * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
-   * And 0ms, 0s, 0m, 0h, and together 1m1s.
-   *
-   * @param {number|string} time
-   * @returns {number}
-   */
   if (typeof time === 'number') { return time * 1000; }
   if (numberFormat.test(time)) { return +time * 1000; }
   const firstFormat = timeFormat.exec(time);

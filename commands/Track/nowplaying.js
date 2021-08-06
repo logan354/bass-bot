@@ -32,7 +32,7 @@ module.exports = {
                     { name: "Time", value: createProgressBar(message) },
                     { name: "Channel", value: queue.tracks[0].channel, inline: true },
                     { name: "Song Duration", value: "`" + queue.tracks[0].durationFormatted + "`", inline: true },
-                    { name: "Views", value: queue.tracks[0].views, inline: true },
+                    { name: "\u200B", value: "\u200B", inline: true },
 
                     { name: "\u200B", value: "**Requested by:** " + "<@" + queue.tracks[0].requestedBy.id + ">" }
                 ],

@@ -23,8 +23,10 @@ module.exports = {
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
         let time = args[0];
+        const numberFormat = /^\d+$/;
 
-        if (parseInt(time) === 0) {
+        //Checks if a input is 0 because parseDuration returns 0 if input is invalid
+        if (time === "0") {
             player(message, serverQueue.tracks[0], time);
             return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
         }

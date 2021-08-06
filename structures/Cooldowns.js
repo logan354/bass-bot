@@ -1,3 +1,8 @@
+/**
+ * Handles empty cooldown
+ * @param {object} client Discord.js client object
+ * @param {object} oldState Discord.js voiceStateUpdate parameter
+ */
 function handleEmptyCooldown(client, oldState) {
     const serverCooldown = client.cooldowns.get("empty-" + oldState.guild.id || "end-" + oldState.guild.id || "stop-" + oldState.guild.id);
     let voiceChannel = oldState.guild.me.voice.channel;
@@ -23,6 +28,10 @@ function handleEmptyCooldown(client, oldState) {
     }
 }
 
+/**
+ * Handles end cooldown
+ * @param {object} message Discord.js message object
+ */
 function handleEndCooldown(message) {
     const serverQueue = message.client.queues.get(message.guild.id);
     const serverCooldown = message.client.cooldowns.has("empty-" + message.guild.id || "end-" + message.guild.id || "stop-" + message.guild.id)
@@ -49,6 +58,10 @@ function handleEndCooldown(message) {
     }
 }
 
+/**
+ * Handles stop cooldown
+ * @param {object} message Discord.js message object
+ */
 function handleStopCooldown(message) {
     const serverQueue = message.client.queues.get(message.guild.id);
     const serverCooldown = message.client.cooldowns.has("empty-" + message.guild.id || "end-" + message.guild.id || "stop-" + message.guild.id)

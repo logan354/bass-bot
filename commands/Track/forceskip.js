@@ -18,30 +18,43 @@ module.exports = {
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
         const voiceChannelSize = voiceChannel.members.filter(m => !m.user.bot).size; //Gets the amount of users in the Voice Channel (execpt bots)
-        if (voiceChannelSize > 1) if (!message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send(client.emotes.error + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
+        if (voiceChannelSize > 1 && !message.member.hasPermission("MANAGE_CHANNELS")) return message.channel.send(client.emotes.error + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
-        if (args[0] && !isNaN(args[0]) && parseInt(args[0]) > 1 && serverQueue.tracks.length > 1) {
-            let skipAmount = parseInt(args[0]) - 1;
-
-            if (args[0].startsWith("-")) return message.channel.send(client.emotes.error + " **Invalid input:** `" + client.config.discord.prefix + "forceskip <number>`");
-            if (parseInt(args[0]) > serverQueue.tracks.length) skipAmount = serverQueue.tracks.length - 1;
-            
-            for (var i = 0; i < skipAmount; i++) serverQueue.tracks.shift();
+        if (!args[0]) {
             try {
                 serverQueue.connection.dispatcher.end();
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
             }
-            return message.channel.send(client.emotes.skip + " **Skipped " + (i + 1) + " songs**");
+            return message.channel.send(client.emotes.skip + " **Skipped**");
         }
 
-        try {
-            serverQueue.connection.dispatcher.end();
-        } catch (ex) {
-            console.log(ex);
-            return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
+        let skipAmount = args[0];
+        const numberFormat = /^\d+$/;
+
+        if (numberFormat.test(skipAmount) && parseInt(skipAmount) !== 0) {
+            if (parseInt(skipAmount) === 1 || serverQueue.tracks.length === 1) {
+                try {
+                    serverQueue.connection.dispatcher.end();
+                } catch (ex) {
+                    console.log(ex);
+                    return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
+                }
+                return message.channel.send(client.emotes.skip + " **Skipped**");
+            }
+            
+            if (parseInt(skipAmount) > serverQueue.tracks.length) skipAmount = serverQueue.tracks.length;
+
+            for (let i = 0; i < skipAmount - 1; i++) serverQueue.tracks.shift();
+            try {
+                serverQueue.connection.dispatcher.end();
+            } catch (ex) {
+                console.log(ex);
+                return message.channel.send(client.emotes.error + " **Error:** `Skipping`");
+            }
+            return message.channel.send(client.emotes.skip + " **Skipped " + skipAmount + " songs**");
         }
-        message.channel.send(client.emotes.skip + " **Skipped**");
+        else return message.channel.send(client.emotes.error + " **Invalid input:** `" + client.config.discord.prefix + "forceskip <number>`");
     }
 }

@@ -1,5 +1,10 @@
 const { formatDuration } = require("./Formatting");
 
+/**
+ * Creates progress bar
+ * @param {object} message Discord.js message
+ * @returns {string} Progress bar with timecodes and indicator
+ */
 function createProgressBar(message) {
     const queue = message.client.queues.get(message.guild.id);
 

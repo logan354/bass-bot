@@ -1,4 +1,8 @@
 module.exports = class Queue {
+    /**
+     * Queue constructer
+     * @param {object} message Discord.js message object
+     */
     constructor(message) {
         /**
          * Guild id of this queue

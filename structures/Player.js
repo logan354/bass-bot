@@ -3,6 +3,12 @@ const scdl = require("soundcloud-downloader").default;
 
 const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 
+/**
+ * Creates and streams audio
+ * @param {object} message Discord.js message object
+ * @param {object} track Track info
+ * @param {number} seekTime Seek time
+ */
 async function player(message, track, seekTime) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
