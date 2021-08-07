@@ -2,8 +2,8 @@ module.exports = class Pagination {
     /**
      * Creates queue chunks
      * @param {Map} arr Queue map
-     * @param {number} size 
-     * @returns {Array} Queue chunks
+     * @param {number} size Size of the chunks
+     * @returns {Array}
      */
     static chunk(arr, size) {
         const temp = [];

@@ -15,7 +15,7 @@ const formatInt = int => {
 /**
  * Formats milliseconds to a formatted time e.g 0:30, 1:30, 2:15, 5:20
  * @param {number} milliseconds 
- * @returns {string} Formatted time
+ * @returns {string}
  */
 function formatDuration(milliseconds) {
   if (!milliseconds || !parseInt(milliseconds)) return "0:00";
@@ -34,7 +34,7 @@ function formatDuration(milliseconds) {
 /**
  * Formats milliseconds to formal time e.g 3 hours 2 minutes 30 seconds
  * @param {number} milliseconds 
- * @returns {string} Formal time
+ * @returns {string}
  */
 function formatFormalTime(milliseconds) {
   if (!milliseconds || !parseInt(milliseconds)) return undefined;
@@ -60,7 +60,7 @@ function formatFormalTime(milliseconds) {
   * And 0ms, 0s, 0m, 0h, and together 1m1s.
   *
   * @param {number|string} time
-  * @returns {number} Milliseconds
+  * @returns {number}
   */
 function parseDuration(time) {
   if (typeof time === 'number') { return time * 1000; }

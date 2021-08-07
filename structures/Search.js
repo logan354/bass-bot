@@ -9,7 +9,7 @@ const { player } = require("./Player");
 /**
  * Resolves query type
  * @param {string} query User query
- * @returns {string} Query type
+ * @returns {string}
  */
 function resolveQueryType(query) {
     //Playlists
@@ -29,6 +29,7 @@ function resolveQueryType(query) {
  * Handles tracks
  * @param {object} message Discord.js message object
  * @param {object} track Track info
+ * @returns 
  */
 async function handleTrack(message, track) {
     const serverQueue = message.client.queues.get(message.guild.id);
@@ -65,6 +66,7 @@ async function handleTrack(message, track) {
  * Searchs for the query on Youtube, Spotify or Soundcloud
  * @param {object} message Discord.js message object
  * @param {string} query User query
+ * @returns 
  */
 async function searchTracks(message, query) {
     let track, trackInfo, queryType;
