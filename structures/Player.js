@@ -13,6 +13,9 @@ const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 async function player(message, track, seekTime) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
+
+    if (!track) return;
+    
     let streamOptions = {
         filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
         quality: "highestaudio",
@@ -20,8 +23,6 @@ async function player(message, track, seekTime) {
         opusEncoded: true,
         seek: seekTime / 1000
     }
-
-    if (!track) return;
 
     try {
         if (track.source === "soundcloud") {
