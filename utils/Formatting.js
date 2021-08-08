@@ -13,7 +13,8 @@ const formatInt = int => {
 }
 
 /**
- * Formats milliseconds to a formatted time e.g 0:30, 1:30, 2:15, 5:20
+ * Formats milliseconds to a formatted time 
+ * e.g 0:30, 1:30, 2:15, 5:20
  * @param {number} milliseconds 
  * @returns {string}
  */
@@ -32,7 +33,8 @@ function formatDuration(milliseconds) {
 }
 
 /**
- * Formats milliseconds to formal time e.g 3 hours 2 minutes 30 seconds
+ * Formats milliseconds to formal time 
+ * e.g 3 hours 2 minutes 30 seconds
  * @param {number} milliseconds 
  * @returns {string}
  */

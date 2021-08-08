@@ -2,7 +2,7 @@ const { formatDuration } = require("./Formatting");
 
 /**
  * Creates progress bar
- * @param {object} message Discord.js message
+ * @param {object} message Discord.js message object
  * @returns {string}
  */
 function createProgressBar(message) {

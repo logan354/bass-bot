@@ -29,7 +29,7 @@ function resolveQueryType(query) {
  * Handles tracks
  * @param {object} message Discord.js message object
  * @param {object} track Track info
- * @returns 
+ * @returns {Promise}
  */
 async function handleTrack(message, track) {
     const serverQueue = message.client.queues.get(message.guild.id);
@@ -66,7 +66,7 @@ async function handleTrack(message, track) {
  * Searchs for the query on Youtube, Spotify or Soundcloud
  * @param {object} message Discord.js message object
  * @param {string} query User query
- * @returns 
+ * @returns {Promise}
  */
 async function searchTracks(message, query) {
     let track, trackInfo, queryType;
