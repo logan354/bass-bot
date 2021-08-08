@@ -10,7 +10,7 @@ module.exports = {
 
     execute(client, message) {
         const { commandCounter }  = require("../../");
-        let availableMemory = 512;
+        const availableMemory = 512;
 
         message.channel.send({
             embed: {
@@ -22,9 +22,9 @@ module.exports = {
                     { name: ":pencil: Bot Information", value: `Creator: **Block354#3452**\nVersion: **${pack.version}**\nLines of Code: **?**\nNumber of Commands: **${commandCounter}**` },
                     { name: ":desktop: Hosting Statistics", value: `Memory Usage: **${Math.trunc((process.memoryUsage().heapTotal / (availableMemory * 1000000)) * 100)}% (${availableMemory}mb)**\nUptime: **${formatFormalTime(client.uptime)}**\nDiscord.js: **v${pack.dependencies["discord.js"].split("^")[1]}**\nOperating System: **${process.platform}**` }
                 ],
-            },
+            }
 
         });
-    },
-};
+    }
+}
 

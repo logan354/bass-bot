@@ -1,15 +1,12 @@
-//Decleared public variables
 const fs = require("fs");
 const Discord = require("discord.js");
+const { handleEmptyCooldown } = require("./structures/Cooldowns");
 
-//Client variables
 const client = new Discord.Client({ disableEveryone: false });
 
 client.config = require("./config/bot");
 client.emotes = client.config.emojis;
 client.commands = new Discord.Collection();
-
-const { handleEmptyCooldown } = require("./structures/Cooldowns");
 
 client.queues = new Map();
 client.cooldowns = new Map();
@@ -17,7 +14,7 @@ client.cooldowns = new Map();
 client.on("voiceStateUpdate", (oldState, newState) => {
     //User leaves the voice channel the bot is in
     if (oldState.channelID === oldState.guild.me.voice.channelID) handleEmptyCooldown(client, oldState);
-})
+});
 
 let commandCounter = 0;
 
@@ -28,7 +25,7 @@ fs.readdirSync("./commands").forEach(dirs => {
     for (const file of commands) {
         const command = require(`./commands/${dirs}/${file}`);
         console.log(`Loading command ${file}`);
-        commandCounter += 1
+        commandCounter += 1;
         client.commands.set(command.name.toLowerCase(), command);
     };
 });
@@ -42,8 +39,6 @@ for (const file of events) {
     client.on(file.split(".")[0], event.bind(null, client));
 };
 
-//Export commandCounter
 module.exports = { commandCounter }
 
-//Login to Discord API
 client.login(client.config.discord.token);

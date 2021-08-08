@@ -28,10 +28,10 @@ async function player(message, track, seekTime) {
             stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), streamOptions);
             streamType = "opus";
         } else if (track.source === "youtube" || "spotify") {
-            stream = await ytdl(track.streamURL, streamOptions); 
+            stream = ytdl(track.streamURL, streamOptions); 
             streamType = "opus";
         }
-        stream.on("error", function (ex) {
+        stream.on("error", (ex) => {
             if (ex) {
                 if (queue) {
                     queue.tracks.shift();
@@ -82,7 +82,7 @@ async function player(message, track, seekTime) {
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {
         try {
-            dispatcher.pause()
+            dispatcher.pause();
         } catch (ex) {
             console.log(ex);
             return message.channel.send(message.client.emotes.error + " **Error:** `Pausing`");

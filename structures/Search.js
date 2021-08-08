@@ -55,7 +55,7 @@ async function handleTrack(message, track) {
                     { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy.id + ">" }
                 ],
             },
-        })
+        });
     }
 
     serverQueue.tracks.push(track);
