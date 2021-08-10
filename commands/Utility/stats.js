@@ -15,7 +15,7 @@ module.exports = {
         message.channel.send({
             embed: {
                 color: "BLACK",
-                author: { name: "-- Bass's Stats --" },
+                title: "-- Bass's Stats --",
                 thumbnail: { url: client.config.discord.logo },
                 fields: [
                     { name: ":joystick: Bot Statistics", value: `Servers: **${client.guilds.cache.size}**\nUsers: **${client.users.cache.size}**\nChannels: **${client.channels.cache.size}**` },

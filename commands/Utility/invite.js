@@ -11,8 +11,8 @@ module.exports = {
             embed: {
                 color: "BLACK",
                 title: "About Me",
-                description: `The best music bot for Discord. With the \nhighest quality audio and support for \nYouTube, Spotify and Soundcloud!\n\n[Invite the bot here](${client.config.discord.invite})`,
-                thumbnail: { url: client.config.discord.logo } ,
+                thumbnail: { url: client.config.discord.logo },
+                description: `The best music bot for Discord. With the \nhighest quality audio and support for \nYouTube, Spotify and Soundcloud!\n\n[Invite the bot here](${client.config.discord.invite})`
             }
         });
 
