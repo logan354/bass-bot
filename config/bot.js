@@ -7,15 +7,12 @@ module.exports = {
         default_prefix: ".",
         prefix: ".",
 
-        //Community invites
+        //Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot&permissions=3525704",
-        titaniumInvite: "https://discord.com/oauth2/authorize?client_id=785437491510771752&scope=bot&permissions=8",
 
-        //Community logos
+        //Logos
         logo: "https://cdn.discordapp.com/emojis/850649409334280202.png?v=1",
         smallLogo: "https://cdn.discordapp.com/emojis/850228524736577576.png?v=1",
-        aiLogo: "https://cdn.discordapp.com/attachments/784280190489985047/853831696512581672/Ai.png",
-        communityLogo: "https://cdn.discordapp.com/attachments/784280190489985047/852123533504020510/Bot_Invite.png"
     },
 
     emojis: {
