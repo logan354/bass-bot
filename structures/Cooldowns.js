@@ -42,10 +42,10 @@ function handleEndCooldown(message) {
         serverCooldown.clear();
     }
 
-    if (message.guild.me.voice.channel) {
+    if (voiceChannel) {
         if (serverQueue.tracks.length === 0) {
             let timeout = setTimeout(() => {
-                if (message.guild.me.voice.channel) {
+                if (voiceChannel) {
                     if (serverQueue.tracks.length === 0) {
                         message.client.queues.delete(message.guild.id);
                         voiceChannel.leave();
@@ -72,10 +72,10 @@ function handleStopCooldown(message) {
         serverCooldown.clear();
     }
 
-    if (message.guild.me.voice.channel) {
+    if (voiceChannel) {
         if (serverQueue.playing === false) {
             let timeout = setTimeout(() => {
-                if (message.guild.me.voice.channel) {
+                if (voiceChannel) {
                     if (serverQueue.playing === false) {
                         message.client.queues.delete(message.guild.id);
                         voiceChannel.leave();

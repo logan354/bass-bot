@@ -8,7 +8,7 @@ const { formatDuration } = require("./Formatting");
 function createProgressBar(message) {
     const queue = message.client.queues.get(message.guild.id);
 
-    const currentStreamTime = queue.connection.dispatcher.streamTime;
+    const currentStreamTime = queue.connection.dispatcher.streamTime + queue.additionalStreamTime;
     const totalTime = queue.tracks[0].duration;
     const length = 15;
 

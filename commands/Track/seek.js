@@ -23,7 +23,6 @@ module.exports = {
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
         let time = args[0];
-        const numberFormat = /^\d+$/;
 
         //Checks if a input is 0 because parseDuration returns 0 if input is invalid
         if (time === "0") {
@@ -33,6 +32,7 @@ module.exports = {
 
         time = parseDuration(time); //Returns in milliseconds
         if (time === 0) return message.channel.send(client.emotes.error + " **Invalid format:** Example formats:\n\n`0:30` `1:30` `2:15` `5:20`");
+        if (time > serverQueue.tracks[0].duration) return message.channel.send(client.emotes.error + "**Time cannot be longer than the song**");
         player(message, serverQueue.tracks[0], time);
         message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
     }

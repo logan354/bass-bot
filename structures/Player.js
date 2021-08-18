@@ -14,9 +14,23 @@ async function player(message, track, seekTime) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
 
-    if (!track) return;
-    
+    if (!track) {
+        handleEndCooldown(message);
+        return;
+    }
+
+    //Cookies
+    let ytAltCookies = [["cookies1", "x-user-data1"], ["cookies2", "x-user-data2"]];
+    let cookies = ytAltCookies[0];
+    ytAltCookies.push(ytAltCookies.shift());
+
     let streamOptions = {
+        requestOptions: {
+            headers: {
+                Cookie: cookies[0],
+                "x-user-data": cookies[1]
+            }
+        },
         filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
         quality: "highestaudio",
         highWaterMark: 1 << 25,
@@ -24,17 +38,23 @@ async function player(message, track, seekTime) {
         seek: seekTime / 1000
     }
 
+    if (seekTime) queue.additionalStreamTime = seekTime;
+
     try {
         if (track.source === "soundcloud") {
             stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), streamOptions);
             streamType = "opus";
         } else if (track.source === "youtube" || "spotify") {
-            stream = ytdl(track.streamURL, streamOptions); 
+            stream = ytdl(track.streamURL, streamOptions);
             streamType = "opus";
         }
         stream.on("error", (ex) => {
             if (ex) {
                 if (queue) {
+                    //Variables that need to be reset
+                    queue.skiplist = [];
+                    queue.additionalStreamTime = 0;
+
                     queue.tracks.shift();
                     player(message, queue.tracks[0]);
                     console.log(ex);
@@ -44,6 +64,10 @@ async function player(message, track, seekTime) {
         });
     } catch (ex) {
         if (queue) {
+            //Variables that need to be reset
+            queue.skiplist = [];
+            queue.additionalStreamTime = 0;
+
             queue.tracks.shift();
             player(message, queue.tracks[0]);
             console.log(ex);
@@ -55,6 +79,10 @@ async function player(message, track, seekTime) {
     queue.connection.on("disconnect", () => message.client.queues.delete(message.guild.id));
     const dispatcher = queue.connection.play(stream, { type: streamType }).on("finish", () => {
 
+        //Variables that need to be reset
+        queue.skiplist = [];
+        queue.additionalStreamTime = 0;
+
         //Check if queue is loopped or track is loopped
         if (queue.loop === true) {
             player(message, queue.tracks[0]);
@@ -65,20 +93,16 @@ async function player(message, track, seekTime) {
             player(message, queue.tracks[0]);
         }
         else {
-            //Variables that need to be reset
-            queue.skiplist = [];
             queue.tracks.shift();
             player(message, queue.tracks[0]);
         }
-
-        handleEndCooldown(message);
     });
 
     //Set volume
     dispatcher.setVolumeLogarithmic(queue.volume / 100);
 
     //Show playing message
-    if (!streamOptions.seek) message.channel.send(message.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
+    if (!seekTime) message.channel.send(message.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
 
     //Pause the stream if queue.playing === false
     if (queue.playing === false) {

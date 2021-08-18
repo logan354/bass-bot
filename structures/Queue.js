@@ -53,6 +53,11 @@ module.exports = class Queue {
          * Playing mode of this queue
          */
         this.playing = true;
+
+        /**
+         * Additional stream time of this queue
+         */
+        this.additionalStreamTime = 0;
     }
 
     /**
@@ -61,7 +66,7 @@ module.exports = class Queue {
     duration() {
         let totalDuration = 0;
         for (let i = 0; i < this.tracks.length; i++) {
-            totalDuration += this.tracks[i].duration; 
+            totalDuration += this.tracks[i].duration;
         }
         return totalDuration;
     }
