@@ -15,6 +15,5 @@ module.exports = {
                 description: `The best music bot for Discord. With the \nhighest quality audio and support for \nYouTube, Spotify and Soundcloud!\n\n[Invite the bot here](${client.config.discord.invite})`
             }
         });
-
     }
 }

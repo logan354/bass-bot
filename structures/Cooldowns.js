@@ -17,6 +17,7 @@ function handleEmptyCooldown(client, oldState) {
             let timeout = setTimeout(() => {
                 if (voiceChannel) {
                     if (voiceChannel.members.filter(x => !x.user.bot).size === 0) {
+                        console.log("Test-empty"); //test will be removed in update
                         client.queues.delete(oldState.guild.id);
                         voiceChannel.leave();
                     }
@@ -47,6 +48,7 @@ function handleEndCooldown(message) {
             let timeout = setTimeout(() => {
                 if (voiceChannel) {
                     if (serverQueue.tracks.length === 0) {
+                        console.log("Test-end"); //test will be removed in update
                         message.client.queues.delete(message.guild.id);
                         voiceChannel.leave();
                     }
@@ -77,6 +79,7 @@ function handleStopCooldown(message) {
             let timeout = setTimeout(() => {
                 if (voiceChannel) {
                     if (serverQueue.playing === false) {
+                        console.log("Test-stop"); //test will be removed in update
                         message.client.queues.delete(message.guild.id);
                         voiceChannel.leave();
                     }

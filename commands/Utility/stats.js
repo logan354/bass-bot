@@ -23,7 +23,6 @@ module.exports = {
                     { name: ":desktop: Hosting Statistics", value: `Memory Usage: **${Math.trunc((process.memoryUsage().heapTotal / (availableMemory * 1000000)) * 100)}% (${availableMemory}mb)**\nUptime: **${formatFormalTime(client.uptime)}**\nDiscord.js: **v${pack.dependencies["discord.js"].split("^")[1]}**\nOperating System: **${process.platform}**` }
                 ],
             }
-
         });
     }
 }
