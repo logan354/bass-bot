@@ -4,28 +4,24 @@
  * @param {object} oldState Discord.js voiceStateUpdate parameter
  */
 function handleEmptyCooldown(client, oldState) {
-    const serverCooldown = client.cooldowns;
+    const serverCooldown = client.cooldowns.get("empty-" + oldState.guild.id);
     let voiceChannel = oldState.guild.me.voice.channel;
 
     if (serverCooldown) {
         clearTimeout(serverCooldown);
-        serverCooldown.clear();
+        client.cooldowns.delete("empty-" + message.guild.id);
     }
 
-    if (voiceChannel) {
-        if (voiceChannel.members.filter(x => !x.user.bot).size === 0) {
-            let timeout = setTimeout(() => {
-                if (voiceChannel) {
-                    if (voiceChannel.members.filter(x => !x.user.bot).size === 0) {
-                        console.log("Test-empty"); //test will be removed in update
-                        client.queues.delete(oldState.guild.id);
-                        voiceChannel.leave();
-                    }
-                }
-            }, 600000); //10 minutes
+    if (voiceChannel && voiceChannel.members.filter(x => !x.user.bot).size === 0) {
+        let timeout = setTimeout(() => {
+            if (voiceChannel && voiceChannel.members.filter(x => !x.user.bot).size === 0) {
+                console.log("Test-empty"); //test will be removed in update
+                client.queues.delete(oldState.guild.id);
+                voiceChannel.leave();
+            }
+        }, 600000); //10 minutes
 
-            client.cooldowns.set("empty-" + oldState.guild.id, timeout);
-        }
+        client.cooldowns.set("empty-" + oldState.guild.id, timeout);
     }
 }
 
@@ -35,28 +31,24 @@ function handleEmptyCooldown(client, oldState) {
  */
 function handleEndCooldown(message) {
     const serverQueue = message.client.queues.get(message.guild.id);
-    const serverCooldown = message.client.cooldowns;
+    const serverCooldown = message.client.cooldowns.get("end-" + message.guild.id);
     let voiceChannel = message.guild.me.voice.channel;
 
     if (serverCooldown) {
         clearTimeout(serverCooldown);
-        serverCooldown.clear();
+        message.client.cooldowns.delete("end-" + message.guild.id);
     }
 
-    if (voiceChannel) {
-        if (serverQueue.tracks.length === 0) {
-            let timeout = setTimeout(() => {
-                if (voiceChannel) {
-                    if (serverQueue.tracks.length === 0) {
-                        console.log("Test-end"); //test will be removed in update
-                        message.client.queues.delete(message.guild.id);
-                        voiceChannel.leave();
-                    }
-                }
-            }, 600000); //10 minutes
+    if (voiceChannel && serverQueue.tracks.length === 0) {
+        let timeout = setTimeout(() => {
+            if (voiceChannel && serverQueue.tracks.length === 0) {
+                console.log("Test-end"); //test will be removed in update
+                message.client.queues.delete(message.guild.id);
+                voiceChannel.leave();
+            }
+        }, 600000); //10 minutes
 
-            message.client.cooldowns.set("end-" + message.guild.id, timeout);
-        }
+        message.client.cooldowns.set("end-" + message.guild.id, timeout);
     }
 }
 
@@ -66,28 +58,24 @@ function handleEndCooldown(message) {
  */
 function handleStopCooldown(message) {
     const serverQueue = message.client.queues.get(message.guild.id);
-    const serverCooldown = message.client.cooldowns;
+    const serverCooldown = message.client.cooldowns.get("stop-" + message.guild.id);
     let voiceChannel = message.guild.me.voice.channel;
 
     if (serverCooldown) {
         clearTimeout(serverCooldown);
-        serverCooldown.clear();
+        message.client.cooldowns.delete("stop-" + message.guild.id);
     }
 
-    if (voiceChannel) {
-        if (serverQueue.playing === false) {
-            let timeout = setTimeout(() => {
-                if (voiceChannel) {
-                    if (serverQueue.playing === false) {
-                        console.log("Test-stop"); //test will be removed in update
-                        message.client.queues.delete(message.guild.id);
-                        voiceChannel.leave();
-                    }
-                }
-            }, 600000); //10 minutes
+    if (voiceChannel && serverQueue.playing === false) {
+        let timeout = setTimeout(() => {
+            if (voiceChannel && serverQueue.playing === false) {
+                console.log("Test-stop"); //test will be removed in update
+                message.client.queues.delete(message.guild.id);
+                voiceChannel.leave();
+            }
+        }, 600000); //10 minutes
 
-            message.client.cooldowns.set("stop-" + message.guild.id, timeout);
-        }
+        message.client.cooldowns.set("stop-" + message.guild.id, timeout);
     }
 }
 

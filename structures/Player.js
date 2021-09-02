@@ -76,6 +76,7 @@ async function player(message, track, seekTime) {
     }
 
     queue.connection.on("error", (ex) => console.log("Test-error: " + ex)); //test will be removed on update
+
     //Start the stream and set actions on finish
     queue.connection.on("disconnect", () => message.client.queues.delete(message.guild.id));
     const dispatcher = queue.connection.play(stream, { type: streamType }).on("finish", () => {
