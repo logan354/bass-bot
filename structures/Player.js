@@ -19,18 +19,7 @@ async function player(message, track, seekTime) {
         return;
     }
 
-    //Cookies
-    //let ytAltCookies = [["cookies1", "x-user-data1"], ["cookies2", "x-user-data2"]];
-    //let cookies = ytAltCookies[0];
-    //ytAltCookies.push(ytAltCookies.shift());
-
     let streamOptions = {
-        //requestOptions: {
-            //headers: {
-               //Cookie: cookies[0],
-                //"x-user-data": cookies[1]
-            //}
-        //},
         filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
         quality: "highestaudio",
         highWaterMark: 1 << 25,

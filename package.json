@@ -1,6 +1,6 @@
 {
   "name": "beat-bot",
-  "version": "1.3.1-dev.3",
+  "version": "1.3.1",
   "description": "The best music bot for Discord. With the highest quality audio and support for YouTube, Spotify and Soundcloud!",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "Block354",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/node-pre-gyp": "^0.4.0",
-    "@discordjs/opus": "^0.5.3",
+    "@discordjs/node-pre-gyp": "^0.4.1",
+    "@discordjs/opus": "^0.6.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^12.5.3",
     "ffmpeg-static": "^4.4.0",
