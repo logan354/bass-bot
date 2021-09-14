@@ -1,6 +1,5 @@
 const fs = require("fs");
 const Discord = require("discord.js");
-const { handleEmptyCooldown } = require("./structures/Cooldowns");
 
 const client = new Discord.Client({ disableEveryone: false });
 
@@ -10,11 +9,6 @@ client.commands = new Discord.Collection();
 
 client.queues = new Map();
 client.cooldowns = new Map();
-
-client.on("voiceStateUpdate", (oldState, newState) => {
-    //User leaves the voice channel the bot is in
-    if (oldState.channelID === oldState.guild.me.voice.channelID) handleEmptyCooldown(client, oldState);
-});
 
 let commandCounter = 0;
 

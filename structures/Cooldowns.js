@@ -9,13 +9,12 @@ function handleEmptyCooldown(client, oldState) {
 
     if (serverCooldown) {
         clearTimeout(serverCooldown);
-        client.cooldowns.delete("empty-" + message.guild.id);
+        client.cooldowns.delete("empty-" + oldState.guild.id);
     }
 
     if (voiceChannel && voiceChannel.members.filter(x => !x.user.bot).size === 0) {
         let timeout = setTimeout(() => {
             if (voiceChannel && voiceChannel.members.filter(x => !x.user.bot).size === 0) {
-                console.log("Test-empty"); //test will be removed in update
                 client.queues.delete(oldState.guild.id);
                 voiceChannel.leave();
             }
@@ -42,7 +41,6 @@ function handleEndCooldown(message) {
     if (voiceChannel && serverQueue.tracks.length === 0) {
         let timeout = setTimeout(() => {
             if (voiceChannel && serverQueue.tracks.length === 0) {
-                console.log("Test-end"); //test will be removed in update
                 message.client.queues.delete(message.guild.id);
                 voiceChannel.leave();
             }
@@ -69,7 +67,6 @@ function handleStopCooldown(message) {
     if (voiceChannel && serverQueue.playing === false) {
         let timeout = setTimeout(() => {
             if (voiceChannel && serverQueue.playing === false) {
-                console.log("Test-stop"); //test will be removed in update
                 message.client.queues.delete(message.guild.id);
                 voiceChannel.leave();
             }
