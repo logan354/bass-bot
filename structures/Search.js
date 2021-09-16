@@ -15,10 +15,6 @@ function resolveQueryType(query) {
     //Playlists
     if (query.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) return "youtube-playlist";
 
-    if (query.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:album\/|\?uri=spotify:album:)((\w|-){22})/)) return "spotify-album";
-
-    if (query.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:playlist\/|\?uri=spotify:playlist:)((\w|-){22})/)) return "spotify-playlist";
-
     //Videos
     if (query.match(/^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi)) return "youtube-video";
 
@@ -35,7 +31,7 @@ function resolveQueryType(query) {
  * @param {object} track Track info
  * @returns {Promise}
  */
-function handleTrack(message, track) {
+async function handleTrack(message, track) {
     const serverQueue = message.client.queues.get(message.guild.id);
 
     if (serverQueue.tracks.length > 0) {
@@ -84,7 +80,7 @@ async function searchTracks(message, query) {
     let searchEmoji;
     if (queryType === "youtube-video" || queryType === "youtube-playlist" || queryType === "youtube-video-keywords") searchEmoji = message.client.emotes.youtube;
     if (queryType === "soundcloud-song") searchEmoji = message.client.emotes.soundcloud;
-    if (queryType === "spotify-song" || queryType === "spotify-album" || queryType === "spotify-playlist") searchEmoji = message.client.emotes.spotify;
+    if (queryType === "spotify-song") searchEmoji = message.client.emotes.spotify;
     message.channel.send(searchEmoji + " **Searching...** :mag_right: `" + query + "`");
 
     switch (queryType) {
@@ -170,7 +166,7 @@ async function searchTracks(message, query) {
                             { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
                         ],
                     },
-                });
+                })
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
@@ -182,7 +178,7 @@ async function searchTracks(message, query) {
             try {
                 trackInfo = await spotify.getData(query);
                 if (!trackInfo) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
-                
+
                 track = {
                     title: trackInfo.name,
                     url: trackInfo.external_urls.spotify,
