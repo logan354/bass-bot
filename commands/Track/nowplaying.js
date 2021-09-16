@@ -15,10 +15,6 @@ module.exports = {
 
         if (!queue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
-        const permissions = message.channel.permissionsFor(message.client.user);
-        if (!permissions.has("MANAGE_MESSAGES")) return message.channel.send(client.emotes.error + " **I do not have permission to Manage Messages in** " + "`" + message.channel.name + "`");
-        if (!permissions.has("ADD_REACTIONS")) return message.channel.send(client.emotes.error + " **I do not have permission to Add Reactions in** " + "`" + message.channel.name + "`");
-
         message.channel.send({
             embed: {
                 color: "BLACK",
