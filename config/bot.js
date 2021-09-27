@@ -1,11 +1,8 @@
 module.exports = {
-    discord: {
-        //Token
-        token: "ODI5OTM5Nzc5NDQwODY5NDA2.YG_bpg.lxdHnN9C_lgXfp10rE2b0HzHVEg",
-
+    app: {
         //Prefix settings
         default_prefix: ".",
-        prefix: ".",
+        prefix: "$",
 
         //Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot&permissions=3525704",
@@ -39,6 +36,8 @@ module.exports = {
         loop: ":repeat_one:",
         loopQueue: ":repeat:",
         shuffle: ":twisted_rightwards_arrows:",
-        seek: ":fast_forward:"
+        seek: ":fast_forward:",
+        clear: ":stop_button:",
+        volume: ":loud_sound:"
     }
 }

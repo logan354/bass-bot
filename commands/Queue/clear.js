@@ -1,9 +1,9 @@
 module.exports = {
-    name: "loop",
-    aliases: ["repeat"],
-    category: "Track",
-    description: "Toggles looping for the current playing song.",
-    utilisation: "{prefix}loop",
+    name: "clear",
+    aliases: ["cl"],
+    category: "Queue",
+    description: "Clears the whole queue.",
+    utilisation: "{prefix}clear",
 
     execute(client, message, args) {
         let voiceChannel = message.member.voice.channel;
@@ -15,12 +15,12 @@ module.exports = {
 
         if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (serverQueue.loop === true) {
-            serverQueue.loop = false;
-            return message.channel.send(client.emotes.loop + " **Disabled**");
-        } else {
-            serverQueue.loop = true;
-            return message.channel.send(client.emotes.loop + " **Enabled**");
-        }
+        if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
+
+        const shiffed = serverQueue.tracks.shift();
+        serverQueue.tracks = [];
+        serverQueue.tracks.push(shiffed);
+
+        message.channel.send(client.emotes.clear + " **Cleared**");
     }
 }

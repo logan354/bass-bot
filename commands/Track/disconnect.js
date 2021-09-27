@@ -8,7 +8,7 @@ module.exports = {
     async execute(client, message, args) {
         let voiceChannel = message.guild.me.voice.channel;
 
-        if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.discord.prefix + "join" + "`" + " to get me in one");
+        if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.app.prefix + "join" + "`" + " to get me in one");
 
         try {
             client.queues.delete(message.guild.id);

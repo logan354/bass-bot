@@ -1,7 +1,11 @@
-module.exports = (client) => {
-    console.log(`Ready on ${client.guilds.cache.size} servers, for a total of ${client.users.cache.size} users`);
+module.exports = async (client) => {
+    console.log(`Logged to the client ${client.user.username}\n-> Ready on ${client.guilds.cache.size} servers for a total of ${client.users.cache.size} users`);
 
-    client.user.setActivity(`🎧 ${client.config.discord.prefix}play`, {
-        type: "LISTENING",
+    client.user.setPresence({
+        activity: {
+            name: `🎧 ${client.config.app.prefix}play`,
+            type: "LISTENING"
+        },
+        status: "idle"
     });
 }

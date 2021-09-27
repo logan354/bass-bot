@@ -39,11 +39,6 @@ module.exports = class Track {
         this.channel;
 
         /**
-         * Views of this track
-         */
-        this.views;
-
-        /**
          * Requester of this track
          */
         this.requestedBy;

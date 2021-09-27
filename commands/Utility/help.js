@@ -19,7 +19,7 @@ module.exports = {
                         { name: client.emotes.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
                         { name: client.emotes.utility + " **Utility**", value: "\n" + utility }
                     ],
-                    thumbnail: { url: client.config.discord.smallLogo }
+                    thumbnail: { url: client.config.app.smallLogo }
                 }
             });
         } else {
@@ -36,7 +36,7 @@ module.exports = {
                         { name: "Category", value: command.category, inline: true },
                         { name: "Aliase(s)", value: command.aliases.length < 1 ? "None" : command.aliases.join(", "), inline: true },
                         { name: "Description", value: command.description, inline: true },
-                        { name: "Utilisation", value: command.utilisation.replace("{prefix}", client.config.discord.prefix), inline: true }
+                        { name: "Utilisation", value: command.utilisation.replace("{prefix}", client.config.app.prefix), inline: true }
                     ],
                     description: "Find information on the command provided.\nMandatory arguments `[]`, optional arguments `<>`.",
                 }
