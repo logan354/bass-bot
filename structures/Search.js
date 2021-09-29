@@ -75,13 +75,12 @@ function handleTrack(message, track) {
  */
 async function searchTracks(message, query) {
     const serverQueue = message.client.queues.get(message.guild.id);
-    let track;
 
-    //Handles query and queryType
-    if (typeof query === 'string') query = query.replace(/<(.+)>/g, '$1');
+    //Handles query
+    if (typeof query === "string") query = query.replace(/<(.+)>/g, "$1");
     const queryType = resolveQueryType(query);
 
-    //Print searching message
+    //Display searching message
     let searchEmoji;
     if (queryType.includes("youtube")) searchEmoji = message.client.emotes.youtube;
     if (queryType.includes("soundcloud")) searchEmoji = message.client.emotes.soundcloud;
@@ -94,7 +93,7 @@ async function searchTracks(message, query) {
                 const data = await ytdl.getInfo(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                track = {
+                const track = {
                     title: data.videoDetails.title,
                     url: data.videoDetails.video_url,
                     streamURL: data.videoDetails.video_url,
@@ -102,7 +101,6 @@ async function searchTracks(message, query) {
                     duration: parseInt(data.videoDetails.lengthSeconds * 1000),
                     durationFormatted: formatDuration(data.videoDetails.lengthSeconds * 1000),
                     channel: data.videoDetails.author.name,
-                    views: data.videoDetails.viewCount,
                     requestedBy: message.author,
                     isFromPlaylist: false,
                     isLive: data.videoDetails.isLiveContent,
@@ -130,7 +128,7 @@ async function searchTracks(message, query) {
                 const list = await data.videos;
 
                 for (const item of list) {
-                    track = {
+                    var track = {
                         title: item.title,
                         url: item.url,
                         streamURL: item.url,
@@ -138,7 +136,6 @@ async function searchTracks(message, query) {
                         duration: parseInt(item.duration),
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        views: item.views,
                         requestedBy: message.author,
                         isFromPlaylist: true,
                         isLive: item.live,
@@ -153,7 +150,7 @@ async function searchTracks(message, query) {
                     handleTrack(message, track);
                 }
 
-                return message.channel.send({
+                message.channel.send({
                     embed: {
                         color: "BLACK",
                         author: {
@@ -184,7 +181,7 @@ async function searchTracks(message, query) {
                 const data = await spotify.getData(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                track = {
+                const track = {
                     title: data.name,
                     url: data.external_urls.spotify,
                     streamURL: data.external_urls.spotify,
@@ -192,36 +189,13 @@ async function searchTracks(message, query) {
                     duration: parseInt(data.duration_ms),
                     durationFormatted: formatDuration(data.duration_ms),
                     channel: data.artists[0].name,
-                    views: 0,
                     requestedBy: message.author,
                     isFromPlaylist: false,
                     isLive: false,
                     source: "spotify"
                 }
 
-                query = track.channel + " - " + track.title;
-
-                const streamData = await YouTube.searchOne(query);
-                if (!streamData) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
-
-                track.title = query;
-                //track.url = streamData.url;
-                track.streamURL = streamData.url
-                //track.thumbnail = streamData.thumbnail.url
-                track.duration = parseInt(streamData.duration);
-                track.durationFormatted = streamData.durationFormatted;
-                //track.channel = streamData.channel.name
-                //track.views = streamData.views
-                //track.requestedBy = message.author
-                //track.isFromPlaylist = false
-                track.isLive = streamData.live;
-                //track.source = "youtube"
-
-                if (track.isLive === true || track.duration === 0) {
-                    track.durationFormatted = "LIVE";
-                    track.isLive = true;
-                }
-
+                track.title = track.channel + " - " + track.title;
                 handleTrack(message, track);
             } catch (ex) {
                 console.log(ex);
@@ -239,50 +213,25 @@ async function searchTracks(message, query) {
                 const list = await data.tracks.items;
 
                 for (let item of list) {
-                    item = item.track;
-
-                    track = {
-                        title: item.name,
-                        url: item.external_urls.spotify,
-                        streamURL: item.external_urls.spotify,
-                        thumbnail: item.album.images[0].url,
-                        duration: parseInt(item.duration_ms),
-                        durationFormatted: formatDuration(item.duration_ms),
-                        channel: item.artists[0].name,
-                        views: 0,
+                    var track = {
+                        title: item.track.name,
+                        url: item.track.external_urls.spotify,
+                        streamURL: item.track.external_urls.spotify,
+                        thumbnail: item.track.album.images[0].url,
+                        duration: parseInt(item.track.duration_ms),
+                        durationFormatted: formatDuration(item.track.duration_ms),
+                        channel: item.track.artists[0].name,
                         requestedBy: message.author,
                         isFromPlaylist: true,
                         isLive: false,
                         source: "spotify"
                     }
 
-                    query = track.channel + " - " + track.title;
-
-                    const streamData = await YouTube.searchOne(query);
-                    if (!streamData) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
-
-                    track.title = query;
-                    //track.url = streamData.url;
-                    track.streamURL = streamData.url
-                    //track.thumbnail = streamData.thumbnail.url
-                    track.duration = parseInt(streamData.duration);
-                    track.durationFormatted = streamData.durationFormatted;
-                    //track.channel = streamData.channel.name
-                    //track.views = streamData.views
-                    //track.requestedBy = message.author
-                    //track.isFromPlaylist = true
-                    track.isLive = streamData.live;
-                    //track.source = "youtube"
-
-                    if (track.isLive === true || track.duration === 0) {
-                        track.durationFormatted = "LIVE";
-                        track.isLive = true;
-                    }
-
+                    track.title = track.channel + " - " + track.title;
                     handleTrack(message, track);
                 }
 
-                return message.channel.send({
+                message.channel.send({
                     embed: {
                         color: "BLACK",
                         author: {
@@ -313,7 +262,7 @@ async function searchTracks(message, query) {
                 const data = await scdl.getInfo(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                track = {
+                const track = {
                     title: data.title,
                     url: data.permalink_url,
                     streamURL: data.permalink_url,
@@ -321,7 +270,6 @@ async function searchTracks(message, query) {
                     duration: parseInt(data.duration),
                     durationFormatted: formatDuration(data.duration),
                     channel: data.publisher_metadata.artist,
-                    views: data.playback_count,
                     requestedBy: message.author,
                     isFromPlaylist: false,
                     isLive: false,
@@ -341,7 +289,7 @@ async function searchTracks(message, query) {
                 const data = await YouTube.searchOne(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **No results found on YouTube for** `" + query + "`");
 
-                track = {
+                const track = {
                     title: data.title,
                     url: data.url,
                     streamURL: data.url,
@@ -349,7 +297,6 @@ async function searchTracks(message, query) {
                     duration: parseInt(data.duration),
                     durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
-                    views: data.views,
                     requestedBy: message.author,
                     isFromPlaylist: false,
                     isLive: data.live,
