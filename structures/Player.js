@@ -14,13 +14,6 @@ const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 async function player(message, track, seekTime) {
     const queue = message.client.queues.get(message.guild.id);
     let stream, streamType;
-    let streamOptions = {
-        filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
-        quality: "highestaudio",
-        highWaterMark: 1 << 25,
-        opusEncoded: true,
-        seek: seekTime / 1000
-    }
 
     //Add additional stream time
     if (seekTime) queue.additionalStreamTime = seekTime;
@@ -29,6 +22,14 @@ async function player(message, track, seekTime) {
     if (!track) {
         handleEndCooldown(message);
         return;
+    }
+
+    let streamOptions = {
+        filter: track.isLive ? "audio" : "audioonly", //filter: audioonly does not work with livestreams
+        quality: "highestaudio",
+        highWaterMark: 1 << 25,
+        opusEncoded: true,
+        seek: seekTime / 1000
     }
 
     //Download readable stream
