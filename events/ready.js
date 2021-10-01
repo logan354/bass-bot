@@ -6,6 +6,6 @@ module.exports = async (client) => {
             name: `🎧 ${client.config.app.prefix}play`,
             type: "LISTENING"
         },
-        status: "idle"
+        status: "online"
     });
 }

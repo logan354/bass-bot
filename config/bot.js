@@ -2,7 +2,7 @@ module.exports = {
     app: {
         //Prefix settings
         default_prefix: ".",
-        prefix: "$",
+        prefix: ".",
 
         //Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot&permissions=3525704",
