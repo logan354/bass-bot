@@ -34,7 +34,7 @@ async function player(message, track, seekTime) {
 
     //Download readable stream
     try {
-        if (track.source === "youtube" || "spotify") {
+        if (track.source === "youtube" || track.source === "spotify") {
             if (track.source === "spotify") {
                 const streamData = await YouTube.searchOne(track.title);
                 if (!streamData) return message.channel.send(message.client.emotes.error + " **Could not find that link**");

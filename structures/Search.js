@@ -19,12 +19,14 @@ function resolveQueryType(query) {
 
     if (query.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:playlist\/|\?uri=spotify:playlist:)((\w|-){22})/)) return "spotify-playlist";
 
+    if (query.match(/^https?:\/\/(soundcloud\.com|snd\.sc)\/([A-Za-z0-9_-]+)\/sets\/([A-Za-z0-9_-]+)\/?$/)) return "soundcloud-playlist";
+
     //Videos
     if (query.match(/^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi)) return "youtube-video";
 
-    if (query.match(/^https?:\/\/(soundcloud\.com)\/(.*)$/gi)) return "soundcloud-song";
-
     if (query.match(/https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:track\/|\?uri=spotify:track:)((\w|-){22})/)) return "spotify-song";
+
+    if (query.match(/^https?:\/\/(soundcloud\.com)\/(.*)$/gi)) return "soundcloud-song";
 
     //Else
     return "youtube-video-keywords";
@@ -267,7 +269,7 @@ async function searchTracks(message, query) {
                     thumbnail: data.artwork_url,
                     duration: parseInt(data.duration),
                     durationFormatted: formatDuration(data.duration),
-                    channel: data.publisher_metadata.artist,
+                    channel: data.user.username,
                     requestedBy: message.author,
                     isFromPlaylist: false,
                     isLive: false,
@@ -275,6 +277,57 @@ async function searchTracks(message, query) {
                 }
 
                 handleTrack(message, track);
+            } catch (ex) {
+                console.log(ex);
+                return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
+            }
+        }
+            break;
+
+        case "soundcloud-playlist": {
+            try {
+                const data = await scdl.getSetInfo(query);
+                if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
+
+                const list = data.tracks;
+
+                for (item of list) {
+                    var track = {
+                        title: item.title,
+                        url: item.permalink_url,
+                        streamURL: item.permalink_url,
+                        thumbnail: item.artwork_url,
+                        duration: parseInt(item.duration),
+                        durationFormatted: formatDuration(item.duration),
+                        channel: item.user.username,
+                        requestedBy: message.author,
+                        isFromPlaylist: true,
+                        isLive: false,
+                        source: "soundcloud"
+                    }
+    
+                    handleTrack(message, track);
+                }
+
+                message.channel.send({
+                    embed: {
+                        color: "BLACK",
+                        author: {
+                            name: "Playlist added to queue",
+                            icon_url: message.client.emotes.player
+                        },
+                        description: `**[${data.title}](${data.permalink_url})**`,
+                        thumbnail: { url: data.artwork_url },
+                        fields: [
+                            { name: "Channel", value: data.user.username, inline: true },
+                            { name: "Enqueued", value: "`" + data.track_count + "` " + "songs", inline: true },
+                            //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
+                            { name: "Position in queue", value: (serverQueue.tracks.length) - data.track_count, inline: true },
+
+                            { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
+                        ],
+                    },
+                });
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
