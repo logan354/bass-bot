@@ -1,6 +1,6 @@
 {
   "name": "beat-bot",
-  "version": "1.4.0-dev.3",
+  "version": "1.4.0-dev.4",
   "description": "The best music bot for Discord. With the highest quality audio and support for YouTube, Spotify and Soundcloud!",
   "main": "index.js",
   "scripts": {

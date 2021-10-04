@@ -1,4 +1,4 @@
-<img width="25%" height="25%" align="left" style="float: left; margin: 0 10px 0 0;" alt="Atlanta" src="https://cdn.discordapp.com/emojis/850649409334280202.png?v=1">
+<img width="25%" height="25%" align="left" style="float: left; margin: 0 10px 0 0;" src="https://cdn.discordapp.com/emojis/850649409334280202.png?v=1">
 
 # Bass
 The best music bot for Discord. With the highest quality audio and support for YouTube, Spotify and Soundcloud!

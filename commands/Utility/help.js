@@ -9,6 +9,7 @@ module.exports = {
         if (!args[0]) {
             const track = message.client.commands.filter(x => x.category == "Track").map((x) => "`" + x.name + "`").join(", "); //./commands/Track
             const queue = message.client.commands.filter(x => x.category == "Queue").map((x) => "`" + x.name + "`").join(", "); //./commands/Queue
+            const premium = message.client.commands.filter(x => x.category == "Premium").map((x) => "`" + x.name + "`").join(", "); //./commands/Premium
             const utility = message.client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`").join(", "); //./commands/Utility         
             
             message.channel.send({
@@ -16,7 +17,7 @@ module.exports = {
                     color: "BLACK",
                     title: "Help Panel",
                     fields: [
-                        { name: client.emotes.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n**Queue: **" + queue + "\n\n" },
+                        { name: client.emotes.playerFrozen + " **Music**", value: "\n**Track:** " + track + "\n\n**Queue:** " + queue + "\n\n**Premium:** " + premium + "\n\n" },
                         { name: client.emotes.utility + " **Utility**", value: "\n" + utility }
                     ],
                     thumbnail: { url: client.config.app.smallLogo }

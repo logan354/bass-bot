@@ -71,13 +71,11 @@ function handleTrack(message, track) {
  * Searchs for the query on Youtube, Spotify or Soundcloud
  * @param {object} message Discord.js message object
  * @param {string} query User query
+ * @param {string} queryType Search query type
  * @returns {Promise}
  */
 async function searchTracks(message, query) {
     const serverQueue = message.client.queues.get(message.guild.id);
-
-    //Handles query
-    if (typeof query === "string") query = query.replace(/<(.+)>/g, "$1");
     const queryType = resolveQueryType(query);
 
     //Display searching message
@@ -125,7 +123,7 @@ async function searchTracks(message, query) {
                 const data = await YouTube.getPlaylist(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                const list = await data.videos;
+                const list = data.videos;
 
                 for (const item of list) {
                     var track = {
@@ -210,7 +208,7 @@ async function searchTracks(message, query) {
                 const data = await spotify.getData(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                const list = await data.tracks.items;
+                const list = data.tracks.items;
 
                 for (let item of list) {
                     var track = {
