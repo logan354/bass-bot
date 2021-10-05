@@ -128,7 +128,7 @@ async function searchTracks(message, query) {
                 const list = data.videos;
 
                 for (const item of list) {
-                    var track = {
+                    const track = {
                         title: item.title,
                         url: item.url,
                         streamURL: item.url,
@@ -161,11 +161,11 @@ async function searchTracks(message, query) {
                         thumbnail: { url: data.thumbnail },
                         fields: [
                             { name: "Channel", value: data.channel.name, inline: true },
-                            { name: "Enqueued", value: "`" + data.videoCount + "` " + "songs", inline: true },
+                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
                             //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - data.videoCount, inline: true },
+                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
 
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
+                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
                         ],
                     },
                 });
@@ -213,7 +213,7 @@ async function searchTracks(message, query) {
                 const list = data.tracks.items;
 
                 for (let item of list) {
-                    var track = {
+                    const track = {
                         title: item.track.name,
                         url: item.track.external_urls.spotify,
                         streamURL: item.track.external_urls.spotify,
@@ -242,11 +242,11 @@ async function searchTracks(message, query) {
                         thumbnail: { url: data.images[0].url },
                         fields: [
                             { name: "Channel", value: data.owner.display_name, inline: true },
-                            { name: "Enqueued", value: "`" + data.tracks.total + "` " + "songs", inline: true },
+                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
                             //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - data.tracks.total, inline: true },
+                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
 
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
+                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
                         ],
                     },
                 });
@@ -292,7 +292,7 @@ async function searchTracks(message, query) {
                 const list = data.tracks;
 
                 for (item of list) {
-                    var track = {
+                    const track = {
                         title: item.title,
                         url: item.permalink_url,
                         streamURL: item.permalink_url,
@@ -320,11 +320,11 @@ async function searchTracks(message, query) {
                         thumbnail: { url: data.artwork_url },
                         fields: [
                             { name: "Channel", value: data.user.username, inline: true },
-                            { name: "Enqueued", value: "`" + data.track_count + "` " + "songs", inline: true },
+                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
                             //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - data.track_count, inline: true },
+                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
 
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
+                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
                         ],
                     },
                 });

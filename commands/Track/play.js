@@ -24,6 +24,7 @@ module.exports = {
         if (!args[0]) return resume.execute(client, message, args);
 
         const permissions = voiceChannel.permissionsFor(message.client.user);
+        if (!permissions.has("EMBED_LINKS")) return message.channel.send(client.emotes.error + " **I do not have permission to Manage Messages in ** " + "`" + message.channel.name + "`");
         if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`");
         if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`");
 
