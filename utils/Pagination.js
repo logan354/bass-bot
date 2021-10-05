@@ -55,8 +55,8 @@ module.exports = class Pagination {
 
                 let loopEnabler = "❌";
                 let loopQueueEnabler = "❌";
-                if (serverQueue.loop === true) loopEnabler = "✅";
-                if (serverQueue.loopQueue === true) loopQueueEnabler = "✅";
+                if (serverQueue.loop) loopEnabler = "✅";
+                if (serverQueue.loopQueue) loopQueueEnabler = "✅";
 
                 var embed;
                 if (currPage === 0)

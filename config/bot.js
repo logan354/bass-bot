@@ -5,7 +5,7 @@ module.exports = {
         prefix: ".",
 
         //Invite
-        invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot&permissions=3525704",
+        invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot&permissions=3501128",
 
         //Logos
         logo: "https://cdn.discordapp.com/emojis/850649409334280202.png?v=1",
