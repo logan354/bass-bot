@@ -1,5 +1,5 @@
 {
-  "name": "beat-bot",
+  "name": "bass-bot",
   "version": "1.4.0",
   "description": "The best music bot for Discord. With the highest quality audio and support for YouTube, Spotify and Soundcloud!",
   "main": "index.js",
