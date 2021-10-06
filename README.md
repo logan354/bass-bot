@@ -13,8 +13,9 @@ The best music bot for Discord. With the highest quality audio and support for Y
 
 ## Commands
 
-Bass has 3 main command categories
+Bass has 4 main command categories
 
 - **Track**: `disconnect`, `forceskip`, `join`, `loop`, `nowplaying`, `pause`, `play`, `resume`, `seek`, `voteskip`
-- **Queue**: `loopqueue`, `queue`, `shuffle`
+- **Queue**: `clear`, `loopqueue`, `queue`, `shuffle`
+- **Premium**: `volume`
 - **Utility**: `debug`, `help`, `invite`, `ping`, `stats`

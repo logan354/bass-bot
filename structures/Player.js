@@ -7,7 +7,7 @@ const { handleEndCooldown, handleStopCooldown } = require("./Cooldowns");
 /**
  * Creates and streams audio
  * @param {object} message Discord.js message object
- * @param {object} track Track info
+ * @param {object} track Track data
  * @param {number} seekTime Seek time
  * @returns {Promise}
  */

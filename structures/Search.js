@@ -35,7 +35,7 @@ function resolveQueryType(query) {
 /**
  * Handles tracks
  * @param {object} message Discord.js message object
- * @param {object} track Track info
+ * @param {object} track Track data
  * @returns {Promise}
  */
 function handleTrack(message, track) {
@@ -43,7 +43,6 @@ function handleTrack(message, track) {
 
     if (serverQueue.tracks.length > 0) {
         serverQueue.tracks.push(track);
-        if (track.isFromPlaylist === true) return;
         return message.channel.send({
             embed: {
                 color: "BLACK",
@@ -59,7 +58,7 @@ function handleTrack(message, track) {
                     //{ name: "Estimated time until QUEUEING", value: "?", inline: true }, //Not Accurate
                     { name: "Position in queue", value: serverQueue.tracks.length - 1, inline: true },
 
-                    { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy.id + ">" }
+                    { name: "\u200B", value: "**Requested by:** " + "<@" + track.requestedBy + ">" }
                 ],
             },
         });
@@ -67,6 +66,44 @@ function handleTrack(message, track) {
 
     serverQueue.tracks.push(track);
     player(message, serverQueue.tracks[0]);
+}
+
+/**
+ * Handles playlists
+ * @param {object} message Discord.js message object
+ * @param {object} playlist Playlist data 
+ * @returns {Promise}
+ */
+function handlePlaylist(message, playlist) {
+    console.log(playlist)
+    const serverQueue = message.client.queues.get(message.guild.id);
+
+    if (serverQueue.tracks.length > 0) {
+        serverQueue.tracks.push(...playlist.tracks);
+    } else {
+        serverQueue.tracks.push(...playlist.tracks);
+        player(message, serverQueue.tracks[0]);
+    }
+
+    message.channel.send({
+        embed: {
+            color: "BLACK",
+            author: {
+                name: "Playlist added to queue",
+                icon_url: message.client.emotes.player
+            },
+            description: `**[${playlist.title}](${playlist.url})**`,
+            thumbnail: { url: playlist.thumbnail },
+            fields: [
+                { name: "Channel", value: playlist.channel, inline: true },
+                { name: "Enqueued", value: "`" + playlist.tracks.length + "` " + "songs", inline: true },
+                //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
+                { name: "Position in queue", value: (serverQueue.tracks.length) - playlist.tracks.length, inline: true },
+
+                { name: "\u200B", value: "**Requested by:** " + "<@" + playlist.requestedBy + ">" }
+            ],
+        },
+    });
 }
 
 /**
@@ -125,7 +162,19 @@ async function searchTracks(message, query) {
                 const data = await YouTube.getPlaylist(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
-                const list = data.videos;
+                const playlist = {
+                    title: data.title,
+                    url: data.url,
+                    thumbnail: data.thumbnail,
+                    tracks: [],
+                    duration: null,
+                    durationFormatted: null,
+                    channel: data.channel.name,
+                    requestedBy: message.author,
+                    source: "youtube"
+                }
+
+                const list = data.videos
 
                 for (const item of list) {
                     const track = {
@@ -147,28 +196,10 @@ async function searchTracks(message, query) {
                         track.isLive = true;
                     }
 
-                    handleTrack(message, track);
+                    playlist.tracks.push(track);
                 }
 
-                message.channel.send({
-                    embed: {
-                        color: "BLACK",
-                        author: {
-                            name: "Playlist added to queue",
-                            icon_url: message.client.emotes.player
-                        },
-                        description: `**[${data.title}](${data.url})**`,
-                        thumbnail: { url: data.thumbnail },
-                        fields: [
-                            { name: "Channel", value: data.channel.name, inline: true },
-                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
-                            //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
-
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
-                        ],
-                    },
-                });
+                handlePlaylist(message, playlist);
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
@@ -210,9 +241,21 @@ async function searchTracks(message, query) {
                 const data = await spotify.getData(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
+                const playlist = {
+                    title: data.name,
+                    url: data.external_urls.spotify,
+                    thumbnail: data.images[0].url,
+                    tracks: [],
+                    duration: null,
+                    durationFormatted: null,
+                    channel: data.owner.display_name,
+                    requestedBy: message.author,
+                    source: "spotify"
+                }
+
                 const list = data.tracks.items;
 
-                for (let item of list) {
+                for (const item of list) {
                     const track = {
                         title: item.track.name,
                         url: item.track.external_urls.spotify,
@@ -228,28 +271,10 @@ async function searchTracks(message, query) {
                     }
 
                     track.title = track.channel + " - " + track.title;
-                    handleTrack(message, track);
+                    playlist.tracks.push(track);
                 }
 
-                message.channel.send({
-                    embed: {
-                        color: "BLACK",
-                        author: {
-                            name: "Playlist added to queue",
-                            icon_url: message.client.emotes.player
-                        },
-                        description: `**[${data.name}](${data.external_urls.spotify})**`,
-                        thumbnail: { url: data.images[0].url },
-                        fields: [
-                            { name: "Channel", value: data.owner.display_name, inline: true },
-                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
-                            //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
-
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
-                        ],
-                    },
-                });
+                handlePlaylist(message, playlist);
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
@@ -289,9 +314,21 @@ async function searchTracks(message, query) {
                 const data = await scdl.getSetInfo(query);
                 if (!data) return message.channel.send(message.client.emotes.error + " **Could not find that link**");
 
+                const playlist = {
+                    title: data.title,
+                    url: data.permalink_url,
+                    thumbnail: data.artwork_url,
+                    tracks: [],
+                    duration: null,
+                    durationFormatted: null,
+                    channel: data.user.username,
+                    requestedBy: message.author,
+                    source: "soundcloud"
+                }
+
                 const list = data.tracks;
 
-                for (item of list) {
+                for (const item of list) {
                     const track = {
                         title: item.title,
                         url: item.permalink_url,
@@ -305,29 +342,11 @@ async function searchTracks(message, query) {
                         isLive: false,
                         source: "soundcloud"
                     }
-    
-                    handleTrack(message, track);
+
+                    playlist.tracks.push(track);
                 }
 
-                message.channel.send({
-                    embed: {
-                        color: "BLACK",
-                        author: {
-                            name: "Playlist added to queue",
-                            icon_url: message.client.emotes.player
-                        },
-                        description: `**[${data.title}](${data.permalink_url})**`,
-                        thumbnail: { url: data.artwork_url },
-                        fields: [
-                            { name: "Channel", value: data.user.username, inline: true },
-                            { name: "Enqueued", value: "`" + list.length + "` " + "songs", inline: true },
-                            //{ name: "Estimated time until playing", value: "?", inline: true }, //Not Accurate
-                            { name: "Position in queue", value: (serverQueue.tracks.length) - list.length, inline: true },
-
-                            { name: "\u200B", value: "**Requested by:** " + "<@" + message.author + ">" }
-                        ],
-                    },
-                });
+                handlePlaylist(message, playlist);
             } catch (ex) {
                 console.log(ex);
                 return message.channel.send(message.client.emotes.error + " **Error: Searching:** `" + ex.message + "`");
