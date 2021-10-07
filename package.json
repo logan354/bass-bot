@@ -13,12 +13,12 @@
     "@discordjs/node-pre-gyp": "^0.4.1",
     "@discordjs/opus": "^0.6.0",
     "discord-ytdl-core": "^5.0.4",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.2.0",
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^4.4.0",
     "soundcloud-downloader": "^1.0.0",
     "spotify-url-info": "^2.2.3",
-    "youtube-sr": "^4.1.7",
+    "youtube-sr": "^4.1.8",
     "ytdl-core": "^4.9.1"
   }
 }

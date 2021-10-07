@@ -1,13 +1,20 @@
 const fs = require("fs");
 const dotenv = require("dotenv");
-const Discord = require("discord.js");
+const { Client, Intents, Collection } = require("discord.js");
 dotenv.config();
 
-const client = new Discord.Client();
+const client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_VOICE_STATES
+    ]
+});
 
 client.config = require("./config/bot");
 client.emotes = client.config.emojis;
-client.commands = new Discord.Collection();
+client.commands = new Collection();
 client.queues = new Map();
 client.cooldowns = new Map();
 
