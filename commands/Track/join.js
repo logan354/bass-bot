@@ -19,7 +19,6 @@ module.exports = {
 
         if (!serverQueue) {
             serverQueue = new Queue(message.guild.id);
-            client.queues.set(message.guild.id, serverQueue);
         }
 
         try {
@@ -29,6 +28,7 @@ module.exports = {
             message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
         }
 
+        client.queues.set(message.guild.id, serverQueue);
         message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
     },
 
@@ -45,7 +45,6 @@ module.exports = {
 
             if (!serverQueue) {
                 serverQueue = new Queue(interaction.guild.id);
-                client.queues.set(interaction.guild.id, serverQueue);
             }
     
             try {
@@ -55,6 +54,7 @@ module.exports = {
                 interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
             }
     
+            client.queues.set(message.guild.id, serverQueue);
             interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
         }
     }
