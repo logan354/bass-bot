@@ -1,12 +1,3 @@
-const numberFormat = /^\d+$/;
-const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
-const timeUnits = {
-  ms: 1,
-  s: 1000,
-  m: 60000,
-  h: 3600000,
-};
-
 const formatInt = int => {
   if (int < 10) return `0${int}`;
   return `${int}`;
@@ -56,6 +47,15 @@ function formatFormalTime(milliseconds) {
   return `${seconds} seconds`;
 }
 
+const numberFormat = /^\d+$/;
+const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
+const timeUnits = {
+  ms: 1,
+  s: 1000,
+  m: 60000,
+  h: 3600000,
+};
+
 /**
   * Converts human friendly time to milliseconds. Supports the format
   * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
@@ -65,7 +65,7 @@ function formatFormalTime(milliseconds) {
   * @returns {number}
   */
 function parseDuration(time) {
-  if (typeof time === 'number') { return time * 1000; }
+  if (typeof time === "number") { return time * 1000; }
   if (numberFormat.test(time)) { return +time * 1000; }
   const firstFormat = timeFormat.exec(time);
   if (firstFormat) {

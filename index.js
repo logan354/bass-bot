@@ -12,9 +12,10 @@ const client = new Client({
     ]
 });
 
-client.config = require("./config/bot");
+client.config = require("./config");
 client.emotes = client.config.emojis;
 client.commands = new Collection();
+
 client.queues = new Map();
 client.cooldowns = new Map();
 
@@ -27,7 +28,7 @@ fs.readdirSync("./commands").forEach(dirs => {
         const command = require(`./commands/${dirs}/${file}`);
         console.log(`-> Loaded command ${command.name.toLowerCase()}`);
         client.commands.set(command.name.toLowerCase(), command);
-    };
+    }
 });
 
 console.log("Loading events...");
@@ -38,7 +39,7 @@ for (const file of events) {
     const event = require(`./events/${file}`);
     console.log(`-> Loaded event ${file.split(".")[0]}`);
     client.on(file.split(".")[0], event.bind(null, client));
-};
+}
 
 module.exports.cmdsSize = client.commands.size;
 

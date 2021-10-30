@@ -1,5 +1,4 @@
-const { handleEndCooldown } = require("../../structures/Cooldowns");
-const Queue = require("../../structures/Queue");
+const Queue = require("../../src/constructors/Queue");
 
 module.exports = {
     name: "join",
@@ -7,32 +6,56 @@ module.exports = {
     category: "Track",
     description: "Summons the bot to the voice channel you are in.",
     utilisation: "{prefix}join",
+    permissions: {
+        channel: [],
+        member: [],
+    },
 
     async execute(client, message, args) {
-        let voiceChannel = message.member.voice.channel;
-        let textChannel = message.channel;
         let serverQueue = client.queues.get(message.guild.id);
+        const voiceChannel = message.member.voice.channel;
 
-        if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
-
-        const permissions = voiceChannel.permissionsFor(message.client.user);
-        if (!permissions.has("CONNECT")) return message.channel.send(client.emotes.error + " **I do not have permission to connect to** " + "`" + voiceChannel.name + "`");
-        if (!permissions.has("SPEAK")) return message.channel.send(client.emotes.error + " **I do not have permission to speak in** " + "`" + voiceChannel.name + "`");
+        if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command*");
 
         if (!serverQueue) {
-            serverQueue = new Queue(message);
+            serverQueue = new Queue(message.guild.id);
             client.queues.set(message.guild.id, serverQueue);
         }
 
         try {
-            const connection = await voiceChannel.join();
-            serverQueue.connection = connection;
-            connection.voice.setSelfDeaf(true);
-            handleEndCooldown(message);
-        } catch (ex) {
-            console.log(ex);
-            return message.channel.send(client.emotes.error + " **Error: Joining:** `" + voiceChannel.name + "`");
+            await serverQueue.connect(message, voiceChannel);
+        } catch {
+            client.queues.delete(message.guild.id);
+            message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
         }
-        message.channel.send(client.emotes.success + " **Successfully joined `" + voiceChannel.name + "` and bound to** <#" + textChannel.id + ">");
+
+        message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
+    },
+
+    slashCommand: {
+        options: [],
+
+        async execute(client, interaction, args) {
+            let serverQueue = client.queues.get(interaction.guild.id);
+            const voiceChannel = interaction.member.voice.channel;
+    
+            if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command*");
+    
+            interaction.deferReply();
+
+            if (!serverQueue) {
+                serverQueue = new Queue(interaction.guild.id);
+                client.queues.set(interaction.guild.id, serverQueue);
+            }
+    
+            try {
+                await serverQueue.connect(interaction, voiceChannel);
+            } catch {
+                client.queues.delete(interaction.guild.id);
+                interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
+            }
+    
+            interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
+        }
     }
 }

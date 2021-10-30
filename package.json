@@ -1,6 +1,6 @@
 {
   "name": "bass-bot",
-  "version": "2.0.0-dev.1",
+  "version": "2.0.0-dev.2",
   "description": "The best music bot for Discord. With the highest quality audio and support for YouTube, Spotify and Soundcloud!",
   "main": "index.js",
   "scripts": {
@@ -12,10 +12,12 @@
   "dependencies": {
     "@discordjs/node-pre-gyp": "^0.4.1",
     "@discordjs/opus": "^0.6.0",
+    "@discordjs/voice": "^0.6.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^13.2.0",
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^4.4.0",
+    "libsodium-wrappers": "^0.7.9",
     "soundcloud-downloader": "^1.0.0",
     "spotify-url-info": "^2.2.3",
     "youtube-sr": "^4.1.8",
