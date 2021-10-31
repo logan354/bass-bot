@@ -68,7 +68,7 @@ async function player(data, track, options = { seek: 0, filters: null }) {
         // Unknown error, play the next track 
         else {
             console.log(error);
-            data.channel.send(`${data.client.emotes.error} **An error occurred while trying to play**` + "`" + track.title + "`");
+            data.channel.send(`${data.client.emotes.error} **An error occurred while trying to play** ` + "`" + track.title + "`");
 
             serverQueue.skiplist = [];
             serverQueue.additionalStreamTime = 0;
@@ -117,7 +117,7 @@ async function player(data, track, options = { seek: 0, filters: null }) {
 
     serverQueue.streamDispatcher.audioPlayer.on("error", (error) => {
         console.log(error);
-        data.channel.send(`${data.client.emotes.error} **An error occurred while playing**` + "`" + track.title + "`");
+        data.channel.send(`${data.client.emotes.error} **An error occurred while playing** ` + "`" + track.title + "`");
     });
 
     // Check if the queue is paused
