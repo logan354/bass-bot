@@ -26,7 +26,7 @@ function buildTrack(client, queue, track) {
             },
             {
                 name: "Position in queue",
-                value: queue.tracks.length - 1,
+                value: `${queue.tracks.length - 1}`,
                 inline: true
             },
             {
@@ -64,7 +64,7 @@ function buildPlaylist(client, queue, playlist) {
             },
             {
                 name: "Position in queue",
-                value: queue.tracks.length - playlist.tracks.length,
+                value: `${queue.tracks.length - playlist.tracks.length}`,
                 inline: true
             },
             {

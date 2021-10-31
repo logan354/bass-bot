@@ -1,4 +1,7 @@
 const { createAudioPlayer, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState } = require("@discordjs/voice");
+const { promisify } = require("util");
+
+const wait = promisify(setTimeout);
 
 module.exports = class StreamDispatcher {
     /**

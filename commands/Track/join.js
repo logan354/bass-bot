@@ -17,19 +17,27 @@ module.exports = {
 
         if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command*");
 
+        // Different joining systems in case connecting the queue takes a long time
         if (!serverQueue) {
             serverQueue = new Queue(message.guild.id);
-        }
 
-        try {
-            await serverQueue.connect(message, voiceChannel);
-        } catch {
-            client.queues.delete(message.guild.id);
-            message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
-        }
+            try {
+                await serverQueue.connect(message, voiceChannel);
+            } catch {
+                return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+            }
 
-        client.queues.set(message.guild.id, serverQueue);
-        message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
+            client.queues.set(message.guild.id, serverQueue);
+            message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
+        } else {
+            try {
+                await serverQueue.connect(message, voiceChannel);
+            } catch {
+                return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+            }
+
+            message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
+        }
     },
 
     slashCommand: {
@@ -38,24 +46,32 @@ module.exports = {
         async execute(client, interaction, args) {
             let serverQueue = client.queues.get(interaction.guild.id);
             const voiceChannel = interaction.member.voice.channel;
-    
+
             if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command*");
-    
+
             interaction.deferReply();
 
+            // Different joining systems in case connecting the queue takes a long time
             if (!serverQueue) {
                 serverQueue = new Queue(interaction.guild.id);
+
+                try {
+                    await serverQueue.connect(interaction, voiceChannel);
+                } catch {
+                    return interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+                }
+
+                client.queues.set(interaction.guild.id, serverQueue);
+                interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
+            } else {
+                try {
+                    await serverQueue.connect(interaction, voiceChannel);
+                } catch {
+                    return interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+                }
+
+                interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
             }
-    
-            try {
-                await serverQueue.connect(interaction, voiceChannel);
-            } catch {
-                client.queues.delete(interaction.guild.id);
-                interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.name + ">");
-            }
-    
-            client.queues.set(message.guild.id, serverQueue);
-            interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
         }
     }
 }

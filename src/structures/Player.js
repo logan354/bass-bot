@@ -3,7 +3,7 @@ const ytdl = require("discord-ytdl-core");
 const YouTube = require("youtube-sr").default;
 const scdl = require("soundcloud-downloader").default;
 
-const { handleEndCooldown, handleStopCooldown } = require("../structures/Cooldowns");
+const { handleEndCooldown, handleStopCooldown } = require("./cooldowns");
 
 /**
  * Creates and streams audio
@@ -58,15 +58,16 @@ async function player(data, track, options = { seek: 0, filters: null }) {
     }
 
     stream.on("error", (error) => {
-        console.log(error);
-
         // HTTP request destroyed, retry request
         if (error.message === "Status code: 403") {
             serverQueue.skiplist = [];
             serverQueue.additionalStreamTime = 0;
             player(data, serverQueue.tracks[0]);
             return;
-        } else {
+        }
+        // Unknown error, play the next track 
+        else {
+            console.log(error);
             data.channel.send(`${data.client.emotes.error} **An error occurred while trying to play**` + "`" + track.title + "`");
 
             serverQueue.skiplist = [];

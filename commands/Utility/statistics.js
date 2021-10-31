@@ -6,7 +6,7 @@ const memory = 512;
 
 module.exports = {
     name: "statistics",
-    aliases: [],
+    aliases: ["stats"],
     category: "Utility",
     description: "Shows the bot's statistics.",
     utilisation: "{prefix}stats",

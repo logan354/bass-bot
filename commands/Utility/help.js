@@ -27,7 +27,7 @@ module.exports = {
                 .setFields(
                     {
                         name: `**Track [${track.length}]**\n`,
-                        value: "track"
+                        value: track.join(", ")
                     },
                     {
                         name: `**Queue [${queue.length}]**\n`,
@@ -88,7 +88,7 @@ module.exports = {
             {
                 name: "command",
                 description: "Name of the command you need help with.",
-                type: 3,
+                type: 3
             }
         ],
 
@@ -108,7 +108,7 @@ module.exports = {
                     .setFields(
                         {
                             name: `**Track [${track.length}]**\n`,
-                            value: "track"
+                            value: track.join(", ")
                         },
                         {
                             name: `**Queue [${queue.length}]**\n`,

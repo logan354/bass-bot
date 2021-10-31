@@ -1,4 +1,4 @@
-const { QueryTypes, QueryTypesRegex } = require("../types/types");
+const { QueryTypes, QueryTypesRegex } = require("../utils/types");
 
 /**
  * Resolves query type
