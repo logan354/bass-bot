@@ -1,4 +1,6 @@
 const ErrorStatusCodes = {
+    AUDIO_PLAYER_ERROR: "AudioPlayerError",
+    CONNECTION_ERROR: "ConnectionError",
     NO_RESULTS: "NoResults",
     INVALID_LINK: "InvalidLink",
     UNKNOWN_ERROR: "UnknownError"

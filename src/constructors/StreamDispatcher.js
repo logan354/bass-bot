@@ -4,16 +4,16 @@ const { promisify } = require("util");
 const wait = promisify(setTimeout);
 
 module.exports = class StreamDispatcher {
-    /**
-     * Creates a stream dispatcher
-     * @param {Object} data Discord.js message or interaction object
-     * @param {Object} connection The connection to Discord
-     */
-    constructor(data, connection) {
-        this.connection = connection;
-        this.audioPlayer = createAudioPlayer();
+	/**
+	 * Creates a stream dispatcher
+	 * @param {Object} data Discord.js message or interaction object
+	 * @param {Object} connection The connection to Discord
+	 */
+	constructor(data, connection) {
+		this.connection = connection;
+		this.audioPlayer = createAudioPlayer();
 
-        this.connection.on('stateChange', async (_, newState) => {
+		this.connection.on('stateChange', async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
 				if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
 					/*
@@ -47,7 +47,7 @@ module.exports = class StreamDispatcher {
 					Once destroyed, stop the subscription
 				*/
 				this.audioPlayer.stop();
-                data.client.queues.delete(data.guild.id);
+				data.client.queues.delete(data.guild.id);
 			} else if (
 				!this.readyLock &&
 				(newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)
@@ -68,12 +68,12 @@ module.exports = class StreamDispatcher {
 			}
 		});
 
-        this.connection.on("error", (error) => {
-            console.log(error);
-            data.channel.send(`${data.client.emotes.error} **An error occurred with the connection to** <#${this.connection.joinConfig.channelId}>`);
-        });
+		this.connection.on("error", (error) => {
+			console.log(error);
+			data.channel.send(`${data.client.emotes.error} **An error occurred with the connection to** <#${this.connection.joinConfig.channelId}>`);
+		});
 
-        this.connection.subscribe(this.audioPlayer);
-    }
+		this.connection.subscribe(this.audioPlayer);
+	}
 
 }

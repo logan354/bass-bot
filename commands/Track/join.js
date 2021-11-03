@@ -15,7 +15,7 @@ module.exports = {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;
 
-        if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command*");
+        if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         // Different joining systems in case connecting the queue takes a long time
         if (!serverQueue) {
@@ -47,7 +47,7 @@ module.exports = {
             let serverQueue = client.queues.get(interaction.guild.id);
             const voiceChannel = interaction.member.voice.channel;
 
-            if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command*");
+            if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
             interaction.deferReply();
 
