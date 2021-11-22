@@ -12,12 +12,11 @@ const client = new Client({
     ]
 });
 
+client.queues = new Map();
+
 client.config = require("./config");
 client.emotes = client.config.emojis;
 client.commands = new Collection();
-
-client.queues = new Map();
-client.cooldowns = new Map();
 
 console.log("Loading commands...");
 
@@ -40,7 +39,5 @@ for (const file of events) {
     console.log(`-> Loaded event ${file.split(".")[0]}`);
     client.on(file.split(".")[0], event.bind(null, client));
 }
-
-module.exports.cmdsSize = client.commands.size;
 
 client.login(process.env.token);

@@ -1,9 +1,5 @@
-const Queue = require("../../src/constructors/Queue");
-const { player } = require("../../src/structures/Player");
-const { search } = require("../../src/structures/Search");
-const { buildTrack, buildPlaylist, buildNowPlaying } = require("../../src/utils/builders");
-const { resolveQueryType } = require("../../src/utils/queryResolver");
-const { ErrorStatusCodes } = require("../../src/utils/types");
+const { Queue } = require("../../src/Queue");
+const { Util } = require("../../src/Utils");
 
 module.exports = {
     name: "play",
@@ -30,56 +26,54 @@ module.exports = {
 
         // Create queue and connect the queue
         if (!serverQueue) {
-            serverQueue = new Queue(message.guild.id);
+            serverQueue = new Queue(client, {
+                guildId: message.guild.id,
+                voiceChannel: voiceChannel,
+                textChannel: message.channel
+            });
 
             try {
-                await serverQueue.connect(message, voiceChannel);
+                await serverQueue.connect();
             } catch {
-                message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+                serverQueue.destroy();
+                return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
 
-            client.queues.set(message.guild.id, serverQueue);
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         }
 
         // Create query and query type
         const query = args.join(" ");
-        const queryType = resolveQueryType(query);
+        const queryType = Util.resolveQueryType(query);
 
-        // Search message
+        // Searching message
         let searchEmoji;
         if (queryType.includes("youtube")) searchEmoji = client.emotes.youtube;
         if (queryType.includes("soundcloud")) searchEmoji = client.emotes.soundcloud;
         if (queryType.includes("spotify")) searchEmoji = client.emotes.spotify;
-
         message.channel.send(searchEmoji + " **Searching...** :mag_right: `" + query + "`");
 
         // Search the users query
-        const res = await search(query, message.author, queryType);
-
-        if (res.track) {
+        const res = await serverQueue.search(query, { queryType: queryType, requester: message.author });
+        if (res.loadType === "TRACK_LOADED") {
             if (serverQueue.tracks.length > 0) {
-                serverQueue.tracks.push(res.track);
-                message.channel.send({ embeds: [buildTrack(client, serverQueue, res.track)] });
+                serverQueue.tracks.push(res.tracks[0]);
+                // Added to queue message
             } else {
-                serverQueue.tracks.push(res.track);
-                const currentTrack = await player(message, serverQueue.tracks[0]);
-                message.channel.send(buildNowPlaying(client, serverQueue, currentTrack));
+                serverQueue.tracks.push(res.tracks[0]);
+                await serverQueue.play();
             }
-        } else if (res.playlist) {
+        } else if (res.loadType === "PLAYLIST_LOADED") {
             if (serverQueue.tracks.length > 0) {
-                serverQueue.tracks.push(...res.playlist.tracks);
+                serverQueue.tracks.push(...res.tracks);
+                // Added to queue message
             } else {
-                serverQueue.tracks.push(...res.playlist.tracks);
-                await player(message, serverQueue.tracks[0]);
+                serverQueue.tracks.push(...res.tracks);
+                // Added to queue message
+                await serverQueue.play();
             }
-
-            message.channel.send({ embeds: [buildPlaylist(client, serverQueue, res.playlist)] });
-        } else {
-            if (res === ErrorStatusCodes.INVALID_LINK) return message.channel.send(client.emotes.error + " **Could not find that link**");
-            if (res === ErrorStatusCodes.NO_RESULTS) return message.channel.send(client.emotes.error + " **No results found on YouTube for** `" + query + "`");
-            if (res === ErrorStatusCodes.UNKNOWN_ERROR) return message.channel.send(client.emotes.error + " **An error occurred while searching** `" + query + "`");
-        }
+        } else if (res.loadType === "NO_MATCHES") return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
+        else if (res.loadType === "LOAD_FAILED") return message.channel.send(client.emotes.error + " **An error occurred while searching for `" + query + "`");
     },
 
     slashCommand: {

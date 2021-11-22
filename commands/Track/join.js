@@ -1,4 +1,4 @@
-const Queue = require("../../src/constructors/Queue");
+const { Queue } = require("../../src/Queue");
 
 module.exports = {
     name: "join",
@@ -19,20 +19,25 @@ module.exports = {
 
         // Different joining systems in case connecting the queue takes a long time
         if (!serverQueue) {
-            serverQueue = new Queue(message.guild.id);
+            serverQueue = new Queue(client, {
+                guildId: message.guild.id,
+                voiceChannel: voiceChannel,
+                textChannel: message.channel
+            });
 
             try {
-                await serverQueue.connect(message, voiceChannel);
+                await serverQueue.connect();
             } catch {
+                serverQueue.destroy();
                 return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
 
-            client.queues.set(message.guild.id, serverQueue);
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         } else {
             try {
-                await serverQueue.connect(message, voiceChannel);
+                await serverQueue.connect(voiceChannel);
             } catch {
+                serverQueue.destroy();
                 return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
 
@@ -44,34 +49,7 @@ module.exports = {
         options: [],
 
         async execute(client, interaction, args) {
-            let serverQueue = client.queues.get(interaction.guild.id);
-            const voiceChannel = interaction.member.voice.channel;
 
-            if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command**");
-
-            interaction.deferReply();
-
-            // Different joining systems in case connecting the queue takes a long time
-            if (!serverQueue) {
-                serverQueue = new Queue(interaction.guild.id);
-
-                try {
-                    await serverQueue.connect(interaction, voiceChannel);
-                } catch {
-                    return interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
-                }
-
-                client.queues.set(interaction.guild.id, serverQueue);
-                interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
-            } else {
-                try {
-                    await serverQueue.connect(interaction, voiceChannel);
-                } catch {
-                    return interaction.followUp(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
-                }
-
-                interaction.followUp(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
-            }
         }
     }
 }

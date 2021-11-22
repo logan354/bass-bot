@@ -3,22 +3,37 @@ const YouTube = require("youtube-sr").default;
 const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
 
-const { ErrorStatusCodes } = require("../utils/types");
-const { formatDuration } = require("../utils/formats");
+const { LoadType, Util } = require("./Utils");
 
 /**
- * Searchs for the query on Youtube, Spotify or Soundcloud
- * @param {string} query User query
- * @param {Object} user Discord.js user object
- * @param {string} queryType Search query type
- * @returns {Object|string}
+ * @typedef SearchOptions
+ * @property {string} queryType - Search query type
+ * @property {Object} requester - User who requested the search
  */
-async function search(query, user, queryType) {
+
+const defaultSearchEngineOptions = {
+    queryType: "auto",
+    requester: "Unknown"
+}
+
+/**
+ * Searches for the query on Youtube, Spotify or Soundcloud
+ * @param {string} query 
+ * @param {SearchOptions} options 
+ * @returns {SearchResult}
+ */
+async function searchEngine(query, options = defaultSearchEngineOptions) {
+    if (options.queryType === "auto") options.queryType = Util.resolveQueryType(query);
     try {
-        switch (queryType) {
+        switch (options.queryType) {
             case "youtube-video": {
                 const data = await ytdl.getInfo(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const track = {
                     title: data.videoDetails.title,
@@ -26,9 +41,9 @@ async function search(query, user, queryType) {
                     streamURL: data.videoDetails.video_url,
                     thumbnail: data.videoDetails.thumbnails[0].url,
                     duration: parseInt(data.videoDetails.lengthSeconds * 1000),
-                    durationFormatted: formatDuration(data.videoDetails.lengthSeconds * 1000),
+                    durationFormatted: Util.formatDuration(data.videoDetails.lengthSeconds * 1000),
                     channel: data.videoDetails.author.name,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     isFromPlaylist: false,
                     isLive: data.videoDetails.isLiveContent,
                     source: "youtube"
@@ -39,12 +54,22 @@ async function search(query, user, queryType) {
                     track.isLive = true;
                 }
 
-                return { track: track, playlist: null }
+                return {
+                    loadType: LoadType.TRACK_LOADED,
+                    exception: null,
+                    tracks: [track],
+                    playlist: null
+                }
             }
 
             case "youtube-playlist": {
                 const data = await YouTube.getPlaylist(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const playlist = {
                     title: data.title,
@@ -54,7 +79,7 @@ async function search(query, user, queryType) {
                     duration: null,
                     durationFormatted: null,
                     channel: data.channel.name,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     source: "youtube"
                 }
 
@@ -69,7 +94,7 @@ async function search(query, user, queryType) {
                         duration: parseInt(item.duration),
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        requestedBy: user,
+                        requestedBy: options.requester,
                         isFromPlaylist: true,
                         isLive: item.live,
                         source: "youtube"
@@ -83,12 +108,22 @@ async function search(query, user, queryType) {
                     playlist.tracks.push(track);
                 }
 
-                return { track: null, playlist: playlist }
+                return {
+                    loadType: LoadType.PLAYLIST_LOADED,
+                    exception: null,
+                    tracks: [playlist.tracks],
+                    playlist: playlist
+                }
             }
 
             case "spotify-song": {
                 const data = await spotify.getData(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const track = {
                     title: data.name,
@@ -96,22 +131,33 @@ async function search(query, user, queryType) {
                     streamURL: data.external_urls.spotify,
                     thumbnail: data.album.images[0].url,
                     duration: parseInt(data.duration_ms),
-                    durationFormatted: formatDuration(data.duration_ms),
+                    durationFormatted: Util.formatDuration(data.duration_ms),
                     channel: data.artists[0].name,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     isFromPlaylist: false,
                     isLive: false,
                     source: "spotify"
                 }
 
                 track.title = track.channel + " - " + track.title;
-                return { track: track, playlist: null }
+
+                return {
+                    loadType: LoadType.TRACK_LOADED,
+                    exception: null,
+                    tracks: [track],
+                    playlist: null
+                }
             }
 
             case "spotify-album":
             case "spotify-playlist": {
                 const data = await spotify.getData(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const playlist = {
                     title: data.name,
@@ -121,7 +167,7 @@ async function search(query, user, queryType) {
                     duration: null,
                     durationFormatted: null,
                     channel: data.owner.display_name,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     source: "spotify"
                 }
 
@@ -134,9 +180,9 @@ async function search(query, user, queryType) {
                         streamURL: item.track.external_urls.spotify,
                         thumbnail: item.track.album.images[0].url,
                         duration: parseInt(item.track.duration_ms),
-                        durationFormatted: formatDuration(item.track.duration_ms),
+                        durationFormatted: Util.formatDuration(item.track.duration_ms),
                         channel: item.track.artists[0].name,
-                        requestedBy: user,
+                        requestedBy: options.requester,
                         isFromPlaylist: true,
                         isLive: false,
                         source: "spotify"
@@ -146,12 +192,22 @@ async function search(query, user, queryType) {
                     playlist.tracks.push(track);
                 }
 
-                return { track: null, playlist: playlist }
+                return {
+                    loadType: LoadType.PLAYLIST_LOADED,
+                    exception: null,
+                    tracks: [playlist.tracks],
+                    playlist: playlist
+                }
             }
 
             case "soundcloud-song": {
                 const data = await scdl.getInfo(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const track = {
                     title: data.title,
@@ -159,20 +215,30 @@ async function search(query, user, queryType) {
                     streamURL: data.permalink_url,
                     thumbnail: data.artwork_url,
                     duration: parseInt(data.duration),
-                    durationFormatted: formatDuration(data.duration),
+                    durationFormatted: Util.formatDuration(data.duration),
                     channel: data.user.username,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     isFromPlaylist: false,
                     isLive: false,
                     source: "soundcloud"
                 }
 
-                return { track: track, playlist: null }
+                return {
+                    loadType: LoadType.TRACK_LOADED,
+                    exception: null,
+                    tracks: [track],
+                    playlist: null
+                }
             }
 
             case "soundcloud-playlist": {
                 const data = await scdl.getSetInfo(query);
-                if (!data) return ErrorStatusCodes.INVALID_LINK;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const playlist = {
                     title: data.title,
@@ -182,7 +248,7 @@ async function search(query, user, queryType) {
                     duration: null,
                     durationFormatted: null,
                     channel: data.user.username,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     source: "soundcloud"
                 }
 
@@ -195,9 +261,9 @@ async function search(query, user, queryType) {
                         streamURL: item.permalink_url,
                         thumbnail: item.artwork_url,
                         duration: parseInt(item.duration),
-                        durationFormatted: formatDuration(item.duration),
+                        durationFormatted: Util.formatDuration(item.duration),
                         channel: item.user.username,
-                        requestedBy: user,
+                        requestedBy: options.requester,
                         isFromPlaylist: true,
                         isLive: false,
                         source: "soundcloud"
@@ -206,12 +272,22 @@ async function search(query, user, queryType) {
                     playlist.tracks.push(track);
                 }
 
-                return { track: null, playlist: playlist }
+                return {
+                    loadType: LoadType.PLAYLIST_LOADED,
+                    exception: null,
+                    tracks: [playlist.tracks],
+                    playlist: playlist
+                }
             }
 
-            case "youtube-video-keywords": {
+            case "youtube-video-search": {
                 const data = await YouTube.searchOne(query);
-                if (!data) return ErrorStatusCodes.NO_RESULTS;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const track = {
                     title: data.title,
@@ -221,7 +297,7 @@ async function search(query, user, queryType) {
                     duration: parseInt(data.duration),
                     durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
-                    requestedBy: user,
+                    requestedBy: options.requester,
                     isFromPlaylist: false,
                     isLive: data.live,
                     source: "youtube"
@@ -232,12 +308,22 @@ async function search(query, user, queryType) {
                     track.isLive = true;
                 }
 
-                return { track: track, playlist: null }
+                return {
+                    loadType: LoadType.TRACK_LOADED,
+                    exception: null,
+                    tracks: [track],
+                    playlist: null
+                }
             }
 
-            case "custom": {
+            case "youtube-search": {
                 const data = await YouTube.search(query, { limit: 10 });
-                if (!data) return ErrorStatusCodes.NO_RESULTS;
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
 
                 const res = [];
                 const list = data;
@@ -265,13 +351,60 @@ async function search(query, user, queryType) {
                     res.push(track);
                 }
 
-                return res;
+                return SearchResult = {
+                    loadType: LoadType.SEARCH_RESULT,
+                    exception: null,
+                    tracks: [res],
+                    playlist: null
+                }
+            }
+
+            case "soundcloud-search": {
+                throw new RangeError("Soundcloud search not supported");
             }
         }
-    } catch (ex) {
-        console.log(ex);
-        return ErrorStatusCodes.UNKNOWN_ERROR;
+    } catch (error) {
+        return {
+            loadType: LoadType.LOAD_FAILED,
+            exception: error,
+            tracks: [],
+            playlist: null
+        }
     }
 }
 
-module.exports = { search }
+/**
+ * @typedef Track
+ * @property {string} title - The title of the track
+ * @property {string} url - The url of the track
+ * @property {string} streamURL - The stream url of the track
+ * @property {string} thumbnail - The thumbnail of the track
+ * @property {string|number|null} duration - The duration of the track
+ * @property {string|null} durationFormatted - The formatted duration of the track
+ * @property {string} channel - The channel this track is from
+ * @property {object} requestedBy - The user that requested this track
+ * @property {boolean} isLive - If the track is live
+ * @property {string} source - The source this track is from
+ */
+
+/**
+ * @typedef Playlist
+ * @property {string} title - The title of the playlist
+ * @property {string} url - The url of the playlist
+ * @property {string} thumbnail - The thumbnail of the playlist
+ * @property {string|number|null} duration - The duration of the playlist
+ * @property {string|null} durationFormatted - The formatted duration of the playlist
+ * @property {string} channel - The channel this playlist is from
+ * @property {object} requestedBy - The user that requested this playlist
+ * @property {string} source - The source this playlist is from
+*/
+
+/**
+ * @typedef SearchResult
+ * @property {LoadType} loadType
+ * @property {Track[]} tracks
+ * @property {Playlist|null} playlist
+ * @property {object} exception
+ */
+
+module.exports = { searchEngine }
