@@ -63,8 +63,11 @@ class Queue {
         /** Volume of this queue */
         this.volume = 100;
 
-        /** Additional stream time of this queue */
-        this.additionalStreamTime = 0;
+        /** Filters the queue is using */
+        this.filters = {
+            seek: null,
+            FFmpeg: []
+        }
     }
 
     /**
@@ -103,12 +106,37 @@ class Queue {
             throw error;
         }
 
-        if (!this.streamDispatcher) this.streamDispatcher = new StreamDispatcher(connection, this);
+        if (!this.streamDispatcher) {
+            this.streamDispatcher = new StreamDispatcher(connection, this);
 
-        this.streamDispatcher.connection.on("error", (error) => {
-            console.log(error);
-            this.textChannel.send(this.client.emotes.error + " **An error occurred with the connection to** <#" + this.voiceChannel.id + ">");
-        });
+            // Listen for connection error
+            this.streamDispatcher.connection.on("error", (error) => {
+                console.log(error);
+                this.textChannel.send(this.client.emotes.error + " **An error occurred with the connection to** <#" + this.voiceChannel.id + ">");
+            });
+
+            // Listen for the audio resource start
+            this.streamDispatcher.on("start", (metadata) => {
+                if (!this.filters.seek && this.filters.FFmpeg.length === 0) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
+            });
+
+            // Listen for audio resource to finish
+            this.streamDispatcher.on("finish", (metadata) => {
+                this.skiplist = [];
+                this.filters.seek = null;
+                this.filters.FFmpeg = [];
+
+                if (this.loop === true) {
+                    this.play(this.tracks[0]);
+                    const shiffed = this.tracks.shift();
+                    this.tracks.push(shiffed);
+                    this.play(this.tracks[0]);
+                } else {
+                    this.tracks.shift();
+                    this.play(this.tracks[0]);
+                }
+            });
+        }
 
         this.voiceChannel = channel;
         this.state = State.CONNECTED;
@@ -158,7 +186,8 @@ class Queue {
             quality: "highestaudio",
             highWaterMark: 1 << 25,
             opusEncoded: false,
-            seek: options.seek / 1000
+            seek: options.seek / 1000,
+            encoderArgs: options.FFmpeg
         }
 
         // Download readable stream
@@ -167,7 +196,8 @@ class Queue {
                 const streamData = await YouTube.searchOne(track.title);
                 if (!streamData) {
                     this.skiplist = [];
-                    this.additionalStreamTime = 0;
+                    this.filters.seek = null;
+                    this.filters.FFmpeg = [];
                     this.tracks.shift();
                     this.play(this.tracks[0]);
                 }
@@ -188,11 +218,13 @@ class Queue {
             stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), streamOptions);
         }
 
+        // Listen for stream error
         stream.on("error", (error) => {
             // HTTP request destroyed, retry request
             if (error.message === "Status code: 403") {
                 this.skiplist = [];
-                this.additionalStreamTime = 0;
+                this.filters.seek = null;
+                this.filters.FFmpeg = [];
                 this.play(this.tracks[0]);
                 return;
             }
@@ -202,7 +234,8 @@ class Queue {
                 this.textChannel.send(this.client.emotes.error + " **An error occurred while attempting to play** " + "`" + track.title + "`");
 
                 this.skiplist = [];
-                this.additionalStreamTime = 0;
+                this.filters.seek = null;
+                this.filters.FFmpeg = [];
                 this.tracks.shift();
                 this.play(this.tracks[0]);
                 return;
@@ -216,8 +249,9 @@ class Queue {
             inlineVolume: true
         });
 
-
-        if (options.seek) this.additionalStreamTime = options.seek;
+        // Attach filters to the queue 
+        if (options.seek) this.filters.seek = options.seek;
+        if (options.FFmpeg) this.filters.FFmpeg = options.FFmpeg;
 
         // Play audio resource across audio player
         this.streamDispatcher.audioPlayer.play(resource);
@@ -226,11 +260,13 @@ class Queue {
 
 /**
  * @typedef PlayOptions
- * @property {number} seek - Amount in seconds to seek the track
+ * @property {number|null} seek - Amount in seconds to seek the track
+ * @property {array} FFmpeg - FFmpeg filters if any
  */
 
 const defaultPlayOptions = {
-    seek: 0
+    seek: null,
+    FFmpeg: [],
 }
 
 module.exports = { Queue }

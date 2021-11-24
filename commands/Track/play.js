@@ -39,6 +39,7 @@ module.exports = {
                 return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
 
+            client.queues.set(message.guild.id, serverQueue);
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         }
 
@@ -73,7 +74,7 @@ module.exports = {
                 await serverQueue.play();
             }
         } else if (res.loadType === "NO_MATCHES") return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === "LOAD_FAILED") return message.channel.send(client.emotes.error + " **An error occurred while searching for `" + query + "`");
+        else if (res.loadType === "LOAD_FAILED") return message.channel.send(client.emotes.error + " **An error occurred while searching for** `" + query + "`");
     },
 
     slashCommand: {

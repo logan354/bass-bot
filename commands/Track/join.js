@@ -32,6 +32,7 @@ module.exports = {
                 return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
 
+            client.queues.set(message.guild.id, serverQueue);
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         } else {
             try {

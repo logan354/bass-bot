@@ -1,5 +1,5 @@
 const { EventEmitter } = require("events");
-const { createAudioPlayer, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
+const { createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
 
 const StreamDispatcherEvents = {
     START: "start",
@@ -16,7 +16,11 @@ class StreamDispatcher extends EventEmitter {
         super();
 
         this.connection = connection;
-        this.audioPlayer = createAudioPlayer();
+        this.audioPlayer = createAudioPlayer({
+            behaviors: {
+                noSubscriber: NoSubscriberBehavior.Pause,
+            }
+        });
         this.queue = queue;
 
         this.connection.on("stateChange", async (_, newState) => {
@@ -78,16 +82,16 @@ class StreamDispatcher extends EventEmitter {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                 // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                 // The queue is then processed to start playing the next track, if one is available.
-                this.emit("finish", oldState);
-            } else if (newState.status === AudioPlayerStatus.Playing) {
+                this.emit("finish", oldState.resource.metadata);
+            } else if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.AutoPaused) {
                 // If the Playing state has been entered, then a new track has started playback.
-                this.emit("start", newState);
+                this.emit("start", newState.resource.metadata);
             }
         });
 
         this.audioPlayer.on("error", (error) => {
             console.log(error);
-            this.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.voiceChannel.id + ">");
+            this.queue.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.voiceChannel.id + ">");
         });
         this.connection.subscribe(this.audioPlayer);
     }
