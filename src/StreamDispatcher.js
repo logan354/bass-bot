@@ -83,7 +83,7 @@ class StreamDispatcher extends EventEmitter {
                 // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                 // The queue is then processed to start playing the next track, if one is available.
                 this.emit("finish", oldState.resource.metadata);
-            } else if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.AutoPaused) {
+            } else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
                 // If the Playing state has been entered, then a new track has started playback.
                 this.emit("start", newState.resource.metadata);
             }
@@ -91,8 +91,9 @@ class StreamDispatcher extends EventEmitter {
 
         this.audioPlayer.on("error", (error) => {
             console.log(error);
-            this.queue.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.voiceChannel.id + ">");
+            this.queue.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.queue.voiceChannel.id + ">");
         });
+        
         this.connection.subscribe(this.audioPlayer);
     }
 
