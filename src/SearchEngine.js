@@ -111,7 +111,7 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
                 return {
                     loadType: LoadType.PLAYLIST_LOADED,
                     exception: null,
-                    tracks: [playlist.tracks],
+                    tracks: playlist.tracks,
                     playlist: playlist
                 }
             }
@@ -195,7 +195,7 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
                 return {
                     loadType: LoadType.PLAYLIST_LOADED,
                     exception: null,
-                    tracks: [playlist.tracks],
+                    tracks: playlist.tracks,
                     playlist: playlist
                 }
             }
@@ -275,7 +275,7 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
                 return {
                     loadType: LoadType.PLAYLIST_LOADED,
                     exception: null,
-                    tracks: [playlist.tracks],
+                    tracks: playlist.tracks,
                     playlist: playlist
                 }
             }
@@ -379,8 +379,8 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
  * @property {string} url - The url of the track
  * @property {string} streamURL - The stream url of the track
  * @property {string} thumbnail - The thumbnail of the track
- * @property {string|number|null} duration - The duration of the track
- * @property {string|null} durationFormatted - The formatted duration of the track
+ * @property {string|number} duration - The duration of the track
+ * @property {string} durationFormatted - The formatted duration of the track
  * @property {string} channel - The channel this track is from
  * @property {object} requestedBy - The user that requested this track
  * @property {boolean} isLive - If the track is live
@@ -404,7 +404,7 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
  * @property {LoadType} loadType
  * @property {Track[]} tracks
  * @property {Playlist|null} playlist
- * @property {object} exception
+ * @property {object|null} exception
  */
 
 module.exports = { searchEngine }
