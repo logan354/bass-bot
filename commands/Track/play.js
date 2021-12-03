@@ -1,5 +1,5 @@
 const { Queue } = require("../../src/Queue");
-const { Util } = require("../../src/Utils");
+const { Builders, LoadType, Util } = require("../../src/Utils");
 
 module.exports = {
     name: "play",
@@ -24,7 +24,6 @@ module.exports = {
 
         if (!args[0]) return resume.execute(client, message, args);
 
-        // Create queue and connect the queue
         if (!serverQueue) {
             serverQueue = new Queue(client, {
                 guildId: message.guild.id,
@@ -56,25 +55,26 @@ module.exports = {
 
         // Search the users query
         const res = await serverQueue.search(query, { queryType: queryType, requester: message.author });
-        if (res.loadType === "TRACK_LOADED") {
+        if (res.loadType === LoadType.TRACK_LOADED) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(res.tracks[0]);
-                // Added to queue message
+                console.log(serverQueue.tracks);
+                message.channel.send({ embeds: [Builders.buildTrack(res.tracks[0], serverQueue)] });
             } else {
                 serverQueue.tracks.push(res.tracks[0]);
                 await serverQueue.play();
             }
-        } else if (res.loadType === "PLAYLIST_LOADED") {
+        } else if (res.loadType === LoadType.PLAYLIST_LOADED) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(...res.tracks);
-                // Added to queue message
+                message.channel.send({ embeds: [Builders.buildPlaylist(res.tracks, res.playlist, serverQueue)] });
             } else {
                 serverQueue.tracks.push(...res.tracks);
-                // Added to queue message
+                message.channel.send({ embeds: [Builders.buildPlaylist(res.tracks, res.playlist, serverQueue)] });
                 await serverQueue.play();
             }
-        } else if (res.loadType === "NO_MATCHES") return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === "LOAD_FAILED") return message.channel.send(client.emotes.error + " **An error occurred while searching for** `" + query + "`");
+        } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
+        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **An error occurred while searching for** `" + query + "`");
     },
 
     slashCommand: {
