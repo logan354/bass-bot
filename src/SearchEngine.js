@@ -1,4 +1,3 @@
-const ytdl = require("discord-ytdl-core");
 const YouTube = require("youtube-sr").default;
 const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
@@ -6,28 +5,17 @@ const scdl = require("soundcloud-downloader").default;
 const { LoadType, Util } = require("./Utils");
 
 /**
- * @typedef SearchOptions
- * @property {string} queryType - Search query type
- * @property {Object} requester - User who requested the search
- */
-
-const defaultSearchEngineOptions = {
-    queryType: "auto",
-    requester: "Unknown"
-}
-
-/**
  * Searches for the query on Youtube, Spotify or Soundcloud
  * @param {string} query 
- * @param {SearchOptions} options 
+ * @param {SearchEngineOptions} options 
  * @returns {SearchResult}
  */
-async function searchEngine(query, options = defaultSearchEngineOptions) {
+async function searchEngine(query, options = defaultSearchEngineoptions) {
     if (options.queryType === "auto") options.queryType = Util.resolveQueryType(query);
     try {
         switch (options.queryType) {
             case "youtube-video": {
-                const data = await ytdl.getInfo(query);
+                const data = await YouTube.getVideo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
                     exception: null,
@@ -36,16 +24,16 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
                 }
 
                 const track = {
-                    title: data.videoDetails.title,
-                    url: data.videoDetails.video_url,
-                    streamURL: data.videoDetails.video_url,
-                    thumbnail: data.videoDetails.thumbnails[0].url,
-                    duration: parseInt(data.videoDetails.lengthSeconds * 1000),
-                    durationFormatted: Util.formatDuration(data.videoDetails.lengthSeconds * 1000),
-                    channel: data.videoDetails.author.name,
+                    title: data.title,
+                    url: data.url,
+                    streamURL: data.url,
+                    thumbnail: data.thumbnail.url,
+                    duration: parseInt(data.duration),
+                    durationFormatted: data.durationFormatted,
+                    channel: data.channel.name,
                     requestedBy: options.requester,
                     isFromPlaylist: false,
-                    isLive: data.videoDetails.isLiveContent,
+                    isLive: data.live,
                     source: "youtube"
                 }
 
@@ -364,6 +352,7 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
             }
         }
     } catch (error) {
+        console.log(error)
         return {
             loadType: LoadType.LOAD_FAILED,
             exception: error,
@@ -371,6 +360,21 @@ async function searchEngine(query, options = defaultSearchEngineOptions) {
             playlist: null
         }
     }
+}
+
+/**
+ * @typedef SearchEngineOptions
+ * @property {string} queryType - Search query type
+ * @property {object|string} requester - User who requested the search
+ */
+
+/**
+ * Default options for the Search Engine
+ * @type {SearchEngineOptions}
+ */
+const defaultSearchEngineoptions = {
+    queryType: "auto",
+    requester: "Unknown"
 }
 
 /**
