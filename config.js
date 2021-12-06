@@ -7,7 +7,10 @@ module.exports = {
         // Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot+applications.commands&permissions=3501128",
 
-        // Suporrt server
+        // Slogan
+        slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
+
+        // Support server
         support_server: "Unknown",
 
         // Logos

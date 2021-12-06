@@ -1,11 +1,6 @@
 const { EventEmitter } = require("events");
 const { createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
 
-const StreamDispatcherEvents = {
-    START: "start",
-    FINISH: "finish"
-}
-
 class StreamDispatcher extends EventEmitter {
     /**
      * Stream dispatcher constructor
@@ -93,7 +88,7 @@ class StreamDispatcher extends EventEmitter {
             console.log(error);
             this.queue.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.queue.voiceChannel.id + ">");
         });
-        
+
         this.connection.subscribe(this.audioPlayer);
     }
 
@@ -106,4 +101,16 @@ class StreamDispatcher extends EventEmitter {
     }
 }
 
-module.exports = { StreamDispatcher, StreamDispatcherEvents }
+/**
+ * Emitted when the audio player starts playing
+ * @event StreamDispatcher#start
+ * @param {import("./SearchEngine").Track} metadata  
+ */
+
+/**
+ * Emitted when the audio player finishes playing
+ * @event StreamDispatcher#finish
+ * @param {import("./SearchEngine").Track} metadata
+ */
+
+module.exports = { StreamDispatcher }

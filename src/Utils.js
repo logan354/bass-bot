@@ -1,8 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 
 const QueryTypes = {
-    // Auto
-    AUTO: "auto",
     // Playlists
     YOUTUBE_PLAYLIST: "youtube-playlist",
     SPOTIFY_ALBUM: "spotify-album",
@@ -139,6 +137,8 @@ class Util {
 }
 
 class Builders {
+    // No color emebeds hex color: 2f3136
+
     /**
      * Builds track embeds
      * @param {import("./SearchEngine").Track} track
@@ -147,7 +147,7 @@ class Builders {
      */
     static buildTrack(track, queue) {
         const embed = new MessageEmbed()
-            .setColor("2f3136")
+            .setColor("Black")
             .setAuthor("Added to queue", queue.client.emotes.player)
             .setDescription(`**[${track.title}](${track.url})**`)
             .setThumbnail(track.thumbnail)
@@ -185,7 +185,7 @@ class Builders {
      */
     static buildPlaylist(tracks, playlist, queue) {
         const embed = new MessageEmbed()
-            .setColor("2f3136")
+            .setColor("Black")
             .setAuthor("Playlist added to queue", queue.client.emotes.player)
             .setDescription(`**[${playlist.title}](${playlist.url})**`)
             .setThumbnail(playlist.thumbnail)
