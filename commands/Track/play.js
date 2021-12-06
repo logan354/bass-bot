@@ -58,7 +58,6 @@ module.exports = {
         if (res.loadType === LoadType.TRACK_LOADED) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(res.tracks[0]);
-                console.log(serverQueue.tracks);
                 message.channel.send({ embeds: [Builders.buildTrack(res.tracks[0], serverQueue)] });
             } else {
                 serverQueue.tracks.push(res.tracks[0]);

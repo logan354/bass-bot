@@ -1,4 +1,7 @@
 const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType } = require("@discordjs/voice");
+const { FFmpeg } = require("prism-media");
+
+const play = require("play-dl");
 const ytdl = require("discord-ytdl-core");
 const YouTube = require("youtube-sr").default;
 const scdl = require("soundcloud-downloader").default;
@@ -7,26 +10,13 @@ const { searchEngine } = require("./SearchEngine");
 const { StreamDispatcher } = require("./StreamDispatcher");
 const { State } = require("./Utils");
 
-/**
- * @typedef QueueOptions
- * @property {string} guildId - Discord guild id
- * @property {object} voiceChannel - Discord.js voice or stage channel
- * @property {object} textChannel - Discord.js text channel
- */
-
-const defaultQueueOptions = {
-    guildId: null,
-    voiceChannel: null,
-    textChannel: null
-}
-
 class Queue {
     /**
      * Queue constructor
      * @param {object} client 
      * @param {QueueOptions} options 
      */
-    constructor(client, options = defaultQueueOptions) {
+    constructor(client, options) {
         /** Client bound to this queue */
         this.client = client
 
@@ -34,13 +24,13 @@ class Queue {
         this.state = State.DISCONNECTED;
 
         /** Guild id of this queue */
-        this.guildId = options.guildId;
+        this.guildId = null;
 
         /** Voice channel bound to this queue */
-        this.voiceChannel = options.voiceChannel;
+        this.voiceChannel = null;
 
         /** Text channel bound to this queue */
-        this.textChannel = options.textChannel;
+        this.textChannel = null;
 
         /** Stream dispatcher of this queue */
         this.streamDispatcher = null;
@@ -63,17 +53,18 @@ class Queue {
         /** Volume of this queue */
         this.volume = 100;
 
-        /** Filters the queue is using */
-        this.filters = {
-            seek: null,
-            FFmpeg: []
-        }
+        /** Additional stream time of this queue */
+        this.addtionalStreamTime = null;
+
+        if (options.guildId) this.guildId = options.guildId;
+        if (options.voiceChannel) this.voiceChannel = options.voiceChannel;
+        if (options.textChannel) this.textChannel = options.textChannel;
     }
 
     /**
      * Shortcut to the SearchEngine on the queue itself.
      * @param {string} query 
-     * @param {import("./SearchEngine").SearchOptions} options 
+     * @param {import("./SearchEngine").SearchEngineOptions} options 
      * @returns {import("./SearchEngine").SearchResult}
      */
     async search(query, options) {
@@ -86,11 +77,11 @@ class Queue {
      * @returns {object} 
      */
     async connect(channel = this.voiceChannel) {
-        if (!channel) throw new RangeError("Failed to find a voice channel to connect to.");
+        if (!channel) throw new RangeError("No voice channel has been set.");
         this.state = State.CONNECTING;
 
         /**
-         * Here, we try to establish a connection to a voice channel. If we're already connected
+         * Here, we try to establish a connection to a voice channel. If we"re already connected
          * to this voice channel, @discordjs/voice will just return the existing connection for us!
          */
         const connection = joinVoiceChannel({
@@ -110,24 +101,24 @@ class Queue {
             this.streamDispatcher = new StreamDispatcher(connection, this);
 
             // Listen for connection error
-            this.streamDispatcher.connection.on("error", (error) => {
+            connection.on("error", (error) => {
                 console.log(error);
                 this.textChannel.send(this.client.emotes.error + " **An error occurred with the connection to** <#" + this.voiceChannel.id + ">");
             });
 
             // Listen for the audio resource start
             this.streamDispatcher.on("start", (metadata) => {
-                if (!this.filters.seek && this.filters.FFmpeg.length === 0) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
+                if (!this.addtionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
             });
 
             // Listen for audio resource to finish
             this.streamDispatcher.on("finish", (metadata) => {
                 this.skiplist = [];
-                this.filters.seek = null;
-                this.filters.FFmpeg = [];
+                this.addtionalStreamTime = null;
 
-                if (this.loop === true) {
+                if (this.loop) {
                     this.play(this.tracks[0]);
+                } else if (this.loopQueue) {
                     const shiffed = this.tracks.shift();
                     this.tracks.push(shiffed);
                     this.play(this.tracks[0]);
@@ -151,7 +142,7 @@ class Queue {
         if (this.voiceChannel === null) return this;
         this.state = State.DISCONNECTING;
 
-        if (!this.streamDispatcher || this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
+        if (this.streamDispatcher || this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
 
         this.voiceChannel = null;
         this.state = State.DISCONNECTED;
@@ -169,35 +160,23 @@ class Queue {
     }
 
     /**
-     * Creates readable and streams audio
+     * Create readable stream and plays it on the audio player
      * @param {import("./SearchEngine").Track} track 
-     * @param {PlayOptions} options 
+     * @param {number} seek
      */
-    async play(track = this.tracks[0], options = defaultPlayOptions) {
-        let stream;
+    async play(track = this.tracks[0], seek) {
+        if (!track) return;
 
-        if (!track) {
-            // Handle end cooldown
-            return;
-        }
+        let stream = null;
+        let streamType = null;
+        let bufferTimeout = 0;
 
-        let streamOptions = {
-            filter: track.isLive ? "audio" : "audioonly", // filter: audioonly does not work with livestreams
-            quality: "highestaudio",
-            highWaterMark: 1 << 25,
-            opusEncoded: false,
-            seek: options.seek / 1000,
-            encoderArgs: options.FFmpeg
-        }
-
-        // Download readable stream
         if (track.source === "youtube" || track.source === "spotify") {
             if (track.source === "spotify") {
                 const streamData = await YouTube.searchOne(track.title);
                 if (!streamData) {
                     this.skiplist = [];
-                    this.filters.seek = null;
-                    this.filters.FFmpeg = [];
+                    this.addtionalStreamTime = null;
                     this.tracks.shift();
                     this.play(this.tracks[0]);
                 }
@@ -213,60 +192,73 @@ class Queue {
                     track.isLive = true;
                 }
             }
-            stream = ytdl(track.streamURL, streamOptions);
+
+            const info = await play.video_info(track.streamURL);
+
+            if (seek && track.isLive === false) {
+                const FFMPEG_OPUS_ARGUMENTS = [
+                    "-analyzeduration",
+                    "0",
+                    "-loglevel",
+                    "0",
+                    "-acodec",
+                    "libopus",
+                    "-f",
+                    "opus",
+                    "-ar",
+                    "48000",
+                    "-ac",
+                    "2",
+                ];
+
+                const highestaudio = info.format[info.format.length - 1].url;
+
+                const final_args = [];
+
+                final_args.push("-ss", `${seek.toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+
+                final_args.push("-i", highestaudio);
+
+                final_args.push(...FFMPEG_OPUS_ARGUMENTS);
+
+                const ffmpeg_instance = new FFmpeg({
+                    args: final_args,
+                });
+
+                stream = ffmpeg_instance;
+                streamType = StreamType.OggOpus;
+            } else {
+                const play_instance = await play.stream_from_info(info);
+                stream = play_instance.stream;
+                streamType = play_instance.type;
+            }
         } else if (track.source === "soundcloud") {
-            stream = ytdl.arbitraryStream(await scdl.download(track.streamURL), streamOptions);
+            const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
+                opusEncoded: true,
+                seek: seek,
+            });
+
+            stream = ytdl_instance;
+            streamType = StreamType.Opus;
         }
 
-        // Listen for stream error
-        stream.on("error", (error) => {
-            // HTTP request destroyed, retry request
-            if (error.message === "Status code: 403") {
-                this.skiplist = [];
-                this.filters.seek = null;
-                this.filters.FFmpeg = [];
-                this.play(this.tracks[0]);
-                return;
-            }
-            // Unknown error, play the next track 
-            else {
-                console.log(error);
-                this.textChannel.send(this.client.emotes.error + " **An error occurred while attempting to play** " + "`" + track.title + "`");
-
-                this.skiplist = [];
-                this.filters.seek = null;
-                this.filters.FFmpeg = [];
-                this.tracks.shift();
-                this.play(this.tracks[0]);
-                return;
-            }
-        });
-
-        // Create audio resource for audio player
         const resource = createAudioResource(stream, {
-            inputType: StreamType.Raw,
+            inputType: streamType,
             metadata: track,
             inlineVolume: true
         });
 
-        // Attach filters to the queue 
-        if (options.seek) this.filters.seek = options.seek;
-        if (options.FFmpeg) this.filters.FFmpeg = options.FFmpeg;
-
-        // Play audio resource across audio player
-        this.streamDispatcher.audioPlayer.play(resource);
+        setTimeout(() => {
+            this.streamDispatcher.audioPlayer.play(resource);
+        }, bufferTimeout);
     }
 }
 
-/**
- * @typedef PlayOptions
- * @property {number|null} seek - Amount in seconds to seek the track
- * @property {array} FFmpeg - FFmpeg filters if any
- */
-
-const defaultPlayOptions = {
-    seek: null,
-    FFmpeg: [],
-}
-
 module.exports = { Queue }
+
+/**
+ * @typedef QueueOptions
+ * @property {string} guildId - Discord guild id
+ * @property {object} voiceChannel - Discord.js voice or stage channel
+ * @property {object} textChannel - Discord.js text channel
+ */
