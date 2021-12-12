@@ -54,11 +54,17 @@ class Queue {
         this.volume = 100;
 
         /** Additional stream time of this queue */
-        this.addtionalStreamTime = null;
+        this.additionalStreamTime = null;
+
+        if (this.client.queues.has(options.guildId)) {
+            return this.client.queues.get(options.guildId);
+        }
 
         if (options.guildId) this.guildId = options.guildId;
         if (options.voiceChannel) this.voiceChannel = options.voiceChannel;
         if (options.textChannel) this.textChannel = options.textChannel;
+
+        this.client.queues.set(options.guildId, this);
     }
 
     /**
@@ -77,7 +83,7 @@ class Queue {
      * @returns {object} 
      */
     async connect(channel = this.voiceChannel) {
-        if (!channel) throw new RangeError("No voice channel has been set.");
+        if (!channel) throw new Error("No voice channel has been set.");
         this.state = State.CONNECTING;
 
         /**
@@ -108,13 +114,13 @@ class Queue {
 
             // Listen for the audio resource start
             this.streamDispatcher.on("start", (metadata) => {
-                if (!this.addtionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
+                if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
             });
 
             // Listen for audio resource to finish
             this.streamDispatcher.on("finish", (metadata) => {
                 this.skiplist = [];
-                this.addtionalStreamTime = null;
+                this.additionalStreamTime = null;
 
                 if (this.loop) {
                     this.play(this.tracks[0]);
@@ -141,8 +147,8 @@ class Queue {
     disconnect() {
         if (this.voiceChannel === null) return this;
         this.state = State.DISCONNECTING;
-
-        if (this.streamDispatcher || this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
+        
+        if (this.streamDispatcher && this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
 
         this.voiceChannel = null;
         this.state = State.DISCONNECTED;
@@ -176,7 +182,7 @@ class Queue {
                 const streamData = await YouTube.searchOne(track.title);
                 if (!streamData) {
                     this.skiplist = [];
-                    this.addtionalStreamTime = null;
+                    this.additionalStreamTime = null;
                     this.tracks.shift();
                     this.play(this.tracks[0]);
                 }
@@ -195,11 +201,13 @@ class Queue {
 
             const info = await play.video_info(track.streamURL);
 
-            if (seek && track.isLive === false) {
+            if (seek) {
+                if (track.isLive) throw new Error("Cannot seek live tracks");
+
                 const FFMPEG_OPUS_ARGUMENTS = [
                     "-analyzeduration",
                     "0",
-                    "-loglevel",
+                    "-loglevel", 
                     "0",
                     "-acodec",
                     "libopus",
@@ -215,7 +223,7 @@ class Queue {
 
                 const final_args = [];
 
-                final_args.push("-ss", `${seek.toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+                final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
 
                 final_args.push("-i", highestaudio);
 
@@ -227,6 +235,8 @@ class Queue {
 
                 stream = ffmpeg_instance;
                 streamType = StreamType.OggOpus;
+
+                this.additionalStreamTime = seek;
             } else {
                 const play_instance = await play.stream_from_info(info);
                 stream = play_instance.stream;
@@ -235,7 +245,7 @@ class Queue {
         } else if (track.source === "soundcloud") {
             const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
                 opusEncoded: true,
-                seek: seek,
+                seek: seek / 1000,
             });
 
             stream = ytdl_instance;
@@ -251,6 +261,10 @@ class Queue {
         setTimeout(() => {
             this.streamDispatcher.audioPlayer.play(resource);
         }, bufferTimeout);
+
+        if (this.paused) {
+            this.streamDispatcher.audioPlayer.pause();
+        }
     }
 }
 

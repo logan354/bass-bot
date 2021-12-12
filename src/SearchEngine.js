@@ -32,7 +32,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
                     requestedBy: options.requester,
-                    isFromPlaylist: false,
                     isLive: data.live,
                     source: "youtube"
                 }
@@ -83,7 +82,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
                         requestedBy: options.requester,
-                        isFromPlaylist: true,
                         isLive: item.live,
                         source: "youtube"
                     }
@@ -122,7 +120,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     durationFormatted: Util.formatDuration(data.duration_ms),
                     channel: data.artists[0].name,
                     requestedBy: options.requester,
-                    isFromPlaylist: false,
                     isLive: false,
                     source: "spotify"
                 }
@@ -171,7 +168,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         durationFormatted: Util.formatDuration(item.track.duration_ms),
                         channel: item.track.artists[0].name,
                         requestedBy: options.requester,
-                        isFromPlaylist: true,
                         isLive: false,
                         source: "spotify"
                     }
@@ -206,7 +202,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     durationFormatted: Util.formatDuration(data.duration),
                     channel: data.user.username,
                     requestedBy: options.requester,
-                    isFromPlaylist: false,
                     isLive: false,
                     source: "soundcloud"
                 }
@@ -252,7 +247,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         durationFormatted: Util.formatDuration(item.duration),
                         channel: item.user.username,
                         requestedBy: options.requester,
-                        isFromPlaylist: true,
                         isLive: false,
                         source: "soundcloud"
                     }
@@ -286,7 +280,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
                     requestedBy: options.requester,
-                    isFromPlaylist: false,
                     isLive: data.live,
                     source: "youtube"
                 }
@@ -325,8 +318,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         duration: parseInt(item.duration),
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        requestedBy: message.author,
-                        isFromPlaylist: false,
+                        requestedBy: options.requester,
                         isLive: item.live,
                         source: "youtube"
                     }
@@ -342,7 +334,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 return SearchResult = {
                     loadType: LoadType.SEARCH_RESULT,
                     exception: null,
-                    tracks: [res],
+                    tracks: res,
                     playlist: null
                 }
             }
