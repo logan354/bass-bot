@@ -147,7 +147,7 @@ class Builders {
      */
     static buildTrack(track, queue) {
         const embed = new MessageEmbed()
-            .setColor("Black")
+            .setColor("BLACK")
             .setAuthor("Added to queue", queue.client.emotes.player)
             .setDescription(`**[${track.title}](${track.url})**`)
             .setThumbnail(track.thumbnail)
@@ -185,7 +185,7 @@ class Builders {
      */
     static buildPlaylist(tracks, playlist, queue) {
         const embed = new MessageEmbed()
-            .setColor("Black")
+            .setColor("BLACK")
             .setAuthor("Playlist added to queue", queue.client.emotes.player)
             .setDescription(`**[${playlist.title}](${playlist.url})**`)
             .setThumbnail(playlist.thumbnail)
