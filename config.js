@@ -15,7 +15,9 @@ module.exports = {
 
         // Logos
         logo: "https://cdn.discordapp.com/emojis/850649409334280202.png?v=1",
-        smallLogo: "https://cdn.discordapp.com/emojis/850228524736577576.png?v=1"
+        smallLogo: "https://cdn.discordapp.com/emojis/850228524736577576.png?v=1",
+
+        embedColor: "BLACK"
     },
 
     emojis: {
@@ -34,8 +36,18 @@ module.exports = {
         // Premium emojis
 
         // Queue emojis
+        loopQueue: ":repeat:",
+        shuffle: ":twisted_rightwards_arrows:",
+        clear: ":stop_button:",
 
         // Track emojis
+        disconnect: ":mailbox_with_no_mail:",
+        resume: ":play_pause:",
+        pause: ":pause_button:",
+        skip: ":track_next:",
+        loop: ":repeat_one:",
+        seek: ":fast_forward:",
+        volume: ":loud_sound:",
 
         // Utility emojis
         ping: ":signal_strength:",

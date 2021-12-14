@@ -1,5 +1,3 @@
-const { MessageEmbed } = require("discord.js");
-
 const QueryTypes = {
     // Playlists
     YOUTUBE_PLAYLIST: "youtube-playlist",
@@ -136,85 +134,6 @@ class Util {
     }
 }
 
-class Builders {
-    // No color emebeds hex color: 2f3136
-
-    /**
-     * Builds track embeds
-     * @param {import("./SearchEngine").Track} track
-     * @param {object} queue
-     * @returns {object}
-     */
-    static buildTrack(track, queue) {
-        const embed = new MessageEmbed()
-            .setColor("BLACK")
-            .setAuthor("Added to queue", queue.client.emotes.player)
-            .setDescription(`**[${track.title}](${track.url})**`)
-            .setThumbnail(track.thumbnail)
-            .setFields(
-                {
-                    name: "Channel",
-                    value: track.channel,
-                    inline: true
-                },
-                {
-                    name: "Song Duration",
-                    value: track.durationFormatted,
-                    inline: true
-                },
-                {
-                    name: "Position in queue",
-                    value: `${queue.tracks.length - 1}`,
-                    inline: true
-                },
-                {
-                    name: "\u200B",
-                    value: "**Requested by:** <@" + track.requestedBy + ">"
-                }
-            );
-
-        return embed;
-    }
-
-    /**
-     * Builds playlist embeds
-     * @param {import("./SearchEngine").Track[]} tracks
-     * @param {import("./SearchEngine").Playlist} playlist
-     * @param {object} queue
-     * @returns {object}
-     */
-    static buildPlaylist(tracks, playlist, queue) {
-        const embed = new MessageEmbed()
-            .setColor("BLACK")
-            .setAuthor("Playlist added to queue", queue.client.emotes.player)
-            .setDescription(`**[${playlist.title}](${playlist.url})**`)
-            .setThumbnail(playlist.thumbnail)
-            .setFields(
-                {
-                    name: "Channel",
-                    value: playlist.channel,
-                    inline: true
-                },
-                {
-                    name: "Enqueued",
-                    value: "`" + tracks.length + "` songs",
-                    inline: true
-                },
-                {
-                    name: "Position in queue",
-                    value: `${queue.tracks.length - tracks.length}`,
-                    inline: true
-                },
-                {
-                    name: "\u200B",
-                    value: "**Requested by:** <@" + playlist.requestedBy + ">"
-                }
-            );
-
-        return embed;
-    }
-}
-
 const LoadType = {
     TRACK_LOADED: "TRACK_LOADED",
     PLAYLIST_LOADED: "PLAYLIST_LOADED",
@@ -231,4 +150,16 @@ const State = {
     DESTROYING: "DESTROYING"
 }
 
-module.exports = { Builders, LoadType, State, QueryTypes, Util }
+/**
+ * 
+const Exception = {
+    CORRUPTED_STREAM: "CORRUPTED_STREAM",
+    CORRUPTED_CONNECTION: "CORRUPTED_CONNECTION",
+    CORRUPTED_PLAYER: "CORRUPTED_PLAYER",
+    INVALID_CHANNEL: "INVALID_CHANNEL",
+    LIVE_TRACK: "LIVE_TRACK"
+}
+ *
+ */
+
+module.exports = { LoadType, State, QueryTypes, Util }

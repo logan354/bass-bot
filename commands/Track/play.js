@@ -1,5 +1,7 @@
 const { Queue } = require("../../src/Queue");
-const { Builders, LoadType, Util } = require("../../src/Utils");
+const { LoadType, Util, State } = require("../../src/Utils");
+const { buildTrack, buildPlaylist } = require("../../utils/builders");
+//const resume = require("./resume");
 
 module.exports = {
     name: "play",
@@ -22,7 +24,7 @@ module.exports = {
 
         if (!message.guild.me.voice.channel) if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
 
-        if (!args[0]) return resume.execute(client, message, args);
+        if (!args[0]) return //resume.execute(client, message, args);
 
         if (!serverQueue) {
             serverQueue = new Queue(client, {
@@ -30,15 +32,15 @@ module.exports = {
                 voiceChannel: voiceChannel,
                 textChannel: message.channel
             });
+        }
 
+        if (serverQueue.state !== State.CONNECTED) {
             try {
                 await serverQueue.connect();
             } catch {
                 serverQueue.destroy();
                 return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
             }
-
-            client.queues.set(message.guild.id, serverQueue);
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         }
 
@@ -58,7 +60,7 @@ module.exports = {
         if (res.loadType === LoadType.TRACK_LOADED) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(res.tracks[0]);
-                message.channel.send({ embeds: [Builders.buildTrack(res.tracks[0], serverQueue)] });
+                message.channel.send({ embeds: [buildTrack(res.tracks[0], serverQueue)] });
             } else {
                 serverQueue.tracks.push(res.tracks[0]);
                 await serverQueue.play();
@@ -66,10 +68,10 @@ module.exports = {
         } else if (res.loadType === LoadType.PLAYLIST_LOADED) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(...res.tracks);
-                message.channel.send({ embeds: [Builders.buildPlaylist(res.tracks, res.playlist, serverQueue)] });
+                message.channel.send({ embeds: [buildPlaylist(res.tracks, res.playlist, serverQueue)] });
             } else {
                 serverQueue.tracks.push(...res.tracks);
-                message.channel.send({ embeds: [Builders.buildPlaylist(res.tracks, res.playlist, serverQueue)] });
+                message.channel.send({ embeds: [buildPlaylist(res.tracks, res.playlist, serverQueue)] });
                 await serverQueue.play();
             }
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");

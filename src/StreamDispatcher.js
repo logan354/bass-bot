@@ -5,7 +5,7 @@ class StreamDispatcher extends EventEmitter {
     /**
      * Stream dispatcher constructor
      * @param {object} connection 
-     * @param {object} queue 
+     * @param {import("./Queue").Queue} queue 
      */
     constructor(connection, queue) {
         super();
@@ -86,7 +86,7 @@ class StreamDispatcher extends EventEmitter {
 
         this.audioPlayer.on("error", (error) => {
             console.log(error);
-            this.queue.textChannel.send(this.queue.client.emotes.error + " **An error occurred with the player while connected to** <#" + this.queue.voiceChannel.id + ">");
+            this.queue.textChannel.send(this.queue.client.emotes.error + " **Error Corrupted Player**");
         });
 
         this.connection.subscribe(this.audioPlayer);

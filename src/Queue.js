@@ -80,7 +80,7 @@ class Queue {
     /**
      * Connect to the voice or stage channel
      * @param {object} channel
-     * @returns {object} 
+     * @returns {Queue} 
      */
     async connect(channel = this.voiceChannel) {
         if (!channel) throw new Error("No voice channel has been set.");
@@ -109,7 +109,7 @@ class Queue {
             // Listen for connection error
             connection.on("error", (error) => {
                 console.log(error);
-                this.textChannel.send(this.client.emotes.error + " **An error occurred with the connection to** <#" + this.voiceChannel.id + ">");
+                this.textChannel.send(this.client.emotes.error + " **Error Corrupted Connection to** <#" + this.voiceChannel.id + ">");
             });
 
             // Listen for the audio resource start
@@ -142,7 +142,7 @@ class Queue {
 
     /**
      * Disconnects from the voice or stage channel
-     * @returns {object}
+     * @returns {Queue}
      */
     disconnect() {
         if (this.voiceChannel === null) return this;
