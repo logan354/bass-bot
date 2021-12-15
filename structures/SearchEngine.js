@@ -2,7 +2,7 @@ const YouTube = require("youtube-sr").default;
 const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
 
-const { LoadType, Util } = require("./Utils");
+const { LoadType, Util } = require("../utils/constants");
 
 /**
  * Searches for the query on Youtube, Spotify or Soundcloud

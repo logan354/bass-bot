@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 /**
  * Builds track embeds
  * @param {import("../src/SearchEngine").Track} track

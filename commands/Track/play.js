@@ -1,6 +1,8 @@
-const { Queue } = require("../../src/Queue");
-const { LoadType, Util, State } = require("../../src/Utils");
+const { Queue } = require("../../structures/Queue");
 const { buildTrack, buildPlaylist } = require("../../utils/builders");
+const { LoadType, State } = require("../../utils/constants");
+const { resolveQueryType } = require("../../utils/queryResolver");
+
 //const resume = require("./resume");
 
 module.exports = {
@@ -46,7 +48,7 @@ module.exports = {
 
         // Create query and query type
         const query = args.join(" ");
-        const queryType = Util.resolveQueryType(query);
+        const queryType = resolveQueryType(query);
 
         // Searching message
         let searchEmoji;
@@ -76,20 +78,5 @@ module.exports = {
             }
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
         else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **An error occurred while searching for** `" + query + "`");
-    },
-
-    slashCommand: {
-        options: [
-            {
-                name: "input",
-                description: "Enter a query or link",
-                required: true,
-                type: 3
-            }
-        ],
-
-        execute(client, interaction, args) {
-
-        }
     }
 }

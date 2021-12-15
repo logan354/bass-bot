@@ -1,4 +1,4 @@
-const { Queue } = require("../../src/Queue");
+const { Queue } = require("../../structures/Queue");
 
 module.exports = {
     name: "join",
@@ -32,13 +32,5 @@ module.exports = {
             return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
         }
         message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
-    },
-
-    slashCommand: {
-        options: [],
-
-        async execute(client, interaction, args) {
-
-        }
     }
 }

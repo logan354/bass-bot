@@ -1,4 +1,4 @@
-const { Util } = require("../src/Utils");
+const { formatDuration } = require("./formats");
 
 /**
  * Creates progress bar
@@ -17,10 +17,10 @@ function createProgressBar(currentStreamTime, totalTime, endTimecode) {
     if (index >= 1 && index <= length) {
         const bar = line.repeat(length - 1).split("");
         bar.splice(index, 0, indicator);
-        const currentTimecode = Util.formatDuration(currentStreamTime);
+        const currentTimecode = formatDuration(currentStreamTime);
         return `${currentTimecode} ┃ ${bar.join("")} ┃ ${endTimecode}`;
     } else {
-        const currentTimecode = Util.formatDuration(currentStreamTime);
+        const currentTimecode = formatDuration(currentStreamTime);
         return `${currentTimecode} ┃ ${indicator}${line.repeat(length - 1)} ┃ ${endTimecode}`;
     }
 }

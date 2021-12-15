@@ -8,7 +8,7 @@ const scdl = require("soundcloud-downloader").default;
 
 const { searchEngine } = require("./SearchEngine");
 const { StreamDispatcher } = require("./StreamDispatcher");
-const { State } = require("./Utils");
+const { State } = require("../utils/constants");
 
 class Queue {
     /**
