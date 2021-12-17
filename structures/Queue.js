@@ -147,7 +147,7 @@ class Queue {
     disconnect() {
         if (this.voiceChannel === null) return this;
         this.state = State.DISCONNECTING;
-        
+
         if (this.streamDispatcher && this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
 
         this.voiceChannel = null;
@@ -207,7 +207,7 @@ class Queue {
                 const FFMPEG_OPUS_ARGUMENTS = [
                     "-analyzeduration",
                     "0",
-                    "-loglevel", 
+                    "-loglevel",
                     "0",
                     "-acodec",
                     "libopus",
@@ -268,11 +268,11 @@ class Queue {
     }
 }
 
-module.exports = { Queue }
-
 /**
  * @typedef QueueOptions
  * @property {string} guildId - Discord guild id
  * @property {object} voiceChannel - Discord.js voice or stage channel
  * @property {object} textChannel - Discord.js text channel
  */
+
+module.exports = { Queue }

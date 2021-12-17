@@ -8,7 +8,7 @@ class ErrorHandler extends Error {
      */
     constructor(code, message) {
         super();
-        
+
         this.message = message;
         this.name = "[" + code + "]";
     }
