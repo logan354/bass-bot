@@ -31,16 +31,12 @@ const State = {
     DESTROYING: "DESTROYING"
 }
 
-/**
- * 
-const Exception = {
+const ErrorCode = {
     CORRUPTED_STREAM: "CORRUPTED_STREAM",
     CORRUPTED_CONNECTION: "CORRUPTED_CONNECTION",
     CORRUPTED_PLAYER: "CORRUPTED_PLAYER",
     INVALID_CHANNEL: "INVALID_CHANNEL",
     LIVE_TRACK: "LIVE_TRACK"
 }
- *
- */
 
-module.exports = { QueryTypes, LoadType, State }
+module.exports = { QueryTypes, LoadType, State, ErrorCode }
