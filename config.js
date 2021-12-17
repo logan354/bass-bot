@@ -34,6 +34,7 @@ module.exports = {
         spotify: "<:Spotify:844386374182633532>",
 
         // Premium emojis
+        volume: ":loud_sound:",
 
         // Queue emojis
         loopQueue: ":repeat:",

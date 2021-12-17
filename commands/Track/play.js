@@ -3,7 +3,7 @@ const { buildTrack, buildPlaylist } = require("../../utils/builders");
 const { LoadType, State } = require("../../utils/constants");
 const { resolveQueryType } = require("../../utils/queryResolver");
 
-//const resume = require("./resume");
+const resume = require("./resume");
 
 module.exports = {
     name: "play",
@@ -26,7 +26,7 @@ module.exports = {
 
         if (!message.guild.me.voice.channel) if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
 
-        if (!args[0]) return //resume.execute(client, message, args);
+        if (!args[0]) return resume.execute(client, message, args);
 
         if (!serverQueue) {
             serverQueue = new Queue(client, {
@@ -41,7 +41,7 @@ module.exports = {
                 await serverQueue.connect();
             } catch {
                 serverQueue.destroy();
-                return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+                return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
             }
             message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
         }
@@ -77,6 +77,6 @@ module.exports = {
                 await serverQueue.play();
             }
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **An error occurred while searching for** `" + query + "`");
+        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching for** `" + query + "`");
     }
 }

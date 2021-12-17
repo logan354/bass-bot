@@ -29,7 +29,7 @@ module.exports = {
             await serverQueue.connect();
         } catch {
             serverQueue.destroy();
-            return message.channel.send(client.emotes.error + " **An error occurred while joining** <#" + voiceChannel.id + ">");
+            return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
         }
         message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
     }
