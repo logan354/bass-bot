@@ -26,7 +26,7 @@ module.exports = {
         }
 
         try {
-            await serverQueue.connect();
+            await serverQueue.connect(voiceChannel);
         } catch {
             serverQueue.destroy();
             return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");

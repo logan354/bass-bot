@@ -50,7 +50,7 @@ module.exports = {
             const collector = message.channel.createMessageCollector({
                 time: 60000,
                 errors: ["time"],
-                filter: m => m.author.id === message.author.id
+                filter: x => x.author.id === message.author.id
             });
 
             collector.on("collect", async (query) => {
