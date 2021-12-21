@@ -45,7 +45,7 @@ module.exports = {
                 .setAuthor("Search results for " + query, client.config.app.logo)
                 .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})\n` + "`" + track.durationFormatted + "`").join("\n\n") + "\n\n**Type a number to make a choice. Type `cancel` to exit**");
 
-            const sentEmbed = await message.channel.send({ embeds: [embed] });
+            const sentMessage = await message.channel.send({ embeds: [embed] });
 
             const collector = message.channel.createMessageCollector({
                 time: 60000,
@@ -55,7 +55,7 @@ module.exports = {
 
             collector.on("collect", async (query) => {
                 if (query.content.toLowerCase() === "cancel") {
-                    sentEmbed.delete();
+                    sentMessage.delete();
                     message.channel.send(client.emotes.success + " **Cancelled**");
                     collector.stop();
                     return;
@@ -65,7 +65,7 @@ module.exports = {
 
                 if (!value || value <= 0 || value > res.tracks.length) return message.channel.send(client.emotes.error + " **Invalid input:** `Pick a value between 1 and " + res.tracks.length + "`");
 
-                sentEmbed.delete();
+                sentMessage.delete();
                 collector.stop();
 
                 if (serverQueue.state !== State.CONNECTED) {
@@ -90,7 +90,7 @@ module.exports = {
 
             collector.on("end", (message, reason) => {
                 if (reason === "time") {
-                    sentEmbed.delete();
+                    sentMessage.delete();
                     message.channel.send(client.emotes.error + " **Timeout**");
                 }
             });
