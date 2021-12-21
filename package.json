@@ -25,6 +25,6 @@
     "soundcloud-downloader": "^1.0.0",
     "spotify-url-info": "^2.2.3",
     "youtube-sr": "^4.1.11",
-    "ytdl-core": "^4.9.1"
+    "ytdl-core": "^4.9.2"
   }
 }
