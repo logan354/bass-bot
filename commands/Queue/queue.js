@@ -1,0 +1,143 @@
+const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+
+const { formatChunk, formatDuration } = require("../../utils/formats");
+
+module.exports = {
+    name: "queue",
+    aliases: ["q"],
+    category: "Queue",
+    description: "Shows the first page of the queue.",
+    utilisation: "{prefix}queue <page>",
+
+    async execute(client, message, args) {
+        const serverQueue = client.queues.get(message.guild.id);
+
+        if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.app.prefix + "join" + "`" + " to get me in one");
+
+        if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
+
+        const loopEmoji = serverQueue.loop ? "✅" : "❌";
+        const loopQueueEmoji = serverQueue.loopQueue ? "✅" : "❌";
+
+        if (serverQueue.tracks.length === 1) {
+            const embed = new MessageEmbed()
+                .setColor("BLACK")
+                .setAuthor("Queue for " + message.guild.name, client.emotes.player)
+                .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">")
+                .addField("Voice Channel", `<#${serverQueue.voiceChannel.id}>`, true)
+                .setFooter("Page 1/1" + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL());
+
+            message.channel.send({ embeds: [embed] });
+        } else {
+            const queue = serverQueue.tracks.map((track, i) => "`" + i + ".` " + `[${track.title}](${track.url})\n` + "`" + track.durationFormatted + "` **|** Requested by: <@" + track.requestedBy + ">").slice(1, serverQueue.tracks.length);
+            const pages = formatChunk(queue, 5).map((x) => x.join("\n\n"));
+            let currentPage = 1;
+
+            // Total Duration of all tracks
+            let totalDuration = 0;
+            for (let i = 0; i < serverQueue.tracks.length; i++) {
+                totalDuration += serverQueue.tracks[i].duration;
+            }
+
+            const embed = new MessageEmbed()
+                .setColor("BLACK")
+                .setAuthor("Queue for " + message.guild.name, client.emotes.player)
+                .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                .setFields(
+                    {
+                        name: "Total songs:",
+                        value: "`" + (serverQueue.tracks.length - 1) + "`",
+                        inline: true
+                    },
+                    {
+                        name: "Total Length:",
+                        value: "`" + formatDuration(totalDuration - serverQueue.tracks[0].duration) + "`",
+                        inline: true
+                    },
+                    {
+                        name: "Voice Channel",
+                        value: `<#${serverQueue.voiceChannel.id}>`,
+                        inline: true
+                    }
+
+                )
+                .setFooter("Page 1/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL());
+
+
+            if (pages.length > 1) {
+                const button1 = new MessageButton()
+                    .setCustomId("queue_previous_page")
+                    .setEmoji("⬅️")
+                    .setStyle("PRIMARY");
+
+                const button2 = new MessageButton()
+                    .setCustomId("queue_stop")
+                    .setEmoji("⏹️")
+                    .setStyle("DANGER");
+
+                const button3 = new MessageButton()
+                    .setCustomId("queue_next_page")
+                    .setEmoji("➡️")
+                    .setStyle("PRIMARY");
+
+                const row1 = new MessageActionRow()
+                    .addComponents(
+                        [
+                            button1,
+                            button2,
+                            button3
+                        ]
+                    );
+
+                const sentMessage = await message.channel.send({ embeds: [embed], components: [row1] });
+
+                const collector = message.channel.createMessageComponentCollector(
+                    {
+                        time: 60000,
+                        errors: ["time"],
+                        filter: x => x.user.id === message.author.id
+                    }
+                );
+
+                collector.on("collect", async (button) => {
+                    if (button.customId === "queue_next_page") {
+                        await button.deferUpdate();
+
+                        if (currentPage < pages.length) {
+                            currentPage++;
+                            const newEmbed = new MessageEmbed(embed)
+                                .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                                .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
+
+                            await sentMessage.edit({ embeds: [newEmbed], components: [row1] });
+                        }
+                    } else if (button.customId === "queue_previous_page") {
+                        await button.deferUpdate();
+
+                        if (currentPage > 1) {
+                            currentPage--;
+                            const newEmbed = new MessageEmbed(embed)
+                                .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                                .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
+
+                            await sentMessage.edit({ embeds: [newEmbed], components: [row1] });
+                        }
+                    } else if (button.customId === "queue_stop") {
+                        await button.deferUpdate();
+
+                        sentMessage.delete();
+                        collector.stop();
+                    } else return;
+                });
+
+                collector.on("end", (message, reason) => {
+                    if (reason === "time") {
+                        sentMessage.edit({ components: [] });
+                    }
+                });
+            } else {
+                message.channel.send({ embeds: [embed] });
+            }
+        }
+    }
+}

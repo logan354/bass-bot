@@ -84,4 +84,12 @@ function parseDuration(time) {
     };
 }
 
-module.exports = { formatDuration, formatFormalTime, parseDuration }
+function formatChunk(arr, size) {
+    const temp = [];
+    for (let i = 0; i < arr.length; i += size) {
+        temp.push(arr.slice(i, i + size));
+    }
+    return temp;
+}
+
+module.exports = { formatDuration, formatFormalTime, parseDuration, formatChunk }
