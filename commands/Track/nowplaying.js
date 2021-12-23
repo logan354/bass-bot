@@ -20,6 +20,7 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
+        const currentStreamTime = serverQueue.streamDispatcher.audioPlayer.state.playbackDuration + serverQueue.additionalStreamTime;
 
         const embed = new MessageEmbed()
             .setColor("BLACK")
@@ -29,7 +30,7 @@ module.exports = {
             .setFields(
                 {
                     name: "Time",
-                    value: createProgressBar(serverQueue)
+                    value: createProgressBar(currentStreamTime, serverQueue.tracks[0].duration, serverQueue.tracks[0].durationFormatted)
                 },
                 {
                     name: "Channel",
