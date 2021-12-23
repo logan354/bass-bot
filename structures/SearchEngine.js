@@ -7,7 +7,7 @@ const { LoadType, Util } = require("../utils/constants");
 /**
  * Searches for the query on Youtube, Spotify or Soundcloud
  * @param {string} query 
- * @param {SearchEngineOptions} options 
+ * @param {SearchEngineOptions} [options]
  * @returns {SearchResult}
  */
 async function searchEngine(query, options = defaultSearchEngineoptions) {
