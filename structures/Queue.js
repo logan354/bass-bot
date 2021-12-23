@@ -258,10 +258,14 @@ class Queue {
             inlineVolume: true
         });
 
+        // Set initial volume
+        resource.volume.setVolumeLogarithmic(this.volume / 100);
+
         setTimeout(() => {
             this.streamDispatcher.audioPlayer.play(resource);
         }, bufferTimeout);
 
+        // Set initial pause state
         if (this.paused) {
             this.streamDispatcher.audioPlayer.pause();
         }
