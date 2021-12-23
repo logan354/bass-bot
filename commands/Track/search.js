@@ -1,6 +1,7 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
 
 const { Queue } = require("../../structures/Queue");
+
 const { buildTrack } = require("../../utils/builders");
 const { LoadType, State, QueryTypes } = require("../../utils/constants");
 
@@ -43,55 +44,68 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
                 .setAuthor("Search results for " + query, client.config.app.logo)
-                .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})\n` + "`" + track.durationFormatted + "`").join("\n\n") + "\n\n**Type a number to make a choice. Type `cancel` to exit**");
+                .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})` + " - `" + track.durationFormatted + "`").join("\n\n"));
 
-            const sentMessage = await message.channel.send({ embeds: [embed] });
+            const random_num = new Date().getTime();
 
-            const collector = message.channel.createMessageCollector({
+            const selectMenu = new MessageSelectMenu()
+                .setCustomId("search_menu" + `_active${random_num}`)
+                .setOptions(
+                    res.tracks.map((track, i) => {
+                        return {
+                            label: track.title,
+                            description: track.channel + " - " + track.durationFormatted,
+                            value: (i + 1).toString()
+                        }
+                    })
+                )
+                .setPlaceholder("Select a Song");
+
+            const row = new MessageActionRow()
+                .addComponents([selectMenu]);
+
+            const sentMessage = await message.channel.send({ embeds: [embed], components: [row] });
+
+            const collector = message.channel.createMessageComponentCollector({
                 time: 60000,
                 errors: ["time"],
-                filter: x => x.author.id === message.author.id
+                filter: x => x.user.id === message.author.id
             });
 
-            collector.on("collect", async (query) => {
-                if (query.content.toLowerCase() === "cancel") {
+            collector.on("collect", async (interaction) => {
+                if (!interaction.isSelectMenu()) return;
+
+                if (interaction.customId === "search_menu" + `_active${random_num}`) {
+                    await interaction.deferUpdate();
+
                     sentMessage.delete();
-                    message.channel.send(client.emotes.success + " **Cancelled**");
                     collector.stop();
-                    return;
-                }
 
-                const value = Number(query.content);
+                    if (serverQueue.state !== State.CONNECTED) {
+                        try {
+                            await serverQueue.connect();
+                        } catch {
+                            serverQueue.destroy();
+                            return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
+                        }
 
-                if (!value || value <= 0 || value > res.tracks.length) return message.channel.send(client.emotes.error + " **Invalid input:** `Pick a value between 1 and " + res.tracks.length + "`");
-
-                sentMessage.delete();
-                collector.stop();
-
-                if (serverQueue.state !== State.CONNECTED) {
-                    try {
-                        await serverQueue.connect();
-                    } catch {
-                        serverQueue.destroy();
-                        return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
+                        message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
                     }
 
-                    message.channel.send(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + message.channel.id + ">");
-                }
+                    if (serverQueue.tracks.length > 0) {
+                        serverQueue.tracks.push(res.tracks[interaction.values[0] - 1]);
+                        message.channel.send({ embeds: [buildTrack(res.tracks[interaction.values[0] - 1], serverQueue)] });
+                    } else {
+                        serverQueue.tracks.push(res.tracks[interaction.values[0] - 1]);
+                        await serverQueue.play();
+                    }
 
-                if (serverQueue.tracks.length > 0) {
-                    serverQueue.tracks.push(res.tracks[query.content - 1]);
-                    message.channel.send({ embeds: [buildTrack(res.tracks[query.content - 1], serverQueue)] });
-                } else {
-                    serverQueue.tracks.push(res.tracks[query.content - 1]);
-                    await serverQueue.play();
-                }
+                } else return;
             });
 
-            collector.on("end", (message, reason) => {
+            collector.on("end", (collection, reason) => {
                 if (reason === "time") {
-                    sentMessage.delete();
-                    message.channel.send(client.emotes.error + " **Timeout**");
+                    sentMessage.edit(client.emotes.error + " **Timeout**");
                 }
             });
         }
