@@ -12,12 +12,16 @@ const client = new Client({
     ]
 });
 
-client.queues = new Map();
-
 client.config = require("./config");
 client.emotes = client.config.emojis;
-client.commands = new Collection();
 
+client.commands = new Collection();
+client.slashCommands = new Collection();
+client.queues = new Map();
+
+/**
+ * Importing all commands
+ */
 console.log("Loading commands...");
 
 fs.readdirSync("./commands").forEach(dirs => {
@@ -30,6 +34,24 @@ fs.readdirSync("./commands").forEach(dirs => {
     }
 });
 
+/**
+ * Importing all slash commands
+ */
+console.log("Loading slash commands...");
+
+fs.readdirSync("./slashCommands").forEach(dirs => {
+    const slashCommands = fs.readdirSync(`./slashCommands/${dirs}`).filter(files => files.endsWith(".js"));
+
+    for (const file of slashCommands) {
+        const slashCommand = require(`./slashCommands/${dirs}/${file}`);
+        console.log(`-> Loaded slash command ${slashCommand.name.toLowerCase()}`);
+        client.slashCommands.set(slashCommand.name.toLowerCase(), slashCommand);
+    }
+});
+
+/**
+ * Listening for all events
+ */
 console.log("Loading events...");
 
 const events = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
