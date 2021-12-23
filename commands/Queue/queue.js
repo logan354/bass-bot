@@ -65,22 +65,24 @@ module.exports = {
 
 
             if (pages.length > 1) {
+                const random_num = new Date().getTime();
+
                 const button1 = new MessageButton()
-                    .setCustomId("queue_previous_page")
+                    .setCustomId("queue_previous_page" + `_active${random_num}`)
                     .setEmoji("⬅️")
                     .setStyle("PRIMARY");
 
                 const button2 = new MessageButton()
-                    .setCustomId("queue_stop")
+                    .setCustomId("queue_stop" + `_active${random_num}`)
                     .setEmoji("⏹️")
                     .setStyle("DANGER");
 
                 const button3 = new MessageButton()
-                    .setCustomId("queue_next_page")
+                    .setCustomId("queue_next_page" + `_active${random_num}`)
                     .setEmoji("➡️")
                     .setStyle("PRIMARY");
 
-                const row1 = new MessageActionRow()
+                const row = new MessageActionRow()
                     .addComponents(
                         [
                             button1,
@@ -89,7 +91,7 @@ module.exports = {
                         ]
                     );
 
-                const sentMessage = await message.channel.send({ embeds: [embed], components: [row1] });
+                const sentMessage = await message.channel.send({ embeds: [embed], components: [row] });
 
                 const collector = message.channel.createMessageComponentCollector(
                     {
@@ -99,9 +101,11 @@ module.exports = {
                     }
                 );
 
-                collector.on("collect", async (button) => {
-                    if (button.customId === "queue_next_page") {
-                        await button.deferUpdate();
+                collector.on("collect", async (interaction) => {
+                    if (!interaction.isButton()) return;
+
+                    if (interaction.customId === "queue_next_page" + `_active${random_num}`) {
+                        await interaction.deferUpdate();
 
                         if (currentPage < pages.length) {
                             currentPage++;
@@ -109,10 +113,10 @@ module.exports = {
                                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                                 .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
 
-                            await sentMessage.edit({ embeds: [newEmbed], components: [row1] });
+                            await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
-                    } else if (button.customId === "queue_previous_page") {
-                        await button.deferUpdate();
+                    } else if (interaction.customId === "queue_previous_page" + `_active${random_num}`) {
+                        await interaction.deferUpdate();
 
                         if (currentPage > 1) {
                             currentPage--;
@@ -120,17 +124,17 @@ module.exports = {
                                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                                 .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
 
-                            await sentMessage.edit({ embeds: [newEmbed], components: [row1] });
+                            await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
-                    } else if (button.customId === "queue_stop") {
-                        await button.deferUpdate();
+                    } else if (interaction.customId === "queue_stop" + `_active${random_num}`) {
+                        await interaction.deferUpdate();
 
                         sentMessage.delete();
                         collector.stop();
                     } else return;
                 });
 
-                collector.on("end", (message, reason) => {
+                collector.on("end", (collection, reason) => {
                     if (reason === "time") {
                         sentMessage.edit({ components: [] });
                     }
