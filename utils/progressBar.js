@@ -5,7 +5,7 @@ const { formatDuration } = require("./formats");
  * @param {number} currentStreamTime
  * @param {number} totalTime
  * @param {string} endTimecode
- * @returns 
+ * @returns {string}
  */
 function createProgressBar(currentStreamTime, totalTime, endTimecode) {
     const length = 15;

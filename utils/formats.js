@@ -84,6 +84,12 @@ function parseDuration(time) {
     };
 }
 
+/**
+ * Formats array into chunks
+ * @param {Array} arr 
+ * @param {number} size 
+ * @returns {Array}
+ */
 function formatChunk(arr, size) {
     const temp = [];
     for (let i = 0; i < arr.length; i += size) {
