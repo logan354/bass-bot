@@ -36,9 +36,8 @@ module.exports = {
                 }
             )
             .setTimestamp(new Date())
-            .setFooter("Thanks For Choosing Stormy", client.config.app.logo);
+            .setFooter("Thanks For Choosing Bass", client.config.app.logo);
 
         message.channel.send({ embeds: [embed] });
     }
 }
-

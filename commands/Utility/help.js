@@ -5,7 +5,7 @@ module.exports = {
     aliases: ["h"],
     category: "Utility",
     description: "Shows the bot's commands.",
-    utilisation: "{prefix}help <command name>",
+    utilisation: "{prefix}help <command>",
     permissions: {
         channel: [],
         member: [],
