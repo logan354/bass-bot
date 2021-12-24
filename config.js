@@ -11,13 +11,10 @@ module.exports = {
         slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
 
         // Support server
-        support_server: "Unknown",
+        support_server: "https://discord.gg/Yu9yFeAcCb",
 
-        // Logos
-        logo: "https://cdn.discordapp.com/emojis/850649409334280202.png?v=1",
-        smallLogo: "https://cdn.discordapp.com/emojis/850228524736577576.png?v=1",
-
-        embedColor: "BLACK"
+        // Logo
+        logo: "https://cdn.discordapp.com/attachments/886402406500429864/923743847601815603/Logo128.jpg",
     },
 
     emojis: {
