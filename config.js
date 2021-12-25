@@ -1,7 +1,7 @@
 module.exports = {
     app: {
         // Prefix settings
-        prefix: "&",
+        prefix: ".",
         default_prefix: ".",
 
         // Invite
