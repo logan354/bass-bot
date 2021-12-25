@@ -15,7 +15,7 @@ const QueryTypesRegex = {
 /**
  * Resolves query type
  * @param {string} query
- * @returns {string}
+ * @returns {QueryTypes}
  */
 function resolveQueryType(query) {
     // Check if the query matches a playlist regex

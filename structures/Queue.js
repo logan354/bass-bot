@@ -1,3 +1,4 @@
+const { Client, VoiceChannel, TextChannel, Snowflake } = require("discord.js");
 const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType } = require("@discordjs/voice");
 const { FFmpeg } = require("prism-media");
 
@@ -13,47 +14,86 @@ const { State } = require("../utils/constants");
 class Queue {
     /**
      * Queue constructor
-     * @param {object} client 
+     * @param {Client} client 
      * @param {QueueOptions} options 
      */
     constructor(client, options) {
-        /** Client bound to this queue */
+        /**
+         * Client bound to this queue
+         * @type {Client}
+         */
         this.client = client
 
-        /** State of this queue */
+        /**
+         * State of this queue
+         * @type {State}
+         */
         this.state = State.DISCONNECTED;
 
-        /** Guild id of this queue */
+        /**
+         * Guild id of this queue
+         * @type {?Snowflake}
+         */
         this.guildId = null;
 
-        /** Voice channel bound to this queue */
+        /**
+         * Voice channel bound to this queue
+         * @type {?VoiceChannel}
+         */
         this.voiceChannel = null;
 
-        /** Text channel bound to this queue */
+        /**
+         * Text channel bound to this queue
+         * @type {?TextChannel}
+         */
         this.textChannel = null;
 
-        /** Stream dispatcher of this queue */
+        /**
+         * Stream dispatcher of this queue
+         * @type {?StreamDispatcher}
+         */
         this.streamDispatcher = null;
 
-        /** Tracks of this queue */
+        /**
+         * Tracks of this queue
+         * @type {import("./SearchEngine").Track[]}
+         */
         this.tracks = [];
 
-        /** Skiplist of this queue */
+        /**
+         * Skiplist of this queue
+         * @type {string[]}
+         */
         this.skiplist = [];
 
-        /** Paused mode of this queue */
+        /**
+         * Paused mode of this queue
+         * @type {boolean}
+         */
         this.paused = false;
 
-        /** Loop mode of this queue */
+        /**
+         * Loop mode of this queue
+         * @type {boolean}
+         */
         this.loop = false;
 
-        /** Loop queue mode of this queue */
+        /**
+         * Loop queue mode of this queue
+         * @type {boolean}
+         */
         this.loopQueue = false;
 
-        /** Volume of this queue */
+        /**
+         * Volume of this queue
+         * @type {number}
+         */
         this.volume = 100;
 
-        /** Additional stream time of this queue */
+        /**
+         * Additional stream time of this queue
+         * @type {?number}
+         */
         this.additionalStreamTime = null;
 
         if (this.client.queues.has(options.guildId)) {
@@ -79,7 +119,7 @@ class Queue {
 
     /**
      * Connect to the voice or stage channel
-     * @param {object} channel
+     * @param {VoiceChannel} channel
      * @returns {Queue} 
      */
     async connect(channel = this.voiceChannel) {
@@ -106,18 +146,15 @@ class Queue {
         if (!this.streamDispatcher) {
             this.streamDispatcher = new StreamDispatcher(connection, this);
 
-            // Listen for connection error
             connection.on("error", (error) => {
                 console.log(error);
                 this.textChannel.send(this.client.emotes.error + " **Error Corrupted Connection to** <#" + this.voiceChannel.id + ">");
             });
 
-            // Listen for the audio resource start
             this.streamDispatcher.on("start", (metadata) => {
                 if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
             });
 
-            // Listen for audio resource to finish
             this.streamDispatcher.on("finish", (metadata) => {
                 this.skiplist = [];
                 this.additionalStreamTime = null;
@@ -272,11 +309,11 @@ class Queue {
     }
 }
 
-/**
+/** 
  * @typedef QueueOptions
- * @property {string} guildId - Discord guild id
- * @property {object} voiceChannel - Discord.js voice or stage channel
- * @property {object} textChannel - Discord.js text channel
+ * @property {Snowflake} guildId - Discord guild id
+ * @property {VoiceChannel} voiceChannel - Discord.js voice or stage channel
+ * @property {TextChannel} textChannel - Discord.js text channel
  */
 
 module.exports = { Queue }

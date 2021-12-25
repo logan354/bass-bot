@@ -1,8 +1,11 @@
+const { User } = require("discord.js");
+
 const YouTube = require("youtube-sr").default;
 const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
 
-const { LoadType, Util } = require("../utils/constants");
+const { LoadType } = require("../utils/constants");
+const { resolveQueryType } = require("../utils/queryResolver")
 
 /**
  * Searches for the query on Youtube, Spotify or Soundcloud
@@ -11,7 +14,7 @@ const { LoadType, Util } = require("../utils/constants");
  * @returns {SearchResult}
  */
 async function searchEngine(query, options = defaultSearchEngineoptions) {
-    if (options.queryType === "auto") options.queryType = Util.resolveQueryType(query);
+    if (options.queryType === "auto") options.queryType = resolveQueryType(query);
     try {
         switch (options.queryType) {
             case "youtube-video": {
@@ -354,11 +357,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
     }
 }
 
-/**
- * @typedef SearchEngineOptions
- * @property {string} queryType - Search query type
- * @property {object|string} requester - User who requested the search
- */
 
 /**
  * Default options for the Search Engine
@@ -370,6 +368,12 @@ const defaultSearchEngineoptions = {
 }
 
 /**
+ * @typedef SearchEngineOptions
+ * @property {string} queryType - Search query type
+ * @property {User|string} requester - User who requested the search
+ */
+
+/**
  * @typedef Track
  * @property {string} title - The title of the track
  * @property {string} url - The url of the track
@@ -378,7 +382,7 @@ const defaultSearchEngineoptions = {
  * @property {string|number} duration - The duration of the track
  * @property {string} durationFormatted - The formatted duration of the track
  * @property {string} channel - The channel this track is from
- * @property {object} requestedBy - The user that requested this track
+ * @property {User} requestedBy - The user that requested this track
  * @property {boolean} isLive - If the track is live
  * @property {string} source - The source this track is from
  */
@@ -388,10 +392,10 @@ const defaultSearchEngineoptions = {
  * @property {string} title - The title of the playlist
  * @property {string} url - The url of the playlist
  * @property {string} thumbnail - The thumbnail of the playlist
- * @property {string|number|null} duration - The duration of the playlist
- * @property {string|null} durationFormatted - The formatted duration of the playlist
+ * @property {?string|?number} duration - The duration of the playlist
+ * @property {?string} durationFormatted - The formatted duration of the playlist
  * @property {string} channel - The channel this playlist is from
- * @property {object} requestedBy - The user that requested this playlist
+ * @property {User} requestedBy - The user that requested this playlist
  * @property {string} source - The source this playlist is from
 */
 
@@ -399,8 +403,8 @@ const defaultSearchEngineoptions = {
  * @typedef SearchResult
  * @property {LoadType} loadType
  * @property {Track[]} tracks
- * @property {Playlist|null} playlist
- * @property {object|null} exception
+ * @property {?Playlist} playlist
+ * @property {?Error} exception
  */
 
 module.exports = { searchEngine }

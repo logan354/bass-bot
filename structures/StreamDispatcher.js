@@ -1,10 +1,10 @@
 const { EventEmitter } = require("events");
-const { createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
+const { VoiceConnection, createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
 
 class StreamDispatcher extends EventEmitter {
     /**
      * Stream dispatcher constructor
-     * @param {object} connection 
+     * @param {VoiceConnection} connection 
      * @param {import("./Queue").Queue} queue 
      */
     constructor(connection, queue) {
