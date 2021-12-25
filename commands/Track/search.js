@@ -59,7 +59,9 @@ module.exports = {
                         }
                     })
                 )
-                .setPlaceholder("Select a Song");
+                .setPlaceholder("Select a Song")
+                .setMinValues(1)
+                .setMaxValues(1);
 
             const row = new MessageActionRow()
                 .addComponents([selectMenu]);
