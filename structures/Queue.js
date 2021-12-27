@@ -151,11 +151,11 @@ class Queue {
                 this.textChannel.send(this.client.emotes.error + " **Error Corrupted Connection to** <#" + this.voiceChannel.id + ">");
             });
 
-            this.streamDispatcher.on("start", (metadata) => {
-                if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + metadata.title + "`");
+            this.streamDispatcher.on("start", (track) => {
+                if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
             });
 
-            this.streamDispatcher.on("finish", (metadata) => {
+            this.streamDispatcher.on("finish", (track) => {
                 this.skiplist = [];
                 this.additionalStreamTime = null;
 
