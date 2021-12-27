@@ -21,10 +21,11 @@ module.exports = {
 
         if (!volume || volume < 0 || volume > 200) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
 
-        if (serverQueue.tracks.length) {
+        if (!serverQueue.tracks.length) serverQueue.volume = volume;
+        else {
             serverQueue.volume = volume;
             serverQueue.streamDispatcher.audioPlayer.state.resource.volume.setVolumeLogarithmic(serverQueue.volume / 100);
-        } else serverQueue.volume = volume;
+        }
 
         message.channel.send(client.emotes.volume + " **Volume level is now set to " + serverQueue.volume + "%**");
     }
