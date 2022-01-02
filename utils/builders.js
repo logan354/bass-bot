@@ -9,7 +9,10 @@ const { MessageEmbed } = require("discord.js");
 function buildTrack(track, queue) {
     const embed = new MessageEmbed()
         .setColor("BLACK")
-        .setAuthor("Added to queue", queue.client.emotes.player)
+        .setAuthor({
+            name: "Added to queue",
+            iconURL: queue.client.emotes.player
+        })
         .setDescription(`**[${track.title}](${track.url})**`)
         .setThumbnail(track.thumbnail)
         .setFields(
@@ -47,7 +50,10 @@ function buildTrack(track, queue) {
 function buildPlaylist(tracks, playlist, queue) {
     const embed = new MessageEmbed()
         .setColor("BLACK")
-        .setAuthor("Playlist added to queue", queue.client.emotes.player)
+        .setAuthor({
+            name: "Playlist added to queue",
+            iconURL: queue.client.emotes.player
+        })
         .setDescription(`**[${playlist.title}](${playlist.url})**`)
         .setThumbnail(playlist.thumbnail)
         .setFields(

@@ -22,10 +22,16 @@ module.exports = {
         if (serverQueue.tracks.length === 1) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
-                .setAuthor("Queue for " + message.guild.name, client.emotes.player)
+                .setAuthor({
+                    name: "Queue for " + message.guild.name,
+                    iconURL: client.emotes.player
+                })
                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">")
                 .addField("Voice Channel", `<#${serverQueue.voiceChannel.id}>`, true)
-                .setFooter("Page 1/1" + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL());
+                .setFooter({
+                    text: "Page 1/1" + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
+                    iconURL: message.author.displayAvatarURL()
+                });
 
             message.channel.send({ embeds: [embed] });
         } else {
@@ -41,7 +47,10 @@ module.exports = {
 
             const embed = new MessageEmbed()
                 .setColor("BLACK")
-                .setAuthor("Queue for " + message.guild.name, client.emotes.player)
+                .setAuthor({
+                    name: "Queue for " + message.guild.name,
+                    iconURL: client.emotes.player
+                })
                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                 .setFields(
                     {
@@ -61,7 +70,10 @@ module.exports = {
                     }
 
                 )
-                .setFooter("Page 1/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL());
+                .setFooter({
+                    text: "Page 1/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
+                    iconURL: message.author.displayAvatarURL()
+                });
 
 
             if (pages.length > 1) {
@@ -111,7 +123,10 @@ module.exports = {
                             currentPage++;
                             const newEmbed = new MessageEmbed(embed)
                                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
-                                .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
+                                .setFooter({
+                                    text: "Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
+                                    iconURL: message.author.displayAvatarURL()
+                                })
 
                             await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
@@ -122,7 +137,10 @@ module.exports = {
                             currentPage--;
                             const newEmbed = new MessageEmbed(embed)
                                 .setDescription("__**Now Playing**__\n" + `[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})\n` + "`" + serverQueue.tracks[0].durationFormatted + "` **|** Requested by: <@" + serverQueue.tracks[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
-                                .setFooter("Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji, message.author.displayAvatarURL())
+                                .setFooter({
+                                    text: "Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
+                                    iconURL: message.author.displayAvatarURL()
+                                })
 
                             await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }

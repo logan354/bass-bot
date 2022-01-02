@@ -17,10 +17,13 @@ module.exports = {
 
     execute(client, message, args) {
         const memory = 512;
-        
+
         const embed = new MessageEmbed()
             .setColor("BLACK")
-            .setAuthor("-- Bass's Statistics --", client.config.app.logo)
+            .setAuthor({
+                name: "-- Bass's Statistics --",
+                iconURL: client.config.app.logo
+            })
             .setFields(
                 {
                     name: ":joystick: Bot Statistics",
@@ -36,7 +39,10 @@ module.exports = {
                 }
             )
             .setTimestamp(new Date())
-            .setFooter("Thanks For Choosing Bass", client.config.app.logo);
+            .setFooter({
+                text: "Thanks For Choosing Bass",
+                iconURL: client.config.app.logo
+            });
 
         message.channel.send({ embeds: [embed] });
     }

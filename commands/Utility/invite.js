@@ -14,7 +14,9 @@ module.exports = {
     execute(client, message, args) {
         const embed = new MessageEmbed()
             .setColor("BLACK")
-            .setAuthor("About Me")
+            .setAuthor({
+                name: "About Me"
+            })
             .setDescription(client.config.app.slogan.split(".").join(".\n"))
             .setThumbnail(message.guild.iconURL())
             .setFields(
@@ -28,7 +30,10 @@ module.exports = {
                 }
             )
             .setTimestamp(new Date())
-            .setFooter("Thanks For Choosing Bass", client.config.app.logo);
+            .setFooter({
+                text: "Thanks For Choosing Bass",
+                iconURL: client.config.app.logo
+            });
 
         message.channel.send({ embeds: [embed] });
     }

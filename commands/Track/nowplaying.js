@@ -24,7 +24,10 @@ module.exports = {
 
         const embed = new MessageEmbed()
             .setColor("BLACK")
-            .setAuthor("Now Playing", client.emotes.player)
+            .setAuthor({
+                name: "Now Playing",
+                iconURL: client.emotes.player
+            })
             .setDescription(`**[${serverQueue.tracks[0].title}](${serverQueue.tracks[0].url})**`)
             .setThumbnail(serverQueue.tracks[0].thumbnail)
             .setFields(
@@ -55,6 +58,6 @@ module.exports = {
                 }
             );
 
-            message.channel.send({ embeds: [embed] });
+        message.channel.send({ embeds: [embed] });
     }
 }

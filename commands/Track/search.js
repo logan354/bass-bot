@@ -43,7 +43,10 @@ module.exports = {
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
-                .setAuthor("Search results for " + query, client.config.app.logo)
+                .setAuthor({
+                    name: "Search results for " + query,
+                    iconURL: client.config.app.logo
+                })
                 .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})` + " - `" + track.durationFormatted + "`").join("\n\n"));
 
             const random_num = new Date().getTime();

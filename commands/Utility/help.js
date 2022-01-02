@@ -21,7 +21,10 @@ module.exports = {
 
             const embed = new MessageEmbed()
                 .setColor("BLACK")
-                .setAuthor("Bass Commands", client.config.app.logo)
+                .setAuthor({
+                    name: "Bass Commands",
+                    iconURL: client.config.app.logo
+                })
                 .setDescription("My current prefix in this server is `" + client.config.app.prefix + "` type `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "` to get information about a specific command.")
                 .setThumbnail(message.guild.iconURL())
                 .setFields(
@@ -43,7 +46,9 @@ module.exports = {
                     }
                 )
                 .setTimestamp(new Date())
-                .setFooter(`Total Commands: ${track.length + queue.length + premium.length + utility.length}`);
+                .setFooter({
+                    text: `Total Commands: ${track.length + queue.length + premium.length + utility.length}`
+                });
 
             message.channel.send({ embeds: [embed] });
         } else {
@@ -53,7 +58,10 @@ module.exports = {
 
             const embed = new MessageEmbed()
                 .setColor("BLACK")
-                .setAuthor(`${command.name.charAt(0).toUpperCase() + command.name.slice(1)} Command`, client.config.app.logo)
+                .setAuthor({
+                    name: `${command.name.charAt(0).toUpperCase() + command.name.slice(1)} Command`,
+                    iconURL: client.config.app.logo
+                })
                 .setDescription("Required arguments `<>`, optional arguments `[]`")
                 .setThumbnail(message.guild.iconURL())
                 .setFields(
