@@ -4,6 +4,10 @@ module.exports = {
     category: "Premium",
     description: "Outputs the current volume.",
     utilisation: "{prefix}volume <1-200> - Changes the current volume.",
+    permissions: {
+        channel: [],
+        member: [],
+    },
 
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);

@@ -8,6 +8,10 @@ module.exports = {
     category: "Queue",
     description: "Shows the first page of the queue.",
     utilisation: "{prefix}queue <page>",
+    permissions: {
+        channel: [],
+        member: [],
+    },
 
     async execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
