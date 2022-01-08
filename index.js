@@ -62,5 +62,4 @@ for (const file of events) {
     client.on(file.split(".")[0], event.bind(null, client));
 }
 
-
 client.login(process.env.token);
