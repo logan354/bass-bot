@@ -6,8 +6,8 @@ module.exports = {
     name: "queue",
     aliases: ["q"],
     category: "Queue",
-    description: "Shows the first page of the queue.",
-    utilisation: "{prefix}queue <page>",
+    description: "Shows all currently enqueued songs",
+    utilisation: "{prefix}queue",
     permissions: {
         channel: [],
         member: [],

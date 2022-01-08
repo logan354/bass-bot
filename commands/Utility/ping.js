@@ -2,7 +2,7 @@ module.exports = {
     name: "ping",
     aliases: [],
     category: "Utility",
-    description: "Checks the bot's response time to Discord.",
+    description: "Checks Bass response time to Discord",
     utilisation: "{prefix}ping",
     permissions: {
         channel: [],

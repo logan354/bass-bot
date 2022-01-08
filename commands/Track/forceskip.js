@@ -2,8 +2,8 @@ module.exports = {
     name: "forceskip",
     aliases: ["fs", "fskip"],
     category: "Track",
-    description: "Skips the current playing song immediately.",
-    utilisation: "{prefix}forceskip <number>",
+    description: "Force skips the song that is currently playing",
+    utilisation: "{prefix}forceskip [number]",
     permissions: {
         channel: [],
         member: [],
@@ -33,7 +33,9 @@ module.exports = {
 
         const skipNum = Number(args[0]);
 
-        if (!skipNum || skipNum === 0) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
+        if (!skipNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
+
+        if (skipNum === 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
 
         if (skipNum > serverQueue.tracks.length) skipNum = serverQueue.tracks.length;
 

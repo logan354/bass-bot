@@ -4,7 +4,7 @@ module.exports = {
     name: "seek",
     aliases: [],
     category: "Track",
-    description: "Seeks to a certain point in the current track.",
+    description: "Seeks to a certain point in the current playing track",
     utilisation: "{prefix}seek <time>",
     permissions: {
         channel: [],
@@ -23,7 +23,7 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
-        if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
+        if (!args[0]) return message.channel.send(client.emotes.error + " **A time is required**");
 
         let time = args[0];
 

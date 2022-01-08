@@ -5,10 +5,10 @@ const { formatFormalTime } = require("../../utils/formats");
 const package = require("../../package.json");
 
 module.exports = {
-    name: "stats",
-    aliases: [],
+    name: "statistics",
+    aliases: ["stats"],
     category: "Utility",
-    description: "Shows the bot's statistics",
+    description: "Shows information about Bass statistics",
     utilisation: "{prefix}stats",
     permissions: {
         channel: [],

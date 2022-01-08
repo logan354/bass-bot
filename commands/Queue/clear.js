@@ -2,7 +2,7 @@ module.exports = {
     name: "clear",
     aliases: ["cl"],
     category: "Queue",
-    description: "Clears the whole queue.",
+    description: "Clears the queue",
     utilisation: "{prefix}clear",
     permissions: {
         channel: [],

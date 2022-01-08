@@ -2,7 +2,7 @@ module.exports = {
     name: "loop",
     aliases: ["repeat"],
     category: "Track",
-    description: "Toggles looping for the current playing song.",
+    description: "Toggles looping the current playing song",
     utilisation: "{prefix}loop",
     permissions: {
         channel: [],

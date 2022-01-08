@@ -4,7 +4,7 @@ module.exports = {
     name: "invite",
     aliases: ["links"],
     category: "Utility",
-    description: "Shows Bass's official links!",
+    description: "Shows information on how to invite Bass",
     utilisation: "{prefix}invite",
     permissions: {
         channel: [],

@@ -6,7 +6,7 @@ module.exports = {
     name: "nowplaying",
     aliases: ["np"],
     category: "Track",
-    description: "Shows what song Rythm is currently playing.",
+    description: "Shows the current playing song",
     utilisation: "{prefix}nowplaying",
     permissions: {
         channel: [],

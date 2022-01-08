@@ -2,7 +2,7 @@ module.exports = {
     name: "voteskip",
     aliases: ["skip", "next", "s"],
     category: "Track",
-    description: "Votes to skip the current playing song.",
+    description: "Votes to skip the currently playing song.",
     utilisation: "{prefix}voteskip",
     permissions: {
         channel: [],

@@ -9,7 +9,7 @@ module.exports = {
     name: "search",
     aliases: ["find"],
     category: "Track",
-    description: "Searches for a song via your query and returns the top 10 results.",
+    description: "Shows a list of songs that match the search query",
     utilisation: "{prefix}search <query>",
     permissions: {
         channel: [],

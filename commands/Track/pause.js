@@ -1,8 +1,10 @@
+const { handleStopCooldown } = require("../../utils/cooldowns");
+
 module.exports = {
     name: "pause",
     aliases: ["stop"],
     category: "Track",
-    description: "Pauses the current playing track.",
+    description: "Toggles pause for the current playing track",
     utilisation: "{prefix}pause",
     permissions: {
         channel: [],
@@ -23,6 +25,7 @@ module.exports = {
 
         serverQueue.streamDispatcher.audioPlayer.pause();
         serverQueue.paused = true;
+        handleStopCooldown(serverQueue);
         message.channel.send(client.emotes.pause + " **Paused**");
     }
 }

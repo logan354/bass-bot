@@ -2,7 +2,7 @@ module.exports = {
     name: "loopqueue",
     aliases: ["qloop" , "lq", "queueloop"],
     category: "Queue",
-    description: "Toggles looping for the whole queue.",
+    description: "Toggles looping the entire queue",
     utilisation: "{prefix}loopqueue",
     permissions: {
         channel: [],

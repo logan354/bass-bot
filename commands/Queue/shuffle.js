@@ -2,7 +2,7 @@ module.exports = {
     name: "shuffle",
     aliases: ["random"],
     category: "Queue",
-    description: "Shuffles the entire queue.",
+    description: "Shuffles the queue",
     utilisation: "{prefix}shuffle",
     permissions: {
         channel: [],

@@ -4,7 +4,7 @@ module.exports = {
     name: "join",
     aliases: ["summon"],
     category: "Track",
-    description: "Summons the bot to the voice channel you are in.",
+    description: "Summons the bot to your voice channel",
     utilisation: "{prefix}join",
     permissions: {
         channel: [],

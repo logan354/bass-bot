@@ -10,8 +10,8 @@ module.exports = {
     name: "play",
     aliases: ["p"],
     category: "Track",
-    description: "Plays a song with the given name or url.",
-    utilisation: "{prefix}play <link/query>",
+    description: "Adds a requested song to the queue",
+    utilisation: "{prefix}play [link/query]",
     permissions: {
         channel: [],
         member: [],

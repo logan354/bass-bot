@@ -2,7 +2,7 @@ module.exports = {
     name: "disconnect",
     aliases: ["dc", "leave", "dis"],
     category: "Track",
-    description: "Disconnects the bot from the voice channel it is in.",
+    description: "Disconnects Bass from the voice channel",
     utilisation: "{prefix}disconnect",
     permissions: {
         channel: [],

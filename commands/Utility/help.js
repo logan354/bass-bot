@@ -2,10 +2,10 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "help",
-    aliases: ["h"],
+    aliases: ["info"],
     category: "Utility",
-    description: "Shows the bot's commands.",
-    utilisation: "{prefix}help <command>",
+    description: "Shows information about Bass",
+    utilisation: "{prefix}help [command]",
     permissions: {
         channel: [],
         member: [],

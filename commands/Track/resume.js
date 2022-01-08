@@ -2,7 +2,7 @@ module.exports = {
     name: "resume",
     aliases: ["re", "res", "continue"],
     category: "Track",
-    description: "Resumes paused music.",
+    description: "Resumes the current playing track",
     utilisation: "{prefix}resume",
     permissions: {
         channel: [],
