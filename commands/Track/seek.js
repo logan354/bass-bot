@@ -36,7 +36,7 @@ module.exports = {
         // Returns time in milliseconds
         time = parseDuration(time);
 
-        if (time === 0) return message.channel.send(client.emotes.error + " **Invalid format:** Example formats:\n\n`0:30` `1:30` `2:15` `5:20`");
+        if (time === 0) return message.channel.send(client.emotes.error + " **Invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
 
         if (serverQueue.tracks[0].isLive) return message.channel.send(client.emotes.error + " **Cannot seek a live song**");
 

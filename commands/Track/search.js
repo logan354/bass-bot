@@ -24,7 +24,7 @@ module.exports = {
 
         if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (!args[0]) return message.channel.send(client.emotes.error + " **Invalid input:** `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "`");
+        if (!args[0]) return message.channel.send(client.emotes.error + " **A query is required**");
 
         if (!serverQueue) {
             serverQueue = new Queue(client, {

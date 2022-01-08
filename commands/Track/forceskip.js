@@ -31,11 +31,11 @@ module.exports = {
             return message.channel.send(client.emotes.skip + " **Skipped**");
         }
 
-        const skipNum = Number(args[0]);
+        let skipNum = Number(args[0]);
 
         if (!skipNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
 
-        if (skipNum === 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
+        if (skipNum <= 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
 
         if (skipNum > serverQueue.tracks.length) skipNum = serverQueue.tracks.length;
 
