@@ -110,7 +110,7 @@ module.exports = {
 
             collector.on("end", (collection, reason) => {
                 if (reason === "time") {
-                    sentMessage.edit(client.emotes.error + " **Timeout**");
+                    sentMessage.edit({ content: client.emotes.error + " **Timeout**", embeds: [], components: [] });
                 }
             });
         }
