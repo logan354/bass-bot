@@ -1,8 +1,14 @@
+const { handleEmptyCooldown } = require("../utils/cooldowns");
+
 module.exports = async (client, oldState, newState) => {
     if (oldState && oldState.id === client.user.id && newState && newState.id === client.user.id) {
         const serverQueue = client.queues.get(newState.guild.id);
 
         if (serverQueue) {
+            if (oldState.channel && oldState.channel.id === serverQueue.voiceChannel.id) {
+                // User has left the channel the bot is in
+                handleEmptyCooldown(serverQueue);
+            }
             if (oldState.channel && oldState.channel.id === serverQueue.voiceChannel.id && !newState.channel) {
                 // Bot has been disconnected forcefully
                 //serverQueue.destroy();

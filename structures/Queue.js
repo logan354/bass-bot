@@ -10,6 +10,7 @@ const scdl = require("soundcloud-downloader").default;
 const { searchEngine } = require("./SearchEngine");
 const { StreamDispatcher } = require("./StreamDispatcher");
 const { State } = require("../utils/constants");
+const { handleEndCooldown, handleStopCooldown } = require("../utils/cooldowns");
 
 class Queue {
     /**
@@ -96,6 +97,12 @@ class Queue {
          */
         this.additionalStreamTime = null;
 
+        /**
+         * Cooldown of this queue
+         * @type {?NodeJS.Timeout}
+         */
+        this.cooldown = null;
+
         if (this.client.queues.has(options.guildId)) {
             return this.client.queues.get(options.guildId);
         }
@@ -173,6 +180,7 @@ class Queue {
         }
 
         this.voiceChannel = channel;
+        handleEndCooldown(this);
         this.state = State.CONNECTED;
         return this;
     }
@@ -208,7 +216,10 @@ class Queue {
      * @param {number} seek
      */
     async play(track = this.tracks[0], seek) {
-        if (!track) return;
+        if (!track) {
+            handleEndCooldown(this);
+            return;
+        }
 
         let stream = null;
         let streamType = null;
@@ -305,6 +316,7 @@ class Queue {
         // Set initial pause state
         if (this.paused) {
             this.streamDispatcher.audioPlayer.pause();
+            handleStopCooldown(this);
         }
     }
 }
