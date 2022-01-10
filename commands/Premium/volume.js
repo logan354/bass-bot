@@ -3,7 +3,7 @@ module.exports = {
     aliases: ["vol"],
     category: "Premium",
     description: "Check or change the current volume",
-    utilisation: "{prefix}volume [1-200]",
+    utilisation: "{prefix}volume [number (1-200)]",
     permissions: {
         channel: [],
         member: [],
@@ -23,9 +23,9 @@ module.exports = {
 
         const volume = Number(args[0]);
 
-        if (!volume) return message.channel.send(client.emotes.error + " **Volume must be a number**");
+        if (!volume) return message.channel.send(client.emotes.error + " **Volume must be a number****");
 
-        if (volume < 0 || volume > 200) return message.channel.send(client.emotes.error + " **Volume must be a number between 1 - 200");
+        if (volume < 0 || volume > 200) return message.channel.send(client.emotes.error + " **Volume must be a number between 1 - 200**");
 
         if (!serverQueue.tracks.length) serverQueue.volume = volume;
         else {
