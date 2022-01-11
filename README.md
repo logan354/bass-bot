@@ -16,4 +16,4 @@ Bass has 4 main command categories
 - **Track**: `disconnect`, `forceskip`, `join`, `loop`, `nowplaying`, `pause`, `play`, `resume`, `search`, `seek`, `voteskip`
 - **Queue**: `clear`, `loopqueue`, `queue`, `shuffle`
 - **Premium**: `volume`
-- **Utility**: `debug`, `help`, `invite`, `ping`, `stats`
+- **Utility**: `help`, `invite`, `ping`, `statistics`
