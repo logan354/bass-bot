@@ -63,7 +63,7 @@ class Queue {
 
         /**
          * Skiplist of this queue
-         * @type {string[]}
+         * @type {Snowflake[]}
          */
         this.skiplist = [];
 
@@ -103,6 +103,8 @@ class Queue {
          */
         this.cooldown = null;
 
+        if (!this.client) throw new RangeError("Client has not been initialized");
+
         if (this.client.queues.has(options.guildId)) {
             return this.client.queues.get(options.guildId);
         }
@@ -130,7 +132,7 @@ class Queue {
      * @returns {Queue} 
      */
     async connect(channel = this.voiceChannel) {
-        if (!channel) throw new Error("No voice channel has been set.");
+        if (!channel) throw new RangeError("No voice channel has been initialized");
         this.state = State.CONNECTING;
 
         /**
