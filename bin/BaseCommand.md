@@ -1,4 +1,4 @@
-# Command Structure
+# Base Command Structure
 
 1. Global variables, e.g serverQueue, voiceChannel.
 2. Command boundarys, requirements the user must meet to execute the command.
