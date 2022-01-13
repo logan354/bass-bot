@@ -130,7 +130,7 @@ module.exports = {
                                 .setFooter({
                                     text: "Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
                                     iconURL: message.author.displayAvatarURL()
-                                })
+                                });
 
                             await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
@@ -144,7 +144,7 @@ module.exports = {
                                 .setFooter({
                                     text: "Page " + currentPage + "/" + pages.length + " | Loop: " + loopEmoji + " | Queue Loop: " + loopQueueEmoji,
                                     iconURL: message.author.displayAvatarURL()
-                                })
+                                });
 
                             await sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
