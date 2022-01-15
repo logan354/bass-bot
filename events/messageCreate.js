@@ -1,5 +1,11 @@
+const { Client, Message } = require("discord.js");
+
+/**
+ * @param {Client} client 
+ * @param {Message} message 
+ */
 module.exports = (client, message) => {
-    if (message.author.bot || message.channel.type === "dm") return;
+    if (message.author.bot || message.channel.type === "DM") return;
 
     const prefix = client.config.app.prefix;
 

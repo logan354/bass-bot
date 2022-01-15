@@ -1,5 +1,11 @@
+const { Client, VoiceState } = require("discord.js");
 const { handleEmptyCooldown } = require("../utils/cooldowns");
 
+/**
+ * @param {Client} client 
+ * @param {VoiceState} oldState 
+ * @param {VoiceState} newState 
+ */
 module.exports = async (client, oldState, newState) => {
     if (oldState && oldState.id === client.user.id && newState && newState.id === client.user.id) {
         const serverQueue = client.queues.get(newState.guild.id);

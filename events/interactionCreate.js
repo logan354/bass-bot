@@ -1,7 +1,13 @@
+const { Client, Interaction } = require("discord.js");
+
+/**
+ * @param {Client} client 
+ * @param {Interaction} interaction 
+ */
 module.exports = (client, interaction) => {
     if (!interaction.isCommand()) return;
     
-    if (interaction.user.bot || interaction.channel.type === "dm") return;
+    if (interaction.user.bot || interaction.channel.type === "DM") return;
 
     const args = interaction.options;
     const slashCommand = interaction.commandName;
