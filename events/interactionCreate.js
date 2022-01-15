@@ -8,5 +8,11 @@ module.exports = (client, interaction) => {
 
     const cmd = client.slashCommands.get(slashCommand);
 
-    if (cmd) cmd.execute(client, interaction, args);
+    if (cmd) {
+        try {
+            cmd.execute(client, interaction, args);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
