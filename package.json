@@ -7,9 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js && app.yml"
   },
-  "engines": {
-    "node": "16.10"
-  },
   "author": "Block354",
   "license": "ISC",
   "dependencies": {
