@@ -1,3 +1,5 @@
+const { Client, Message } = require("discord.js");
+
 const { formatDuration, parseDuration } = require("../../utils/formats");
 
 module.exports = {
@@ -6,11 +8,12 @@ module.exports = {
     category: "Track",
     description: "Seeks to a certain point in the current playing track",
     utilisation: "{prefix}seek <time>",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     async execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

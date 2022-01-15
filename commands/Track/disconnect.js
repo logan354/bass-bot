@@ -1,14 +1,17 @@
+const { Client, Message } = require("discord.js");
+
 module.exports = {
     name: "disconnect",
     aliases: ["dc", "leave", "dis"],
     category: "Track",
     description: "Disconnects Bass from the voice channel",
     utilisation: "{prefix}disconnect",
-    permissions: {
-        channel: [],
-        member: [],
-    },
-
+    
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
 

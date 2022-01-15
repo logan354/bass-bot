@@ -1,3 +1,5 @@
+const { Client, Message } = require("discord.js");
+
 const { handleStopCooldown } = require("../../utils/cooldowns");
 
 module.exports = {
@@ -6,11 +8,12 @@ module.exports = {
     category: "Track",
     description: "Toggles pause for the current playing track",
     utilisation: "{prefix}pause",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

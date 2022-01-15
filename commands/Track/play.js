@@ -1,3 +1,5 @@
+const { Client, Message } = require("discord.js");
+
 const { Queue } = require("../../structures/Queue");
 
 const { buildTrack, buildPlaylist } = require("../../utils/builders");
@@ -12,11 +14,12 @@ module.exports = {
     category: "Track",
     description: "Adds a requested song to the queue",
     utilisation: "{prefix}play [link/query]",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     async execute(client, message, args) {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

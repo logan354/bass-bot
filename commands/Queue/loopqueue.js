@@ -1,14 +1,17 @@
+const { Client, Message } = require("discord.js");
+
 module.exports = {
     name: "loopqueue",
-    aliases: ["qloop" , "lq", "queueloop"],
+    aliases: ["qloop", "lq", "queueloop"],
     category: "Queue",
     description: "Toggles looping the entire queue",
     utilisation: "{prefix}loopqueue",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

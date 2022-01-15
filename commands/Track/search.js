@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
+const { Client, Message, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
 
 const { Queue } = require("../../structures/Queue");
 
@@ -11,11 +11,12 @@ module.exports = {
     category: "Track",
     description: "Shows a list of songs that match the search query",
     utilisation: "{prefix}search <query>",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     async execute(client, message, args) {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+const { Client, Message, MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
 
 const { formatChunk, formatDuration } = require("../../utils/formats");
 
@@ -8,11 +8,12 @@ module.exports = {
     category: "Queue",
     description: "Shows all currently enqueued songs",
     utilisation: "{prefix}queue",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     async execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
 

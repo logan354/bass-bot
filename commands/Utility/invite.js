@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { Client, Message, MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "invite",
@@ -6,11 +6,12 @@ module.exports = {
     category: "Utility",
     description: "Shows information on how to invite Bass",
     utilisation: "{prefix}invite",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const embed = new MessageEmbed()
             .setColor("BLACK")

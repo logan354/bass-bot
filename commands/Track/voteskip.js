@@ -1,14 +1,17 @@
+const { Client, Message } = require("discord.js");
+
 module.exports = {
     name: "voteskip",
     aliases: ["skip", "next", "s"],
     category: "Track",
     description: "Votes to skip the currently playing song.",
     utilisation: "{prefix}voteskip",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;

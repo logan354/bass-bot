@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { Client, Message, MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "help",
@@ -6,11 +6,12 @@ module.exports = {
     category: "Utility",
     description: "Shows information about Bass",
     utilisation: "{prefix}help [command]",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         if (!args[0]) {
             // Command categories

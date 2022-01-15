@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { Client, Message, MessageEmbed } = require("discord.js");
 
 const { formatFormalTime } = require("../../utils/formats");
 
@@ -10,11 +10,12 @@ module.exports = {
     category: "Utility",
     description: "Shows information about Bass statistics",
     utilisation: "{prefix}stats",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const memory = 512;
 

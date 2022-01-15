@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { Client, Message, MessageEmbed } = require("discord.js");
 
 const { createProgressBar } = require("../../utils/progressBar");
 
@@ -8,11 +8,12 @@ module.exports = {
     category: "Track",
     description: "Shows the current playing song",
     utilisation: "{prefix}nowplaying",
-    permissions: {
-        channel: [],
-        member: [],
-    },
-
+    
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
 

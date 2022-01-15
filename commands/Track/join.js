@@ -1,3 +1,5 @@
+const { Client, Message } = require("discord.js");
+
 const { Queue } = require("../../structures/Queue");
 
 module.exports = {
@@ -6,11 +8,12 @@ module.exports = {
     category: "Track",
     description: "Summons the bot to your voice channel",
     utilisation: "{prefix}join",
-    permissions: {
-        channel: [],
-        member: [],
-    },
 
+    /**
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args 
+     */
     async execute(client, message, args) {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;
