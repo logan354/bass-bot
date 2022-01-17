@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
+const { Client, Message, Permissions, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
 
 const { Queue } = require("../../structures/Queue");
 
@@ -20,6 +20,11 @@ module.exports = {
     async execute(client, message, args) {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;
+
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        const botPermissionsForVoice = voiceChannel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
+        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
 
         if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
@@ -88,6 +93,9 @@ module.exports = {
                     collector.stop();
 
                     if (serverQueue.state !== State.CONNECTED) {
+                        if (!botPermissionsForVoice.has(Permissions.FLAGS.CONNECT)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Connect in** " + "`" + voiceChannel.name + "`");
+                        if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
+
                         try {
                             await serverQueue.connect();
                         } catch {

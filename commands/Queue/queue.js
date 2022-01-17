@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+const { Client, Message, Permissions, MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
 
 const { formatChunk, formatDuration } = require("../../utils/formats");
 
@@ -16,6 +16,10 @@ module.exports = {
      */
     async execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
+
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
+        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
 
         if (!message.guild.me.voice.channel) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.** Type " + "`" + client.config.app.prefix + "join" + "`" + " to get me in one");
 

@@ -1,4 +1,4 @@
-const { Client, Message } = require("discord.js");
+const { Client, Message, Permissions } = require("discord.js");
 
 const { Queue } = require("../../structures/Queue");
 
@@ -18,6 +18,10 @@ module.exports = {
         let serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;
 
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        const botPermissionsForVoice = voiceChannel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
+
         if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!serverQueue) {
@@ -27,6 +31,9 @@ module.exports = {
                 textChannel: message.channel
             });
         }
+
+        if (!botPermissionsForVoice.has(Permissions.FLAGS.CONNECT)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Connect in** " + "`" + voiceChannel.name + "`");
+        if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
 
         try {
             await serverQueue.connect(voiceChannel);

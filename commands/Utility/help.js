@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require("discord.js");
+const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "help",
@@ -13,6 +13,10 @@ module.exports = {
      * @param {string[]} args 
      */
     execute(client, message, args) {
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
+        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
+
         if (!args[0]) {
             // Command categories
             const track = client.commands.filter(x => x.category == "Track").map((x) => "`" + x.name + "`");

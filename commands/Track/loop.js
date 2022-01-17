@@ -1,4 +1,4 @@
-const { Client, Message } = require("discord.js");
+const { Client, Message, Permissions } = require("discord.js");
 
 module.exports = {
     name: "loop",
@@ -15,6 +15,9 @@ module.exports = {
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
         const voiceChannel = message.member.voice.channel;
+
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
 
         if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 

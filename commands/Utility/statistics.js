@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require("discord.js");
+const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
 
 const { formatFormalTime } = require("../../utils/formats");
 
@@ -18,6 +18,10 @@ module.exports = {
      */
     execute(client, message, args) {
         const memory = 512;
+
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
+        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
+        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
 
         const embed = new MessageEmbed()
             .setColor("BLACK")

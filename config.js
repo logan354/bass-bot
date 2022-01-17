@@ -22,6 +22,7 @@ module.exports = {
         success: "<:Success:896608983568228364>",
         neutral: "<:Neutral:896608983429808129>",
         error: "<:Error:896608983505326101>",
+        permissionError: ":no_entry:",
 
         // Structure emojis
         player: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif",
