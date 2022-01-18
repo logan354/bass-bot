@@ -88,7 +88,7 @@ module.exports = {
                 if (interaction.customId === "search_menu" + `_active${random_num}`) {
                     await interaction.deferUpdate();
 
-                    sentMessage.delete();
+                    sentMessage.edit({ content: "\u200B", embeds: [], components: [] });
                     collector.stop();
 
                     if (serverQueue.state !== State.CONNECTED) {
