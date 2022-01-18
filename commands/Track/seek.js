@@ -34,7 +34,7 @@ module.exports = {
         let time = args[0];
 
         // Checks if a input is 0 because parseDuration returns 0 if input is invalid
-        if (time === "0") {
+        if (Number(time) === 0) {
             await serverQueue.play(serverQueue.tracks[0], time);
             return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
         }
