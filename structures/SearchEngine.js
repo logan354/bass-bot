@@ -5,7 +5,8 @@ const spotify = require("spotify-url-info");
 const scdl = require("soundcloud-downloader").default;
 
 const { LoadType } = require("../utils/constants");
-const { resolveQueryType } = require("../utils/queryResolver")
+const { formatDuration } = require("../utils/formats");
+const { resolveQueryType } = require("../utils/queryResolver");
 
 /**
  * Searches for the query on Youtube, Spotify or Soundcloud
@@ -120,7 +121,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     streamURL: data.external_urls.spotify,
                     thumbnail: data.album.images[0].url,
                     duration: parseInt(data.duration_ms),
-                    durationFormatted: Util.formatDuration(data.duration_ms),
+                    durationFormatted: formatDuration(data.duration_ms),
                     channel: data.artists[0].name,
                     requestedBy: options.requester,
                     isLive: false,
@@ -168,7 +169,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         streamURL: item.track.external_urls.spotify,
                         thumbnail: item.track.album.images[0].url,
                         duration: parseInt(item.track.duration_ms),
-                        durationFormatted: Util.formatDuration(item.track.duration_ms),
+                        durationFormatted: formatDuration(item.track.duration_ms),
                         channel: item.track.artists[0].name,
                         requestedBy: options.requester,
                         isLive: false,
@@ -202,7 +203,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     streamURL: data.permalink_url,
                     thumbnail: data.artwork_url,
                     duration: parseInt(data.duration),
-                    durationFormatted: Util.formatDuration(data.duration),
+                    durationFormatted: formatDuration(data.duration),
                     channel: data.user.username,
                     requestedBy: options.requester,
                     isLive: false,
@@ -247,7 +248,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         streamURL: item.permalink_url,
                         thumbnail: item.artwork_url,
                         duration: parseInt(item.duration),
-                        durationFormatted: Util.formatDuration(item.duration),
+                        durationFormatted: formatDuration(item.duration),
                         channel: item.user.username,
                         requestedBy: options.requester,
                         isLive: false,
