@@ -27,6 +27,9 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return message.channel.send(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
+        const voiceChannelSize = voiceChannel.members.filter(m => !m.user.bot).size;
+        if (voiceChannelSize > 1 && !message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
+        
         const shiffed = serverQueue.tracks.shift();
         serverQueue.tracks = [];
         serverQueue.tracks.push(shiffed);
