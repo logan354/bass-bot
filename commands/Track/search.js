@@ -122,8 +122,7 @@ module.exports = {
                     sentMessage.edit({ content: client.emotes.error + " **Timeout**", embeds: [], components: [] });
                 }
             });
-        }
-        else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching for** `" + query + "`");
+        } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found**");
+        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
     }
 }

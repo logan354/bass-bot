@@ -126,8 +126,7 @@ module.exports = {
                     interaction.editReply({ content: client.emotes.error + " **Timeout**", embeds: [], components: [] });
                 }
             });
-        }
-        else if (res.loadType === LoadType.NO_MATCHES) return interaction.reply(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === LoadType.LOAD_FAILED) return interaction.reply(client.emotes.error + " **Error searching for** `" + query + "`");
+        } else if (res.loadType === LoadType.NO_MATCHES) return interaction.reply(client.emotes.error + " **No results found**");
+        else if (res.loadType === LoadType.LOAD_FAILED) return interaction.reply(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
     }
 }

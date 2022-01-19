@@ -92,7 +92,7 @@ module.exports = {
                 interaction.channel.send({ embeds: [buildPlaylist(res.tracks, res.playlist, serverQueue)] });
                 await serverQueue.play();
             }
-        } else if (res.loadType === LoadType.NO_MATCHES) return interaction.channel.send(client.emotes.error + " **No results found for** `" + query + "`");
-        else if (res.loadType === LoadType.LOAD_FAILED) return interaction.channel.send(client.emotes.error + " **Error searching for** `" + query + "`");
+        } else if (res.loadType === LoadType.NO_MATCHES) return interaction.channel.send(client.emotes.error + " **No results found**");
+        else if (res.loadType === LoadType.LOAD_FAILED) return interaction.channel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
     }
 }
