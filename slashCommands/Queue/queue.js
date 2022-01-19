@@ -115,7 +115,7 @@ module.exports = {
                 const collector = interaction.channel.createMessageComponentCollector(
                     {
                         time: 60000,
-                        errors: ["time"],
+                        errors: ["time", "user"],
                         filter: x => x.user.id === interaction.user.id
                     }
                 );
@@ -154,13 +154,12 @@ module.exports = {
                     } else if (_interaction.customId === "queue_stop" + `_active${random_num}`) {
                         await _interaction.deferUpdate();
 
-                        interaction.deleteReply();
                         collector.stop();
                     } else return;
                 });
 
                 collector.on("end", (collection, reason) => {
-                    if (reason === "time") {
+                    if (reason === "time" || "user") {
                         interaction.editReply({ components: [] });
                     }
                 });
