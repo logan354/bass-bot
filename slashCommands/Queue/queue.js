@@ -135,7 +135,7 @@ module.exports = {
                                     iconURL: interaction.user.displayAvatarURL()
                                 });
 
-                            await interaction.editReply({ embeds: [newEmbed], components: [row] });
+                            interaction.editReply({ embeds: [newEmbed], components: [row] });
                         }
                     } else if (_interaction.customId === "queue_previous_page" + `_active${random_num}`) {
                         await _interaction.deferUpdate();
@@ -149,7 +149,7 @@ module.exports = {
                                     iconURL: interaction.user.displayAvatarURL()
                                 });
 
-                            await interaction.editReply({ embeds: [newEmbed], components: [row] });
+                            interaction.editReply({ embeds: [newEmbed], components: [row] });
                         }
                     } else if (_interaction.customId === "queue_stop" + `_active${random_num}`) {
                         await _interaction.deferUpdate();

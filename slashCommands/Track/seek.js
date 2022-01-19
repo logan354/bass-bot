@@ -35,7 +35,7 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return interaction.reply(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
-        const time = args.getNumber("time");
+        const time = args.getNumber("time") * 1000;
 
         if (serverQueue.tracks[0].isLive) return interaction.reply(client.emotes.error + " **Cannot seek a live song**");
 

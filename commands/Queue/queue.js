@@ -137,7 +137,7 @@ module.exports = {
                                     iconURL: message.author.displayAvatarURL()
                                 });
 
-                            await sentMessage.edit({ embeds: [newEmbed], components: [row] });
+                            sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
                     } else if (interaction.customId === "queue_previous_page" + `_active${random_num}`) {
                         await interaction.deferUpdate();
@@ -151,7 +151,7 @@ module.exports = {
                                     iconURL: message.author.displayAvatarURL()
                                 });
 
-                            await sentMessage.edit({ embeds: [newEmbed], components: [row] });
+                            sentMessage.edit({ embeds: [newEmbed], components: [row] });
                         }
                     } else if (interaction.customId === "queue_stop" + `_active${random_num}`) {
                         await interaction.deferUpdate();

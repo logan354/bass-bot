@@ -64,7 +64,7 @@ module.exports = {
         const query = args.getString("query");
         const queryType = resolveQueryType(query);
 
-        // Searching interaction
+        // Searching message
         let searchEmoji;
         if (queryType.includes("youtube")) searchEmoji = client.emotes.youtube;
         if (queryType.includes("soundcloud")) searchEmoji = client.emotes.soundcloud;
