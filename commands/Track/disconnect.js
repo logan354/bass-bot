@@ -14,6 +14,7 @@ module.exports = {
      */
     execute(client, message, args) {
         const serverQueue = client.queues.get(message.guild.id);
+        const voiceChannel = message.member.voice.channel;
 
         const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
         if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");

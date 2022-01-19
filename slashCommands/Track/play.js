@@ -57,7 +57,7 @@ module.exports = {
                 serverQueue.destroy();
                 return interaction.reply(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
             }
-            interaction.reply(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
+            await interaction.reply(client.emotes.success + " **Successfully joined <#" + voiceChannel.id + "> and bound to** <#" + interaction.channel.id + ">");
         }
 
         // Create query and query type
