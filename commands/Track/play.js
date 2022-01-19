@@ -1,6 +1,6 @@
 const { Client, Message, Permissions } = require("discord.js");
 
-const { Queue } = require("../../structures/Queue");
+const Queue = require("../../structures/Queue");
 
 const { buildTrack, buildPlaylist } = require("../../utils/builders");
 const { LoadType, State } = require("../../utils/constants");

@@ -8,7 +8,7 @@ const YouTube = require("youtube-sr").default;
 const scdl = require("soundcloud-downloader").default;
 
 const { searchEngine } = require("./SearchEngine");
-const { StreamDispatcher } = require("./StreamDispatcher");
+const StreamDispatcher = require("./StreamDispatcher");
 const { State } = require("../utils/constants");
 const { handleEndCooldown, handleStopCooldown } = require("../utils/cooldowns");
 
@@ -136,7 +136,7 @@ class Queue {
         this.state = State.CONNECTING;
 
         /**
-         * Here, we try to establish a connection to a voice channel. If we"re already connected
+         * Here, we try to establish a connection to a voice channel. If we're already connected
          * to this voice channel, @discordjs/voice will just return the existing connection for us!
          */
         const connection = joinVoiceChannel({
@@ -330,4 +330,4 @@ class Queue {
  * @property {TextChannel} textChannel - Discord.js text channel
  */
 
-module.exports = { Queue }
+module.exports = Queue;

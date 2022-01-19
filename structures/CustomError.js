@@ -10,8 +10,8 @@ class CustomError extends Error {
         super();
 
         this.message = message;
-        this.name = "[" + code + "]";
+        this.name = code;
     }
 }
 
-module.exports = { CustomError }
+module.exports = CustomError;

@@ -113,4 +113,4 @@ class StreamDispatcher extends EventEmitter {
  * @param {import("./SearchEngine").Track} metadata
  */
 
-module.exports = { StreamDispatcher }
+module.exports = StreamDispatcher;

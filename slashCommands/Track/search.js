@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
 
-const { Queue } = require("../../structures/Queue");
+const Queue = require("../../structures/Queue");
 
 const { buildTrack } = require("../../utils/builders");
 const { LoadType, State, QueryTypes } = require("../../utils/constants");

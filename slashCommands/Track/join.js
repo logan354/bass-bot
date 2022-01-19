@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
 
-const { Queue } = require("../../structures/Queue");
+const Queue = require("../../structures/Queue");
 
 module.exports = {
     name: "join",
