@@ -3,6 +3,7 @@ module.exports = {
         // Prefix settings
         prefix: ".",
         default_prefix: ".",
+        slash_prefix: "/",
 
         // Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot+applications.commands&permissions=3501128",
