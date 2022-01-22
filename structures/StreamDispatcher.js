@@ -1,5 +1,8 @@
 const { EventEmitter } = require("events");
-const { VoiceConnection, createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus } = require("@discordjs/voice");
+const { promisify } = require("node:util");
+const wait = promisify(setTimeout);
+
+const { VoiceConnection, createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, AudioPlayer } = require("@discordjs/voice");
 
 class StreamDispatcher extends EventEmitter {
     /**
@@ -9,13 +12,27 @@ class StreamDispatcher extends EventEmitter {
      */
     constructor(connection, queue) {
         super();
-
+        
+        /**
+         * Connection of this stream dispatcher
+         * @type {VoiceConnection}
+         */
         this.connection = connection;
+
+        /**
+         * Audio player of this stream dispatcher
+         * @type {AudioPlayer}
+         */
         this.audioPlayer = createAudioPlayer({
             behaviors: {
                 noSubscriber: NoSubscriberBehavior.Pause,
             }
         });
+
+        /**
+         * Queue bound to this stream dispatcher
+         * @type {import("./Queue").Queue}
+         */
         this.queue = queue;
 
         this.connection.on("stateChange", async (_, newState) => {
