@@ -8,7 +8,7 @@ class StreamDispatcher extends EventEmitter {
     /**
      * Stream dispatcher constructor
      * @param {VoiceConnection} connection 
-     * @param {import("./Queue").Queue} queue 
+     * @param {import("./Queue")} queue 
      */
     constructor(connection, queue) {
         super();
@@ -31,7 +31,7 @@ class StreamDispatcher extends EventEmitter {
 
         /**
          * Queue bound to this stream dispatcher
-         * @type {import("./Queue").Queue}
+         * @type {import("./Queue")}
          */
         this.queue = queue;
 

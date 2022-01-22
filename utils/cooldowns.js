@@ -1,6 +1,6 @@
 /**
  * Handles empty cooldown
- * @param {import("../structures/Queue").Queue} queue 
+ * @param {import("../structures/Queue")} queue 
  */
 function handleEmptyCooldown(queue) {
     if (queue.cooldown) {
@@ -19,7 +19,7 @@ function handleEmptyCooldown(queue) {
 
 /**
  * Handles end cooldown
- * @param {import("../structures/Queue").Queue} queue 
+ * @param {import("../structures/Queue")} queue 
  */
 function handleEndCooldown(queue) {
     if (queue.cooldown) {
@@ -38,7 +38,7 @@ function handleEndCooldown(queue) {
 
 /**
  * Handles stop cooldown
- * @param {import("../structures/Queue").Queue} queue 
+ * @param {import("../structures/Queue")} queue 
  */
 function handleStopCooldown(queue) {
     if (queue.cooldown) {
