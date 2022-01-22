@@ -113,7 +113,7 @@ class StreamDispatcher extends EventEmitter {
      * Stops audio player and destroys queue
      */
     stop() {
-        this.audioPlayer.stop();
+        this.audioPlayer.stop(true);
         this.queue.client.queues.delete(this.queue.guildId);
     }
 }
