@@ -35,6 +35,12 @@ class StreamDispatcher extends EventEmitter {
          */
         this.queue = queue;
 
+        /**
+         * Ready lock of this stream dispatcher
+         * @type {boolean}
+         */
+        this.readyLock = false;
+
         this.connection.on("stateChange", async (_, newState) => {
             if (newState.status === VoiceConnectionStatus.Disconnected) {
                 if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
@@ -103,7 +109,7 @@ class StreamDispatcher extends EventEmitter {
 
         this.audioPlayer.on("error", (error) => {
             console.log(error);
-            this.queue.textChannel.send(this.queue.client.emotes.error + " **Error Corrupted Player**");
+            this.queue.textChannel.send(this.queue.client.emotes.error + " **Error** `AudioPlayerError: " + error.message + "`");
         });
 
         this.connection.subscribe(this.audioPlayer);

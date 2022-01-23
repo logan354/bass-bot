@@ -12,7 +12,7 @@ module.exports = {
         slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
 
         // Support server
-        support_server: "https://discord.gg/Yu9yFeAcCb",
+        support_server: "https://discord.gg/ja4KJAj3sU",
 
         // Logo
         logo: "https://cdn.discordapp.com/attachments/886402406500429864/923743847601815603/Logo128.jpg",
@@ -27,7 +27,7 @@ module.exports = {
 
         // Structure emojis
         player: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif",
-        playerFrozen: "<:PlayerFrozen:844386375338819584>",
+        playing: ":notes:",
         youtube: "<:Youtube:844386374143967253>",
         soundcloud: "<:Soundcloud:844386374000836609>",
         spotify: "<:Spotify:844386374182633532>",

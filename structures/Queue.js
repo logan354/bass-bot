@@ -157,11 +157,11 @@ class Queue {
 
             connection.on("error", (error) => {
                 console.log(error);
-                this.textChannel.send(this.client.emotes.error + " **Error Corrupted Connection to** <#" + this.voiceChannel.id + ">");
+                this.textChannel.send(this.client.emotes.error + " **Error** `VoiceConnectionError: " + error.message + "`");
             });
 
             this.streamDispatcher.on("start", (track) => {
-                if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playerFrozen + " **Now Playing** `" + track.title + "`");
+                if (!this.additionalStreamTime) this.textChannel.send(this.client.emotes.playing + " **Now Playing** `" + track.title + "`");
             });
 
             this.streamDispatcher.on("finish", (track) => {
@@ -302,6 +302,7 @@ class Queue {
             streamType = StreamType.Opus;
         }
 
+        // Create resource
         const resource = createAudioResource(stream, {
             inputType: streamType,
             metadata: track,
@@ -311,6 +312,7 @@ class Queue {
         // Set initial volume
         resource.volume.setVolumeLogarithmic(this.volume / 100);
 
+        // Play resoure on audio player
         setTimeout(() => {
             this.streamDispatcher.audioPlayer.play(resource);
         }, bufferTimeout);
