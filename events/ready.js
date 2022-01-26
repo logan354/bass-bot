@@ -22,7 +22,7 @@ module.exports = async (client) => {
 
     client.slashCommands.forEach((slashCommand) => data.push(slashCommand));
 
-    client.application.commands.set([data]);
+    client.application.commands.set(data);
 
     console.log("Successful startup...");
 }
