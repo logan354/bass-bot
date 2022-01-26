@@ -22,7 +22,7 @@ module.exports = async (client) => {
 
     client.slashCommands.forEach((slashCommand) => data.push(slashCommand));
 
-    client.guilds.cache.get("718350376344223754").commands.set(data);
+    client.application.commands.set([data]);
 
     console.log("Successful startup...");
 }
