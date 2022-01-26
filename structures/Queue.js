@@ -128,7 +128,7 @@ class Queue {
 
     /**
      * Connect to the voice or stage channel
-     * @param {VoiceChannel} channel
+     * @param {VoiceChannel} [channel]
      * @returns {Queue} 
      */
     async connect(channel = this.voiceChannel) {
@@ -215,7 +215,7 @@ class Queue {
     /**
      * Create readable stream and plays it on the audio player
      * @param {import("./SearchEngine").Track} track 
-     * @param {number} seek
+     * @param {number} [seek]
      */
     async play(track = this.tracks[0], seek) {
         if (!track) {
