@@ -1,6 +1,6 @@
 const { ErrorCode } = require("../utils/constants");
 
-class BaseError extends Error {
+class CodeError extends Error {
     /**
      * BaseError constructor
      * @param {ErrorCode} code 
@@ -16,4 +16,4 @@ class BaseError extends Error {
     }
 }
 
-module.exports = BaseError;
+module.exports = CodeError;
