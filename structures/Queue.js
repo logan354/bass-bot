@@ -227,79 +227,84 @@ class Queue {
         let streamType = null;
         let bufferTimeout = 0;
 
-        if (track.source === "youtube" || track.source === "spotify") {
-            if (track.source === "spotify") {
-                const streamData = await YouTube.searchOne(track.title);
-                if (!streamData) {
-                    this.skiplist = [];
-                    this.additionalStreamTime = null;
-                    this.tracks.shift();
-                    this.play(this.tracks[0]);
+        try {
+            if (track.source === "youtube" || track.source === "spotify") {
+                if (track.source === "spotify") {
+                    const streamData = await YouTube.searchOne(track.title);
+                    if (!streamData) {
+                        this.skiplist = [];
+                        this.additionalStreamTime = null;
+                        this.tracks.shift();
+                        this.play(this.tracks[0]);
+                    }
+
+                    track.title = streamData.title;
+                    track.streamURL = streamData.url
+                    track.duration = parseInt(streamData.duration);
+                    track.durationFormatted = streamData.durationFormatted;
+                    track.isLive = streamData.live;
+
+                    if (track.isLive === true || track.duration === 0) {
+                        track.durationFormatted = "LIVE";
+                        track.isLive = true;
+                    }
                 }
 
-                track.title = streamData.title;
-                track.streamURL = streamData.url
-                track.duration = parseInt(streamData.duration);
-                track.durationFormatted = streamData.durationFormatted;
-                track.isLive = streamData.live;
+                const info = await play.video_info(track.streamURL);
 
-                if (track.isLive === true || track.duration === 0) {
-                    track.durationFormatted = "LIVE";
-                    track.isLive = true;
+                if (seek) {
+                    if (track.isLive) throw new Error("Cannot seek live tracks");
+
+                    const FFMPEG_OPUS_ARGUMENTS = [
+                        "-analyzeduration",
+                        "0",
+                        "-loglevel",
+                        "0",
+                        "-acodec",
+                        "libopus",
+                        "-f",
+                        "opus",
+                        "-ar",
+                        "48000",
+                        "-ac",
+                        "2",
+                    ];
+
+                    const highestaudio = info.format[info.format.length - 1].url;
+
+                    const final_args = [];
+
+                    final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+
+                    final_args.push("-i", highestaudio);
+
+                    final_args.push(...FFMPEG_OPUS_ARGUMENTS);
+
+                    const ffmpeg_instance = new FFmpeg({
+                        args: final_args,
+                    });
+
+                    stream = ffmpeg_instance;
+                    streamType = StreamType.OggOpus;
+
+                    this.additionalStreamTime = seek;
+                } else {
+                    const play_instance = await play.stream_from_info(info);
+                    stream = play_instance.stream;
+                    streamType = play_instance.type;
                 }
-            }
-
-            const info = await play.video_info(track.streamURL);
-
-            if (seek) {
-                if (track.isLive) throw new Error("Cannot seek live tracks");
-
-                const FFMPEG_OPUS_ARGUMENTS = [
-                    "-analyzeduration",
-                    "0",
-                    "-loglevel",
-                    "0",
-                    "-acodec",
-                    "libopus",
-                    "-f",
-                    "opus",
-                    "-ar",
-                    "48000",
-                    "-ac",
-                    "2",
-                ];
-
-                const highestaudio = info.format[info.format.length - 1].url;
-
-                const final_args = [];
-
-                final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
-
-                final_args.push("-i", highestaudio);
-
-                final_args.push(...FFMPEG_OPUS_ARGUMENTS);
-
-                const ffmpeg_instance = new FFmpeg({
-                    args: final_args,
+            } else if (track.source === "soundcloud") {
+                const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
+                    opusEncoded: true,
+                    seek: seek / 1000,
                 });
 
-                stream = ffmpeg_instance;
-                streamType = StreamType.OggOpus;
-
-                this.additionalStreamTime = seek;
-            } else {
-                const play_instance = await play.stream_from_info(info);
-                stream = play_instance.stream;
-                streamType = play_instance.type;
+                stream = ytdl_instance;
+                streamType = StreamType.Opus;
             }
-        } else if (track.source === "soundcloud") {
-            const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
-                opusEncoded: true,
-                seek: seek / 1000,
-            });
-
-            stream = ytdl_instance;
-            streamType = StreamType.Opus;
+        } catch (error) {
+            console.log(error);
+            this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
         }
 
         // Create resource
