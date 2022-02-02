@@ -312,6 +312,9 @@ class Queue {
             streamType = StreamType.Opus;
         }
 
+        // Test
+        stream.on("error", (error) => { console.log(error) });
+
         // Create resource
         const resource = createAudioResource(stream, {
             inputType: streamType,
