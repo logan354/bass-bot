@@ -295,11 +295,15 @@ class Queue {
                     console.log(error);
                     this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
                 });
+
                 stream = play_instance.stream;
                 streamType = play_instance.type;
             }
         } else if (track.source === "soundcloud") {
-            const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
+            const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL).catch((error) => {
+                console.log(error);
+                this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
+            }), {
                 opusEncoded: true,
                 seek: seek / 1000,
             });
