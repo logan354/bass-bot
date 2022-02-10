@@ -331,7 +331,7 @@ class Queue {
                 this.streamDispatcher.audioPlayer.pause();
                 handleStopCooldown(this);
             }
-        } catch {
+        } catch (error) {
             console.log("caught 1st");
             console.log(error);
             this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
