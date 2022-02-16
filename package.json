@@ -1,6 +1,6 @@
 {
   "name": "bass-bot",
-  "version": "2.0.1-dev.1",
+  "version": "2.0.1-dev.2",
   "description": "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
   "main": "index.js",
   "scripts": {
