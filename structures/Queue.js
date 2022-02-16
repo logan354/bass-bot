@@ -155,9 +155,9 @@ class Queue {
         if (!this.streamDispatcher) {
             this.streamDispatcher = new StreamDispatcher(connection, this);
 
-            connection.on("error", (error) => {
-                console.log(error);
-                this.textChannel.send(this.client.emotes.error + " **Error** `VoiceConnectionError: " + error.message + "`");
+            connection.on("error", (e) => {
+                console.error(e);
+                this.textChannel.send(this.client.emotes.error + " **Error** `VoiceConnectionError: " + e.message + "`");
             });
 
             this.streamDispatcher.on("start", (track) => {
@@ -217,7 +217,7 @@ class Queue {
      * @param {import("./SearchEngine").Track} track 
      * @param {number} [seek]
      */
-    async play(track = this.tracks[0], seek) {
+    async play(track = this.tracks[0], seek = 0) {
         if (!track) {
             handleEndCooldown(this);
             return;
@@ -296,10 +296,7 @@ class Queue {
                 }
 
             } else if (track.source === "soundcloud") {
-                const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL).catch((error) => {
-                    console.log(error);
-                    this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
-                }), {
+                const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
                     opusEncoded: true,
                     seek: seek / 1000,
                 });
@@ -307,34 +304,30 @@ class Queue {
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
             }
+        } catch (e) {
+            console.error(e);
+            this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + e.message + "`");
+        }
 
-            // Test
-            stream.on("error", (error) => { console.log(error) });
+        // Create resource
+        const resource = createAudioResource(stream, {
+            inputType: streamType,
+            metadata: track,
+            inlineVolume: true
+        });
 
-            // Create resource
-            const resource = createAudioResource(stream, {
-                inputType: streamType,
-                metadata: track,
-                inlineVolume: true
-            });
+        // Set initial volume
+        resource.volume.setVolumeLogarithmic(this.volume / 100);
 
-            // Set initial volume
-            resource.volume.setVolumeLogarithmic(this.volume / 100);
+        // Play resoure on audio player
+        setTimeout(() => {
+            this.streamDispatcher.audioPlayer.play(resource);
+        }, bufferTimeout);
 
-            // Play resoure on audio player
-            setTimeout(() => {
-                this.streamDispatcher.audioPlayer.play(resource);
-            }, bufferTimeout);
-
-            // Set initial pause state
-            if (this.paused) {
-                this.streamDispatcher.audioPlayer.pause();
-                handleStopCooldown(this);
-            }
-        } catch (error) {
-            console.log("caught 1st");
-            console.log(error);
-            this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + error.message + "`");
+        // Set initial pause state
+        if (this.paused) {
+            this.streamDispatcher.audioPlayer.pause();
+            handleStopCooldown(this);
         }
     }
 

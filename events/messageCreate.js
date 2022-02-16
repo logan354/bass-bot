@@ -19,8 +19,8 @@ module.exports = (client, message) => {
     if (cmd) {
         try {
             cmd.execute(client, message, args);
-        } catch (error) {
-            console.log(error);
+        } catch (e) {
+            console.error(e);
         }
     }
 }

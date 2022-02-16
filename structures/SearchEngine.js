@@ -347,11 +347,11 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 throw new RangeError("Soundcloud search not supported");
             }
         }
-    } catch (error) {
-        console.log(error)
+    } catch (e) {
+        console.error(e);
         return {
             loadType: LoadType.LOAD_FAILED,
-            exception: error,
+            exception: e,
             tracks: [],
             playlist: null
         }

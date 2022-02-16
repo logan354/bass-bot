@@ -17,8 +17,8 @@ module.exports = (client, interaction) => {
     if (cmd) {
         try {
             cmd.execute(client, interaction, args);
-        } catch (error) {
-            console.log(error);
+        } catch (e) {
+            console.error(e);
         }
     }
 }
