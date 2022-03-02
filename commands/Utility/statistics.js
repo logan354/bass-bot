@@ -8,7 +8,7 @@ module.exports = {
     name: "statistics",
     aliases: ["stats"],
     category: "Utility",
-    description: "Shows information about Bass statistics",
+    description: "Shows information about Bass's statistics",
     utilisation: "{prefix}stats",
 
     /**

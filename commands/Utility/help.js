@@ -27,7 +27,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
                 .setAuthor({
-                    name: "Bass Commands",
+                    name: "Bass's Commands",
                     iconURL: client.config.app.logo
                 })
                 .setDescription("My current prefix in this server is `" + client.config.app.prefix + "` type `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "` to get information about a specific command.")
