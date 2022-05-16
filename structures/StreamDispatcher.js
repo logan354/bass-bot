@@ -107,7 +107,7 @@ class StreamDispatcher extends EventEmitter {
             }
         });
 
-        this.audioPlayer.on("error", (error) => {
+        this.audioPlayer.on("error", (e) => {
             console.error(e);
             this.queue.textChannel.send(this.queue.client.emotes.error + " **Error** `AudioPlayerError: " + e.message + "`");
         });
