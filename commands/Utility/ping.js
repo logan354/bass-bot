@@ -13,8 +13,6 @@ module.exports = {
      * @param {string[]} args 
      */
     execute(client, message, args) {
-        const serverQueue = client.queues.get(message.guild.id);
-
         message.channel.send(client.emotes.ping + " Ping: **" + client.ws.ping + "ms**");
     }
 }

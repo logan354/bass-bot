@@ -3,7 +3,7 @@ const { Client, CommandInteraction, CommandInteractionOptionResolver } = require
 module.exports = {
     name: "ping",
     category: "Utility",
-    description: "Checks Bass response time to Discord",
+    description: "Checks Bass's response time to Discord",
 
     /**
      * @param {Client} client 

@@ -7,7 +7,7 @@ const package = require("../../package.json");
 module.exports = {
     name: "statistics",
     category: "Utility",
-    description: "Shows information about Bass statistics",
+    description: "Shows information about Bass's statistics",
     /**
      * @param {Client} client 
      * @param {CommandInteraction} interaction
