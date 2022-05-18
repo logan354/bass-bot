@@ -16,13 +16,15 @@ module.exports = async (client) => {
         status: "online"
     });
 
+    /**
+     * Registering all slash commands
+     */
     console.log("Registering slash commands...");
 
     const data = [];
-
     client.slashCommands.forEach((slashCommand) => data.push(slashCommand));
-
     client.application.commands.set(data);
+    
 
     console.log("Successful startup...");
 }

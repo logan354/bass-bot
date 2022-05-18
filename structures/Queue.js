@@ -217,7 +217,7 @@ class Queue {
      * @param {import("./SearchEngine").Track} track 
      * @param {number} [seek]
      */
-    async play(track = this.tracks[0], seek = 0 /* test **/) {
+    async play(track = this.tracks[0], seek) {
         if (!track) {
             handleEndCooldown(this);
             return;
