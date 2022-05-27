@@ -13,11 +13,6 @@ module.exports = {
      * @param {string[]} args 
      */
     execute(client, message, args) {
-        const serverQueue = client.queues.get(message.guild.id);
-
         message.channel.send(client.emotes.ping + " Ping: **" + client.ws.ping + "ms**");
-        console.log(serverQueue.streamDispatcher.connection.ping);
-        message.channel.send(client.emotes.ping + " Ping: **" + serverQueue.streamDispatcher.connection.ping.ws + "ms**");
-        message.channel.send(client.emotes.ping + " Ping: **" + serverQueue.streamDispatcher.connection.ping.udp + "ms**");
     }
 }
