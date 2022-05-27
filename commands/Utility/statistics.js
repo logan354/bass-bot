@@ -25,7 +25,7 @@ module.exports = {
         const embed = new MessageEmbed()
             .setColor("BLACK")
             .setAuthor({
-                name: "-- Bass Statistics --",
+                name: "-- Bass's Statistics --",
                 iconURL: client.config.app.logo
             })
             .setFields(

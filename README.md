@@ -6,7 +6,7 @@ A music bot for Discord. With support for YouTube, Spotify and Soundcloud!
 
 ## Features
 
-- ✅ Build on Discord.js v13
+- ✅ Built on Discord.js v13
 - ✅ Supports YouTube, Spotify and Soundcloud!
 
 ## Commands
