@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
 
-const { formatDuration } = require("../../utils/formats");
+const { formatDuration, parseDuration } = require("../../utils/formats");
 
 module.exports = {
     name: "seek",
@@ -9,9 +9,9 @@ module.exports = {
     options: [
         {
             name: "time",
-            description: "Enter a number",
+            description: "Enter a number or time format",
             required: true,
-            type: "NUMBER"
+            type: "STRING"
         }
     ],
 
@@ -35,7 +35,18 @@ module.exports = {
 
         if (!serverQueue.tracks.length) return interaction.reply(client.emotes.error + " **Nothing playing in this server**, let's get this party started! :tada:");
 
-        const time = args.getNumber("time") * 1000;
+        let time = args.getString("time");
+
+        // Checks if a input is 0 because parseDuration returns 0 if input is invalid
+        if (Number(time) === 0) {
+            await serverQueue.play(serverQueue.tracks[0], time);
+            return interaction.reply(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
+        }
+
+        // Returns time in milliseconds
+        time = parseDuration(time);
+
+        if (time === 0) return interaction.reply(client.emotes.error + " **Invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
 
         if (serverQueue.tracks[0].isLive) return interaction.reply(client.emotes.error + " **Cannot seek a live song**");
 
