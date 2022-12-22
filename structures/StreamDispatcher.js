@@ -6,39 +6,39 @@ const { promisify } = require("node:util");
 const wait = promisify(setTimeout);
 
 class StreamDispatcher extends EventEmitter {
-    /**
-     * Stream dispatcher constructor
-     * @param {Queue} queue
-     * @param {VoiceConnection} voiceConnection
-     */
-    constructor(queue, voiceConnection) {
-        super();
-        
-        /**
-         * Connection of this stream dispatcher
-         * @type {VoiceConnection}
-         */
-        this.voiceConnection = voiceConnection;
+	/**
+	 * Stream dispatcher constructor
+	 * @param {Queue} queue
+	 * @param {VoiceConnection} voiceConnection
+	 */
+	constructor(queue, voiceConnection) {
+		super();
 
-        /**
-         * Audio player of this stream dispatcher
-         * @type {AudioPlayer}
-         */
-        this.audioPlayer = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Pause,
-            }
-        });
+		/**
+		 * Connection of this stream dispatcher
+		 * @type {VoiceConnection}
+		 */
+		this.voiceConnection = voiceConnection;
 
-        /**
-         * Queue bound to this stream dispatcher
-         * @type {Queue}
-         */
-        this.queue = queue;
+		/**
+		 * Audio player of this stream dispatcher
+		 * @type {AudioPlayer}
+		 */
+		this.audioPlayer = createAudioPlayer({
+			behaviors: {
+				noSubscriber: NoSubscriberBehavior.Pause,
+			}
+		});
 
-        this.readyLock = false;
+		/**
+		 * Queue bound to this stream dispatcher
+		 * @type {Queue}
+		 */
+		this.queue = queue;
 
-        this.voiceConnection.on("stateChange", async (_, newState) => {
+		this.readyLock = false;
+
+		this.voiceConnection.on("stateChange", async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
 				if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
 					/**
@@ -97,7 +97,7 @@ class StreamDispatcher extends EventEmitter {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
-                this.emit("finish", oldState.resource.metadata)
+				this.emit("finish", oldState.resource.metadata)
 			} else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
 				// If the Playing state has been entered, then a new track has started playback.
 				this.emit("start", newState.resource.metadata);
@@ -107,15 +107,15 @@ class StreamDispatcher extends EventEmitter {
 		this.audioPlayer.on("error", (e) => this.emit("error", e));
 
 		this.voiceConnection.subscribe(this.audioPlayer);
-    }
+	}
 
-    /**
-     * Stops audio playback
-     */
-    stop() {
-        this.audioPlayer.stop(true);
-        this.queue.destroy(false);
-    }
+	/**
+	 * Stops audio playback
+	 */
+	stop() {
+		this.audioPlayer.stop(true);
+		this.queue.destroy(false);
+	}
 }
 
 /**
