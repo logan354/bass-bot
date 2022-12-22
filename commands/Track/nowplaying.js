@@ -1,5 +1,4 @@
 const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
-
 const { createProgressBar } = require("../../utils/progressBar");
 
 module.exports = {

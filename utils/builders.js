@@ -2,7 +2,7 @@ const { MessageEmbed } = require("discord.js");
 
 /**
  * Builds track embeds
- * @param {import("../structures/SearchEngine").Track} track
+ * @param {import("../structures/searchEngine").Track} track
  * @param {import("../structures/Queue")} queue
  * @returns {MessageEmbed}
  */
@@ -42,8 +42,8 @@ function buildTrack(track, queue) {
 
 /**
  * Builds playlist embeds
- * @param {import("../structures/SearchEngine").Track[]} tracks
- * @param {import("../structures/SearchEngine").Playlist} playlist
+ * @param {import("../structures/searchEngine").Track[]} tracks
+ * @param {import("../structures/searchEngine").Playlist} playlist
  * @param {import("../structures/Queue")} queue
  * @returns {MessageEmbed}
  */

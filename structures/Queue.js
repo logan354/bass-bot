@@ -1,24 +1,19 @@
-const { Client, VoiceChannel, TextChannel, Snowflake } = require("discord.js");
+const { Client, Snowflake, TextChannel, VoiceChannel, User } = require("discord.js");
+const { State, QueryTypes, LoadType } = require("../utils/constants");
+const { searchEngine } = require("./searchEngine");
 const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType } = require("@discordjs/voice");
-const { FFmpeg } = require("prism-media");
-
-const play = require("play-dl");
-const ytdl = require("discord-ytdl-core");
-const YouTube = require("youtube-sr").default;
-const scdl = require("soundcloud-downloader").default;
-
-const { searchEngine } = require("./SearchEngine");
 const StreamDispatcher = require("./StreamDispatcher");
-const { State } = require("../utils/constants");
-const { handleEndCooldown, handleStopCooldown } = require("../utils/cooldowns");
+const play = require("play-dl");
+const { FFmpeg } = require("prism-media");
+const ytdl = require("discord-ytdl-core");
+const scdl = require("soundcloud-downloader").default;
 
 class Queue {
     /**
      * Queue constructor
-     * @param {Client} client 
-     * @param {QueueOptions} options 
+     * @param {Client} client
      */
-    constructor(client, options) {
+    constructor(client, guildId, textChannel) {
         /**
          * Client bound to this queue
          * @type {Client}
@@ -33,21 +28,21 @@ class Queue {
 
         /**
          * Guild id of this queue
-         * @type {?Snowflake}
+         * @type {Snowflake}
          */
-        this.guildId = null;
+        this.guildId = guildId;
+
+        /**
+         * Text channel bound to this queue
+         * @type {TextChannel}
+         */
+        this.textChannel = textChannel;
 
         /**
          * Voice channel bound to this queue
          * @type {?VoiceChannel}
          */
         this.voiceChannel = null;
-
-        /**
-         * Text channel bound to this queue
-         * @type {?TextChannel}
-         */
-        this.textChannel = null;
 
         /**
          * Stream dispatcher of this queue
@@ -57,7 +52,7 @@ class Queue {
 
         /**
          * Tracks of this queue
-         * @type {import("./SearchEngine").Track[]}
+         * @type {import("./searchEngine").Track[]}
          */
         this.tracks = [];
 
@@ -97,42 +92,32 @@ class Queue {
          */
         this.additionalStreamTime = null;
 
-        /**
-         * Cooldown of this queue
-         * @type {?NodeJS.Timeout}
-         */
-        this.cooldown = null;
 
-        if (!this.client) throw new RangeError("Client has not been initialized");
-
-        if (this.client.queues.has(options.guildId)) {
-            return this.client.queues.get(options.guildId);
+        if (this.client.queues.has(guildId)) {
+            return this.client.queues.get(guildId);
         }
-
-        if (options.guildId) this.guildId = options.guildId;
-        if (options.voiceChannel) this.voiceChannel = options.voiceChannel;
-        if (options.textChannel) this.textChannel = options.textChannel;
-
-        this.client.queues.set(options.guildId, this);
+        else {
+            this.client.queues.set(guildId, this);
+        }
     }
 
     /**
-     * Shortcut to the SearchEngine on the queue itself.
-     * @param {string} query 
-     * @param {import("./SearchEngine").SearchEngineOptions} options 
-     * @returns {import("./SearchEngine").SearchResult}
+     * Shortcut to the search engine on the queue itself.
+     * @param {string} query
+     * @param {User} requester
+     * @param {import("./searchEngine").SearchEngineOptions} options 
+     * @returns {import("./searchEngine").SearchResult}
      */
-    async search(query, options) {
-        return await searchEngine(query, options);
+    async search(query, requester, options) {
+        return await searchEngine(query, requester, options);
     }
 
     /**
      * Connect to the voice or stage channel
-     * @param {VoiceChannel} [channel]
+     * @param {VoiceChannel} channel
      * @returns {Queue} 
      */
-    async connect(channel = this.voiceChannel) {
-        if (!channel) throw new RangeError("No voice channel has been initialized");
+    async connect(channel) {
         this.state = State.CONNECTING;
 
         /**
@@ -147,17 +132,17 @@ class Queue {
 
         try {
             await entersState(connection, VoiceConnectionStatus.Ready, 20_000);
-        } catch (error) {
+        } catch (e) {
             connection.destroy();
-            throw error;
+            throw e;
         }
 
         if (!this.streamDispatcher) {
-            this.streamDispatcher = new StreamDispatcher(connection, this);
+            this.streamDispatcher = new StreamDispatcher(this, connection);
 
             connection.on("error", (e) => {
                 console.error(e);
-                this.textChannel.send(this.client.emotes.error + " **Error** `VoiceConnectionError: " + e.message + "`");
+                this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError):** `" + e.message + "`");
             });
 
             this.streamDispatcher.on("start", (track) => {
@@ -179,10 +164,14 @@ class Queue {
                     this.play(this.tracks[0]);
                 }
             });
+
+            this.streamDispatcher.on("error", (e) => {
+                console.error(e);
+                this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError):** `" + e.message + "`");
+            });
         }
 
         this.voiceChannel = channel;
-        handleEndCooldown(this);
         this.state = State.CONNECTED;
         return this;
     }
@@ -195,7 +184,7 @@ class Queue {
         if (this.voiceChannel === null) return this;
         this.state = State.DISCONNECTING;
 
-        if (this.streamDispatcher && this.streamDispatcher.connection.state.status !== VoiceConnectionStatus.Destroyed) this.streamDispatcher.connection.destroy();
+        this.streamDispatcher.voiceConnection.destroy();
 
         this.voiceChannel = null;
         this.state = State.DISCONNECTED;
@@ -205,21 +194,22 @@ class Queue {
     /**
      * Destroys the queue
      */
-    destroy() {
+    destroy(disconnect = true) {
         this.state = State.DESTROYING;
-        this.disconnect();
+        if (disconnect) {
+            this.disconnect();
+        }
 
         this.client.queues.delete(this.guildId);
     }
 
     /**
      * Create readable stream and plays it on the audio player
-     * @param {import("./SearchEngine").Track} track 
+     * @param {import("./searchEngine").Track} track 
      * @param {number} [seek]
      */
     async play(track = this.tracks[0], seek) {
         if (!track) {
-            handleEndCooldown(this);
             return;
         }
 
@@ -230,31 +220,30 @@ class Queue {
         try {
             if (track.source === "youtube" || track.source === "spotify") {
                 if (track.source === "spotify") {
-                    const streamData = await YouTube.searchOne(track.title);
-                    if (!streamData) {
-                        this.skiplist = [];
-                        this.additionalStreamTime = null;
+                    const res = await searchEngine(track.channel + " - " + track.title, track.requestedBy, { queryType: QueryTypes.YOUTUBE_SEARCH });
+                    if (res.loadType === LoadType.SEARCH_RESULT) {
+                        track.title = res.tracks[0].title;
+                        track.streamURL = res.tracks[0].url
+                        track.duration = res.tracks[0].duration;
+                        track.durationFormatted = res.tracks[0].durationFormatted;
+                        track.isLive = res.tracks[0].live;
+                    }
+                    else if (res.loadType === LoadType.NO_MATCHES) {
                         this.tracks.shift();
                         this.play(this.tracks[0]);
+                        return this.textChannel.send(client.emotes.error + " **No results found**");
                     }
-
-                    track.title = streamData.title;
-                    track.streamURL = streamData.url
-                    track.duration = parseInt(streamData.duration);
-                    track.durationFormatted = streamData.durationFormatted;
-                    track.isLive = streamData.live;
-
-                    if (track.isLive === true || track.duration === 0) {
-                        track.durationFormatted = "LIVE";
-                        track.isLive = true;
+                    else if (res.loadType === LoadType.LOAD_FAILED) {
+                        this.tracks.shift();
+                        this.play(this.tracks[0]);
+                        return this.textChannel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
                     }
                 }
 
+                // Track info from play-dl
                 const info = await play.video_info(track.streamURL);
 
                 if (seek) {
-                    if (track.isLive) throw new Error("Cannot seek live tracks");
-
                     const FFMPEG_OPUS_ARGUMENTS = [
                         "-analyzeduration",
                         "0",
@@ -275,11 +264,10 @@ class Queue {
                     const final_args = [];
 
                     final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
-
                     final_args.push("-i", highestaudio);
-
                     final_args.push(...FFMPEG_OPUS_ARGUMENTS);
 
+                    // Create readable stream from FFmpeg
                     const ffmpeg_instance = new FFmpeg({
                         args: final_args,
                     });
@@ -289,13 +277,14 @@ class Queue {
 
                     this.additionalStreamTime = seek;
                 } else {
+                    // Create readable stream from play-dl
                     const play_instance = await play.stream_from_info(info);
 
                     stream = play_instance.stream;
                     streamType = play_instance.type;
                 }
-
             } else if (track.source === "soundcloud") {
+                // Create readable stream from discord-ytdl-core
                 const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
                     opusEncoded: true,
                     seek: seek / 1000,
@@ -306,10 +295,10 @@ class Queue {
             }
         } catch (e) {
             console.error(e);
-            this.textChannel.send(this.client.emotes.error + " **Error** `StreamError: " + e.message + "`");
+            this.textChannel.send(this.client.emotes.error + " **Error(StreamError):** `" + e.message + "`");
         }
 
-        // Create resource
+
         const resource = createAudioResource(stream, {
             inputType: streamType,
             metadata: track,
@@ -319,7 +308,6 @@ class Queue {
         // Set initial volume
         resource.volume.setVolumeLogarithmic(this.volume / 100);
 
-        // Play resoure on audio player
         setTimeout(() => {
             this.streamDispatcher.audioPlayer.play(resource);
         }, bufferTimeout);
@@ -327,10 +315,8 @@ class Queue {
         // Set initial pause state
         if (this.paused) {
             this.streamDispatcher.audioPlayer.pause();
-            handleStopCooldown(this);
         }
     }
-
 }
 
 /** 

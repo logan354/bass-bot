@@ -24,11 +24,7 @@ module.exports = {
         if (!voiceChannel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: message.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: message.channel
-            });
+            serverQueue = new Queue(client, message.guild.id, message.channel);
         }
 
         const botPermissionsForVoice = voiceChannel.permissionsFor(message.guild.me);

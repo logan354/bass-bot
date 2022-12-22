@@ -1,24 +1,27 @@
 const { User } = require("discord.js");
-
+const { QueryTypes, LoadType } = require("../utils/constants");
+const { resolveQueryType } = require("../utils/queryResolver");
+const { formatDuration } = require("../utils/formats");
 const YouTube = require("youtube-sr").default;
-const spotify = require("spotify-url-info");
+const fetch = require("isomorphic-unfetch");
+const spotify = require("spotify-url-info")(fetch);
 const scdl = require("soundcloud-downloader").default;
 
-const { LoadType } = require("../utils/constants");
-const { formatDuration } = require("../utils/formats");
-const { resolveQueryType } = require("../utils/queryResolver");
-
 /**
- * Searches for the query on Youtube, Spotify or Soundcloud
+ * Search engine for Youtube, Spotify or Soundcloud
  * @param {string} query 
+ * @param {User} requester
  * @param {SearchEngineOptions} [options]
  * @returns {SearchResult}
  */
-async function searchEngine(query, options = defaultSearchEngineoptions) {
-    if (options.queryType === "auto") options.queryType = resolveQueryType(query);
+async function searchEngine(query, requester, options = defaultSearchEngineOptions) {
+    if (options.queryType === QueryTypes.AUTO) {
+        options.queryType = resolveQueryType(query);
+    }
+
     try {
         switch (options.queryType) {
-            case "youtube-video": {
+            case QueryTypes.YOUTUBE_VIDEO: {
                 const data = await YouTube.getVideo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -35,7 +38,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     duration: parseInt(data.duration),
                     durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
-                    requestedBy: options.requester,
+                    requestedBy: requester,
                     isLive: data.live,
                     source: "youtube"
                 }
@@ -53,7 +56,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "youtube-playlist": {
+            case QueryTypes.YOUTUBE_PLAYLIST: {
                 const data = await YouTube.getPlaylist(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -70,7 +73,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     duration: null,
                     durationFormatted: null,
                     channel: data.channel.name,
-                    requestedBy: options.requester,
+                    requestedBy: requester,
                     source: "youtube"
                 }
 
@@ -85,7 +88,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         duration: parseInt(item.duration),
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        requestedBy: options.requester,
+                        requestedBy: requester,
                         isLive: item.live,
                         source: "youtube"
                     }
@@ -106,7 +109,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "spotify-song": {
+            case QueryTypes.SPOTIFY_SONG: {
                 const data = await spotify.getData(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -119,16 +122,14 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     title: data.name,
                     url: data.external_urls.spotify,
                     streamURL: data.external_urls.spotify,
-                    thumbnail: data.album.images[0].url,
-                    duration: parseInt(data.duration_ms),
-                    durationFormatted: formatDuration(data.duration_ms),
+                    thumbnail: data.coverArt.sources[0].url,
+                    duration: data.duration,
+                    durationFormatted: formatDuration(data.duration),
                     channel: data.artists[0].name,
-                    requestedBy: options.requester,
+                    requestedBy: requester,
                     isLive: false,
                     source: "spotify"
                 }
-
-                track.title = track.channel + " - " + track.title;
 
                 return {
                     loadType: LoadType.TRACK_LOADED,
@@ -138,8 +139,8 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "spotify-album":
-            case "spotify-playlist": {
+            case QueryTypes.SPOTIFY_ALBUM:
+            case QueryTypes.SPOTIFY_PLAYLIST: {
                 const data = await spotify.getData(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -150,33 +151,32 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
 
                 const playlist = {
                     title: data.name,
-                    url: data.external_urls.spotify,
-                    thumbnail: data.images[0].url,
+                    url: data.uri.replace("spotify:playlist:", "https://open.spotify.com/playlist/"),
+                    thumbnail: data.coverArt.sources[0].url,
                     tracks: [],
                     duration: null,
                     durationFormatted: null,
-                    channel: data.owner.display_name,
-                    requestedBy: options.requester,
+                    channel: data.subtitle,
+                    requestedBy: requester,
                     source: "spotify"
                 }
 
-                const list = data.tracks.items;
+                const list = data.trackList;
 
                 for (const item of list) {
                     const track = {
-                        title: item.track.name,
-                        url: item.track.external_urls.spotify,
-                        streamURL: item.track.external_urls.spotify,
-                        thumbnail: item.track.album.images[0].url,
-                        duration: parseInt(item.track.duration_ms),
-                        durationFormatted: formatDuration(item.track.duration_ms),
-                        channel: item.track.artists[0].name,
-                        requestedBy: options.requester,
+                        title: item.title,
+                        url: item.uri.replace("spotify:track:", "https://open.spotify.com/track/"),
+                        streamURL: item.uri.replace("spotify:track:", "https://open.spotify.com/track/"),
+                        thumbnail: "https://www.scdn.co/i/_global/twitter_card-default.jpg",
+                        duration: item.duration,
+                        durationFormatted: formatDuration(item.duration),
+                        channel: item.subtitle,
+                        requestedBy: requester,
                         isLive: false,
                         source: "spotify"
                     }
-
-                    track.title = track.channel + " - " + track.title;
+                    
                     playlist.tracks.push(track);
                 }
 
@@ -188,7 +188,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "soundcloud-song": {
+            case QueryTypes.SOUNDCLOUD_SONG: {
                 const data = await scdl.getInfo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -205,7 +205,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     duration: parseInt(data.duration),
                     durationFormatted: formatDuration(data.duration),
                     channel: data.user.username,
-                    requestedBy: options.requester,
+                    requestedBy: requester,
                     isLive: false,
                     source: "soundcloud"
                 }
@@ -218,7 +218,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "soundcloud-playlist": {
+            case QueryTypes.SOUNDCLOUD_PLAYLIST: {
                 const data = await scdl.getSetInfo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -235,7 +235,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     duration: null,
                     durationFormatted: null,
                     channel: data.user.username,
-                    requestedBy: options.requester,
+                    requestedBy: requester,
                     source: "soundcloud"
                 }
 
@@ -250,7 +250,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         duration: parseInt(item.duration),
                         durationFormatted: formatDuration(item.duration),
                         channel: item.user.username,
-                        requestedBy: options.requester,
+                        requestedBy: requester,
                         isLive: false,
                         source: "soundcloud"
                     }
@@ -266,43 +266,8 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                 }
             }
 
-            case "youtube-video-search": {
-                const data = await YouTube.searchOne(query);
-                if (!data) return {
-                    loadType: LoadType.NO_MATCHES,
-                    exception: null,
-                    tracks: [],
-                    playlist: null
-                }
-
-                const track = {
-                    title: data.title,
-                    url: data.url,
-                    streamURL: data.url,
-                    thumbnail: data.thumbnail.url,
-                    duration: parseInt(data.duration),
-                    durationFormatted: data.durationFormatted,
-                    channel: data.channel.name,
-                    requestedBy: options.requester,
-                    isLive: data.live,
-                    source: "youtube"
-                }
-
-                if (track.isLive === true || track.duration === 0) {
-                    track.durationFormatted = "LIVE";
-                    track.isLive = true;
-                }
-
-                return {
-                    loadType: LoadType.TRACK_LOADED,
-                    exception: null,
-                    tracks: [track],
-                    playlist: null
-                }
-            }
-
             case "youtube-search": {
-                const data = await YouTube.search(query, { limit: 10 });
+                const data = await YouTube.search(query, { limit: options.searchLimit });
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
                     exception: null,
@@ -322,7 +287,7 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                         duration: parseInt(item.duration),
                         durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        requestedBy: options.requester,
+                        requestedBy: requester,
                         isLive: item.live,
                         source: "youtube"
                     }
@@ -342,10 +307,6 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
                     playlist: null
                 }
             }
-
-            case "soundcloud-search": {
-                throw new RangeError("Soundcloud search not supported");
-            }
         }
     } catch (e) {
         console.error(e);
@@ -363,15 +324,15 @@ async function searchEngine(query, options = defaultSearchEngineoptions) {
  * Default options for the Search Engine
  * @type {SearchEngineOptions}
  */
-const defaultSearchEngineoptions = {
-    queryType: "auto",
-    requester: "Unknown"
+const defaultSearchEngineOptions = {
+    queryType: QueryTypes.AUTO,
+    searchLimit: 1
 }
 
 /**
  * @typedef SearchEngineOptions
- * @property {string} queryType - Search query type
- * @property {User|string} requester - User who requested the search
+ * @property {QueryTypes} queryType
+ * @property {number} searchLimit
  */
 
 /**

@@ -1,7 +1,5 @@
 const { Client, Message, Permissions } = require("discord.js");
 
-const { handleStopCooldown } = require("../../utils/cooldowns");
-
 module.exports = {
     name: "pause",
     aliases: ["stop"],
@@ -31,7 +29,6 @@ module.exports = {
 
         serverQueue.streamDispatcher.audioPlayer.pause();
         serverQueue.paused = true;
-        handleStopCooldown(serverQueue);
         message.channel.send(client.emotes.pause + " **Paused**");
     }
 }

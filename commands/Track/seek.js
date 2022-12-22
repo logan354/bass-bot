@@ -1,5 +1,4 @@
 const { Client, Message, Permissions } = require("discord.js");
-
 const { formatDuration, parseDuration } = require("../../utils/formats");
 
 module.exports = {

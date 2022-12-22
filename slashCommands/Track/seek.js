@@ -1,5 +1,4 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
-
 const { formatDuration, parseDuration } = require("../../utils/formats");
 
 module.exports = {

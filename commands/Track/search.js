@@ -1,7 +1,5 @@
 const { Client, Message, Permissions, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
-
 const Queue = require("../../structures/Queue");
-
 const { buildTrack } = require("../../utils/builders");
 const { LoadType, State, QueryTypes } = require("../../utils/constants");
 
@@ -32,19 +30,14 @@ module.exports = {
         if (!args[0]) return message.channel.send(client.emotes.error + " **A query is required**");
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: message.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: message.channel
-            });
+            serverQueue = new Queue(client, message.guild.id, message.channel);
         }
 
         // Create query and query type
         const query = args.join(" ");
-        const queryType = QueryTypes.YOUTUBE_SEARCH;
 
         // Search the users query
-        const res = await serverQueue.search(query, { queryType: queryType, requester: message.author });
+        const res = await serverQueue.search(query, message.author, { queryType: QueryTypes.YOUTUBE_SEARCH });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
@@ -97,7 +90,7 @@ module.exports = {
                         if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
 
                         try {
-                            await serverQueue.connect();
+                            await serverQueue.connect(voiceChannel);
                         } catch {
                             serverQueue.destroy();
                             return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");

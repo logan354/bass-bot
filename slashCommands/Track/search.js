@@ -1,7 +1,5 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions, MessageEmbed, MessageSelectMenu, MessageActionRow } = require("discord.js");
-
 const Queue = require("../../structures/Queue");
-
 const { buildTrack } = require("../../utils/builders");
 const { LoadType, State, QueryTypes } = require("../../utils/constants");
 
@@ -36,19 +34,14 @@ module.exports = {
         if (interaction.guild.me.voice.channel && interaction.member.voice.channel.id !== interaction.guild.me.voice.channel.id) return interaction.reply(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: interaction.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: interaction.channel
-            });
+            serverQueue = new Queue(client, interaction.guild.id, interaction.channel);
         }
 
         // Create query and query type
         const query = args.getString("query");
-        const queryType = QueryTypes.YOUTUBE_SEARCH;
 
         // Search the users query
-        const res = await serverQueue.search(query, { queryType: queryType, requester: interaction.user });
+        const res = await serverQueue.search(query, interaction.user, { queryType: QueryTypes.YOUTUBE_SEARCH });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")
@@ -101,7 +94,7 @@ module.exports = {
                         if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return interaction.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
 
                         try {
-                            await serverQueue.connect();
+                            await serverQueue.connect(voiceChannel);
                         } catch {
                             serverQueue.destroy();
                             return interaction.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");

@@ -1,7 +1,5 @@
 const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
-
 const { formatFormalTime } = require("../../utils/formats");
-
 const package = require("../../package.json");
 
 module.exports = {

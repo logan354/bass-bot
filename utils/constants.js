@@ -1,18 +1,20 @@
 const QueryTypes = {
-    // Playlists
+    // Auto
+    AUTO: "auto",
+
+    // Track
+    YOUTUBE_VIDEO: "youtube-video",
+    SPOTIFY_SONG: "spotify-song",
+    SOUNDCLOUD_SONG: "soundcloud-song",
+
+    // Playlist
     YOUTUBE_PLAYLIST: "youtube-playlist",
     SPOTIFY_ALBUM: "spotify-album",
     SPOTIFY_PLAYLIST: "spotify-playlist",
     SOUNDCLOUD_PLAYLIST: "soundcloud-playlist",
-    // Videos
-    YOUTUBE_VIDEO: "youtube-video",
-    SPOTIFY_SONG: "spotify-song",
-    SOUNDCLOUD_SONG: "soundcloud-song",
-    // General Search
-    YOUTUBE_VIDEO_SEARCH: "youtube-video-search",
-    // Custom searches
+
+    // Search
     YOUTUBE_SEARCH: "youtube-search",
-    SOUNDCLOUD_SEARCH: "soundcloud-search"
 }
 
 const LoadType = {
@@ -31,12 +33,4 @@ const State = {
     DESTROYING: "DESTROYING"
 }
 
-const ErrorCode = {
-    AUDIO_PLAYER_ERROR: "AUDIO_PLAYER_ERROR",
-    VOICE_CONNECTION_ERROR: "VOICE_CONNECTION_ERROR",
-    STREAM_ERROR: "STREAM_ERROR",
-    INVALID_CHANNEL: "INVALID_CHANNEL",
-    LIVE_TRACK: "LIVE_TRACK"
-}
-
-module.exports = { QueryTypes, LoadType, State, ErrorCode }
+module.exports = { QueryTypes, LoadType, State }

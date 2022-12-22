@@ -1,7 +1,5 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
 
-const { handleStopCooldown } = require("../../utils/cooldowns");
-
 module.exports = {
     name: "pause",
     category: "Track",
@@ -29,7 +27,6 @@ module.exports = {
 
         serverQueue.streamDispatcher.audioPlayer.pause();
         serverQueue.paused = true;
-        handleStopCooldown(serverQueue);
         interaction.reply(client.emotes.pause + " **Paused**");
     }
 }

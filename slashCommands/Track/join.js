@@ -1,5 +1,4 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
-
 const Queue = require("../../structures/Queue");
 
 module.exports = {
@@ -22,11 +21,7 @@ module.exports = {
         if (!voiceChannel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: interaction.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: interaction.channel
-            });
+            serverQueue = new Queue(client, interaction.guild.id, interaction.channel);
         }
 
         const botPermissionsForVoice = voiceChannel.permissionsFor(interaction.guild.me);

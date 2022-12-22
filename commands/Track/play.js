@@ -1,12 +1,9 @@
 const { Client, Message, Permissions } = require("discord.js");
-
+const resume = require("./resume");
 const Queue = require("../../structures/Queue");
-
 const { buildTrack, buildPlaylist } = require("../../utils/builders");
 const { LoadType, State } = require("../../utils/constants");
 const { resolveQueryType } = require("../../utils/queryResolver");
-
-const resume = require("./resume");
 
 module.exports = {
     name: "play",
@@ -37,11 +34,7 @@ module.exports = {
         if (!args[0]) return resume.execute(client, message, args);
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: message.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: message.channel
-            });
+            serverQueue = new Queue(client, message.guild.id, message.channel);
         }
 
         if (serverQueue.state !== State.CONNECTED) {
@@ -50,7 +43,7 @@ module.exports = {
             if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
 
             try {
-                await serverQueue.connect();
+                await serverQueue.connect(voiceChannel);
             } catch {
                 serverQueue.destroy();
                 return message.channel.send(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
@@ -70,8 +63,8 @@ module.exports = {
         message.channel.send(searchEmoji + " **Searching...** :mag_right: `" + query + "`");
 
         // Search the users query
-        const res = await serverQueue.search(query, { queryType: queryType, requester: message.author });
-        if (res.loadType === LoadType.TRACK_LOADED) {
+        const res = await serverQueue.search(query, message.author, { queryType: queryType });
+        if (res.loadType === LoadType.TRACK_LOADED || res.loadType === LoadType.SEARCH_RESULT) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(res.tracks[0]);
                 message.channel.send({ embeds: [buildTrack(res.tracks[0], serverQueue)] });

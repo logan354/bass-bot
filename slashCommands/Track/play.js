@@ -1,12 +1,9 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, Permissions } = require("discord.js");
-
+const resume = require("./resume");
 const Queue = require("../../structures/Queue");
-
 const { buildTrack, buildPlaylist } = require("../../utils/builders");
 const { LoadType, State } = require("../../utils/constants");
 const { resolveQueryType } = require("../../utils/queryResolver");
-
-const resume = require("./resume");
 
 module.exports = {
     name: "play",
@@ -39,11 +36,7 @@ module.exports = {
         if (interaction.guild.me.voice.channel && interaction.member.voice.channel.id !== interaction.guild.me.voice.channel.id) return interaction.reply(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
         if (!serverQueue) {
-            serverQueue = new Queue(client, {
-                guildId: interaction.guild.id,
-                voiceChannel: voiceChannel,
-                textChannel: interaction.channel
-            });
+            serverQueue = new Queue(client, interaction.guild.id, interaction.channel);
         }
 
         if (serverQueue.state !== State.CONNECTED) {
@@ -52,7 +45,7 @@ module.exports = {
             if (!botPermissionsForVoice.has(Permissions.FLAGS.SPEAK)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Speak in** " + "`" + voiceChannel.name + "`");
 
             try {
-                await serverQueue.connect();
+                await serverQueue.connect(voiceChannel);
             } catch {
                 serverQueue.destroy();
                 return interaction.reply(client.emotes.error + " **Error joining** <#" + voiceChannel.id + ">");
@@ -74,8 +67,8 @@ module.exports = {
         else interaction.reply(searchEmoji + " **Searching...** :mag_right: `" + query + "`");
 
         // Search the users query
-        const res = await serverQueue.search(query, { queryType: queryType, requester: interaction.user });
-        if (res.loadType === LoadType.TRACK_LOADED) {
+        const res = await serverQueue.search(query, interaction.user, { queryType: queryType });
+        if (res.loadType === LoadType.TRACK_LOADED || res.loadType === LoadType.SEARCH_RESULT) {
             if (serverQueue.tracks.length > 0) {
                 serverQueue.tracks.push(res.tracks[0]);
                 interaction.channel.send({ embeds: [buildTrack(res.tracks[0], serverQueue)] });

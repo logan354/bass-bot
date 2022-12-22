@@ -1,5 +1,5 @@
 const { Client, VoiceState } = require("discord.js");
-const { handleEmptyCooldown } = require("../utils/cooldowns");
+const { State } = require("../utils/constants");
 
 /**
  * @param {Client} client 
@@ -7,22 +7,19 @@ const { handleEmptyCooldown } = require("../utils/cooldowns");
  * @param {VoiceState} newState 
  */
 module.exports = async (client, oldState, newState) => {
-    if (oldState && oldState.id === client.user.id && newState && newState.id === client.user.id) {
-        const serverQueue = client.queues.get(newState.guild.id);
+    if (oldState.id === client.user.id) {
+        const serverQueue = client.queues.get(oldState.guild.id);
 
         if (serverQueue) {
-            if (oldState.channel && oldState.channel.id === serverQueue.voiceChannel.id) {
-                // User has left the channel the bot is in
-                handleEmptyCooldown(serverQueue);
+            if (oldState.channel && newState.channel && newState.channel.id !== oldState.channel.id) {
+                // Bot has been forcefully moved to another channel
+                if (serverQueue.state !== State.CONNECTING) {
+                    await serverQueue.connect(newState.channel);
+                }
             }
-            if (oldState.channel && oldState.channel.id === serverQueue.voiceChannel.id && !newState.channel) {
-                // Bot has been disconnected forcefully
+            else if (oldState.channel && !newState.channel) {
+                // Bot has been forcefully disconnected
                 //serverQueue.destroy();
-            }
-
-            if (oldState.channel && newState.channel && oldState.channel.id !== newState.channel.id) {
-                // Bot has been moved from on channel to another forcefully
-                await serverQueue.connect(newState.channel);
             }
         }
     }
