@@ -32,18 +32,18 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const track = {
                     title: data.title,
-                    url: data.url,
-                    streamURL: data.url,
-                    thumbnail: data.thumbnail.url,
-                    duration: parseInt(data.duration),
-                    durationFormatted: data.durationFormatted,
                     channel: data.channel.name,
-                    requestedBy: requester,
+                    url: data.url,
+                    thumbnail: data.thumbnail.url,
+                    duration: data.duration,
+                    durationFormatted: data.durationFormatted,
                     isLive: data.live,
+                    requestedBy: requester,
                     source: "youtube"
                 }
 
                 if (track.isLive === true || track.duration === 0) {
+                    track.duration = 0;
                     track.durationFormatted = "LIVE";
                     track.isLive = true;
                 }
@@ -67,12 +67,10 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const playlist = {
                     title: data.title,
+                    channel: data.channel.name,
                     url: data.url,
                     thumbnail: data.thumbnail,
                     tracks: [],
-                    duration: null,
-                    durationFormatted: null,
-                    channel: data.channel.name,
                     requestedBy: requester,
                     source: "youtube"
                 }
@@ -82,18 +80,18 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 for (const item of list) {
                     const track = {
                         title: item.title,
-                        url: item.url,
-                        streamURL: item.url,
-                        thumbnail: item.thumbnail.url,
-                        duration: parseInt(item.duration),
-                        durationFormatted: item.durationFormatted,
                         channel: item.channel.name,
-                        requestedBy: requester,
+                        url: item.url,
+                        thumbnail: item.thumbnail.url,
+                        duration: item.duration,
+                        durationFormatted: item.durationFormatted,
                         isLive: item.live,
+                        requestedBy: requester,
                         source: "youtube"
                     }
-
+    
                     if (track.isLive === true || track.duration === 0) {
+                        track.duration = 0;
                         track.durationFormatted = "LIVE";
                         track.isLive = true;
                     }
@@ -109,6 +107,48 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
+            case QueryTypes.YOUTUBE_SEARCH: {
+                const data = await YouTube.search(query, { limit: options.searchLimit });
+                if (!data) return {
+                    loadType: LoadType.NO_MATCHES,
+                    exception: null,
+                    tracks: [],
+                    playlist: null
+                }
+
+                const res = [];
+                const list = data;
+
+                for (const item of list) {
+                    const track = {
+                        title: item.title,
+                        channel: item.channel.name,
+                        url: item.url,
+                        thumbnail: item.thumbnail.url,
+                        duration: item.duration,
+                        durationFormatted: item.durationFormatted,
+                        isLive: item.live,
+                        requestedBy: requester,
+                        source: "youtube"
+                    }
+    
+                    if (track.isLive === true || track.duration === 0) {
+                        track.duration = 0;
+                        track.durationFormatted = "LIVE";
+                        track.isLive = true;
+                    }
+
+                    res.push(track);
+                }
+
+                return SearchResult = {
+                    loadType: LoadType.SEARCH_RESULT,
+                    exception: null,
+                    tracks: res,
+                    playlist: null
+                }
+            }
+
             case QueryTypes.SPOTIFY_SONG: {
                 const data = await spotify.getData(query);
                 if (!data) return {
@@ -120,14 +160,13 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const track = {
                     title: data.name,
+                    channel: data.artists[0].name,
                     url: data.external_urls.spotify,
-                    streamURL: data.external_urls.spotify,
                     thumbnail: data.coverArt.sources[0].url,
                     duration: data.duration,
                     durationFormatted: formatDuration(data.duration),
-                    channel: data.artists[0].name,
-                    requestedBy: requester,
                     isLive: false,
+                    requestedBy: requester,
                     source: "spotify"
                 }
 
@@ -151,12 +190,10 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const playlist = {
                     title: data.name,
+                    channel: data.subtitle,
                     url: data.uri.replace("spotify:playlist:", "https://open.spotify.com/playlist/"),
                     thumbnail: data.coverArt.sources[0].url,
                     tracks: [],
-                    duration: null,
-                    durationFormatted: null,
-                    channel: data.subtitle,
                     requestedBy: requester,
                     source: "spotify"
                 }
@@ -166,14 +203,13 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 for (const item of list) {
                     const track = {
                         title: item.title,
+                        channel: item.subtitle,
                         url: item.uri.replace("spotify:track:", "https://open.spotify.com/track/"),
-                        streamURL: item.uri.replace("spotify:track:", "https://open.spotify.com/track/"),
                         thumbnail: "https://www.scdn.co/i/_global/twitter_card-default.jpg",
                         duration: item.duration,
                         durationFormatted: formatDuration(item.duration),
-                        channel: item.subtitle,
-                        requestedBy: requester,
                         isLive: false,
+                        requestedBy: requester,
                         source: "spotify"
                     }
                     
@@ -199,14 +235,13 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const track = {
                     title: data.title,
-                    url: data.permalink_url,
-                    streamURL: data.permalink_url,
-                    thumbnail: data.artwork_url,
-                    duration: parseInt(data.duration),
-                    durationFormatted: formatDuration(data.duration),
                     channel: data.user.username,
-                    requestedBy: requester,
+                    url: data.permalink_url,
+                    thumbnail: data.artwork_url,
+                    duration: data.duration,
+                    durationFormatted: formatDuration(data.duration),
                     isLive: false,
+                    requestedBy: requester,
                     source: "soundcloud"
                 }
 
@@ -229,12 +264,10 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 
                 const playlist = {
                     title: data.title,
+                    channel: data.user.username,
                     url: data.permalink_url,
                     thumbnail: data.artwork_url,
                     tracks: [],
-                    duration: null,
-                    durationFormatted: null,
-                    channel: data.user.username,
                     requestedBy: requester,
                     source: "soundcloud"
                 }
@@ -244,14 +277,13 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 for (const item of list) {
                     const track = {
                         title: item.title,
-                        url: item.permalink_url,
-                        streamURL: item.permalink_url,
-                        thumbnail: item.artwork_url,
-                        duration: parseInt(item.duration),
-                        durationFormatted: formatDuration(item.duration),
                         channel: item.user.username,
-                        requestedBy: requester,
+                        url: item.permalink_url,
+                        thumbnail: item.artwork_url,
+                        duration: item.duration,
+                        durationFormatted: formatDuration(item.duration),
                         isLive: false,
+                        requestedBy: requester,
                         source: "soundcloud"
                     }
 
@@ -263,48 +295,6 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     exception: null,
                     tracks: playlist.tracks,
                     playlist: playlist
-                }
-            }
-
-            case "youtube-search": {
-                const data = await YouTube.search(query, { limit: options.searchLimit });
-                if (!data) return {
-                    loadType: LoadType.NO_MATCHES,
-                    exception: null,
-                    tracks: [],
-                    playlist: null
-                }
-
-                const res = [];
-                const list = data;
-
-                for (const item of list) {
-                    const track = {
-                        title: item.title,
-                        url: item.url,
-                        streamURL: item.url,
-                        thumbnail: item.thumbnail.url,
-                        duration: parseInt(item.duration),
-                        durationFormatted: item.durationFormatted,
-                        channel: item.channel.name,
-                        requestedBy: requester,
-                        isLive: item.live,
-                        source: "youtube"
-                    }
-
-                    if (track.isLive === true || track.duration === 0) {
-                        track.durationFormatted = "LIVE";
-                        track.isLive = true;
-                    }
-
-                    res.push(track);
-                }
-
-                return SearchResult = {
-                    loadType: LoadType.SEARCH_RESULT,
-                    exception: null,
-                    tracks: res,
-                    playlist: null
                 }
             }
         }
@@ -338,25 +328,23 @@ const defaultSearchEngineOptions = {
 /**
  * @typedef Track
  * @property {string} title - The title of the track
- * @property {string} url - The url of the track
- * @property {string} streamURL - The stream url of the track
- * @property {string} thumbnail - The thumbnail of the track
- * @property {string|number} duration - The duration of the track
- * @property {string} durationFormatted - The formatted duration of the track
  * @property {string} channel - The channel this track is from
- * @property {User} requestedBy - The user that requested this track
+ * @property {string} url - The url of the track
+ * @property {string} thumbnail - The thumbnail of the track
+ * @property {number} duration - The duration of the track
+ * @property {string} durationFormatted - The formatted duration of the track
  * @property {boolean} isLive - If the track is live
+ * @property {User} requestedBy - The user that requested this track
  * @property {string} source - The source this track is from
  */
 
 /**
  * @typedef Playlist
  * @property {string} title - The title of the playlist
+ * @property {string} channel - The channel this playlist is from
  * @property {string} url - The url of the playlist
  * @property {string} thumbnail - The thumbnail of the playlist
- * @property {?string|?number} duration - The duration of the playlist
- * @property {?string} durationFormatted - The formatted duration of the playlist
- * @property {string} channel - The channel this playlist is from
+ * @property {Track[]} tracks - The tracks of the playlist
  * @property {User} requestedBy - The user that requested this playlist
  * @property {string} source - The source this playlist is from
 */

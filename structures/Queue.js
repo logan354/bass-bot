@@ -57,10 +57,16 @@ class Queue {
         this.tracks = [];
 
         /**
-         * Skiplist of this queue
+         * Previous tracks of this queue
+         * @type {import("./searchEngine").Track[]}
+         */
+        this.previousTracks = [];
+
+        /**
+         * Vote skip list of this queue
          * @type {Snowflake[]}
          */
-        this.skiplist = [];
+        this.voteSkipList = [];
 
         /**
          * Paused mode of this queue
@@ -69,16 +75,16 @@ class Queue {
         this.paused = false;
 
         /**
-         * Loop mode of this queue
+         * Repeat mode of this queue
          * @type {boolean}
          */
-        this.loop = false;
+        this.repeat = false;
 
         /**
-         * Loop queue mode of this queue
+         * Track repeat mode of this queue
          * @type {boolean}
          */
-        this.loopQueue = false;
+        this.repeatTrack = false;
 
         /**
          * Volume of this queue
@@ -153,13 +159,15 @@ class Queue {
                 this.skiplist = [];
                 this.additionalStreamTime = null;
 
-                if (this.loop) {
-                    this.play(this.tracks[0]);
-                } else if (this.loopQueue) {
+                if (this.repeat) {
                     const shiffed = this.tracks.shift();
                     this.tracks.push(shiffed);
                     this.play(this.tracks[0]);
-                } else {
+                }
+                else if (this.repeatTrack) {
+                    this.play(this.tracks[0]);
+                }
+                else {
                     this.tracks.shift();
                     this.play(this.tracks[0]);
                 }
@@ -187,6 +195,7 @@ class Queue {
         this.streamDispatcher.voiceConnection.destroy();
 
         this.voiceChannel = null;
+        this.streamDispatcher = null;
         this.state = State.DISCONNECTED;
         return this;
     }
@@ -215,6 +224,7 @@ class Queue {
 
         let stream = null;
         let streamType = null;
+        let streamURL = track.url;
         let bufferTimeout = 0;
 
         try {
@@ -222,11 +232,11 @@ class Queue {
                 if (track.source === "spotify") {
                     const res = await searchEngine(track.channel + " - " + track.title, track.requestedBy, { queryType: QueryTypes.YOUTUBE_SEARCH });
                     if (res.loadType === LoadType.SEARCH_RESULT) {
-                        track.title = res.tracks[0].title;
-                        track.streamURL = res.tracks[0].url
                         track.duration = res.tracks[0].duration;
                         track.durationFormatted = res.tracks[0].durationFormatted;
                         track.isLive = res.tracks[0].live;
+
+                        streamURL = res.tracks[0].url;
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.tracks.shift();
@@ -241,7 +251,7 @@ class Queue {
                 }
 
                 // Track info from play-dl
-                const info = await play.video_info(track.streamURL);
+                const info = await play.video_info(streamURL);
 
                 if (seek) {
                     const FFMPEG_OPUS_ARGUMENTS = [
@@ -285,7 +295,7 @@ class Queue {
                 }
             } else if (track.source === "soundcloud") {
                 // Create readable stream from discord-ytdl-core
-                const ytdl_instance = ytdl.arbitraryStream(await scdl.download(track.streamURL), {
+                const ytdl_instance = ytdl.arbitraryStream(await scdl.download(streamURL), {
                     opusEncoded: true,
                     seek: seek / 1000,
                 });

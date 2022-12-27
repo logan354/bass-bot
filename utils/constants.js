@@ -1,20 +1,17 @@
 const QueryTypes = {
-    // Auto
-    AUTO: "auto",
+    AUTO: "AUTO",
 
-    // Track
-    YOUTUBE_VIDEO: "youtube-video",
-    SPOTIFY_SONG: "spotify-song",
-    SOUNDCLOUD_SONG: "soundcloud-song",
+    YOUTUBE_VIDEO: "YOUTUBE_VIDEO",
+    YOUTUBE_PLAYLIST: "YOUTUBE_PLAYLIST",
 
-    // Playlist
-    YOUTUBE_PLAYLIST: "youtube-playlist",
-    SPOTIFY_ALBUM: "spotify-album",
-    SPOTIFY_PLAYLIST: "spotify-playlist",
-    SOUNDCLOUD_PLAYLIST: "soundcloud-playlist",
+    SPOTIFY_SONG: "SPOTIFY_SONG",
+    SPOTIFY_ALBUM: "SPOTIFY_ALBUM",
+    SPOTIFY_PLAYLIST: "SPOTIFY_PLAYLIST",
 
-    // Search
-    YOUTUBE_SEARCH: "youtube-search",
+    SOUNDCLOUD_SONG: "SOUNDCLOUD_SONG",
+    SOUNDCLOUD_PLAYLIST: "SOUNDCLOUD_PLAYLIST",
+
+    YOUTUBE_SEARCH: "YOUTUBE_SEARCH",
 }
 
 const LoadType = {
