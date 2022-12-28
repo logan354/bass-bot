@@ -148,7 +148,7 @@ class Queue {
 
             connection.on("error", (e) => {
                 console.error(e);
-                this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError):** `" + e.message + "`");
+                this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError)** `" + e.message + "`");
             });
 
             this.streamDispatcher.on("start", (track) => {
@@ -175,7 +175,7 @@ class Queue {
 
             this.streamDispatcher.on("error", (e) => {
                 console.error(e);
-                this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError):** `" + e.message + "`");
+                this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError)** `" + e.message + "`");
             });
         }
 
@@ -305,7 +305,7 @@ class Queue {
             }
         } catch (e) {
             console.error(e);
-            this.textChannel.send(this.client.emotes.error + " **Error(StreamError):** `" + e.message + "`");
+            this.textChannel.send(this.client.emotes.error + " **Error(StreamError)** `" + e.message + "`");
         }
 
 
