@@ -19,7 +19,9 @@ module.exports = async (client, oldState, newState) => {
             }
             else if (oldState.channel && !newState.channel) {
                 // Bot has been forcefully disconnected
-                //serverQueue.destroy();
+                // if (serverQueue.state !== State.DISCONNECTING) {
+                //     serverQueue.destroy();
+                // }
             }
         }
     }

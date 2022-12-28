@@ -9,22 +9,12 @@ module.exports = async (client) => {
     client.user.setPresence({
         activities: [
             {
-                name: `🎧 ${client.config.app.prefix}play`,
+                name: `🎧 /play`,
                 type: "LISTENING"
             }
         ],
         status: "online"
     });
-
-    /**
-     * Registering all slash commands
-     */
-    console.log("Registering slash commands...");
-
-    const data = [];
-    client.slashCommands.forEach((slashCommand) => data.push(slashCommand));
-    client.application.commands.set(data);
-    
 
     console.log("Successful startup...");
 }
