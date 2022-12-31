@@ -49,7 +49,7 @@ class Player {
 
         /**
          * The stream dispatcher of this player
-         * @type {StreamDispatcher}
+         * @type {?StreamDispatcher}
          */
         this.streamDispatcher = null;
 
@@ -158,12 +158,12 @@ class Player {
             });
 
             this.streamDispatcher.on("voiceConnectionError", (error) => {
-                console.error(e);
+                console.error(error);
                 this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError)** `" + error.message + "`");
             });
 
             this.streamDispatcher.on("audioPlayerError", (error) => {
-                console.error(e);
+                console.error(error);
                 this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError)** `" + error.message + "`");
             });
         }
@@ -204,9 +204,9 @@ class Player {
     /**
      * Plays a track on the audio player
      * @param {import("./searchEngine").Track} track
-     * @param {number} [scrub]
+     * @param {number} [seek]
      */
-    async play(track = this.currentTrack, scrub) {
+    async play(track = this.currentTrack, seek) {
         if (!track) return;
         if (!this.currentTrack) this.currentTrack = track;
 
@@ -243,7 +243,7 @@ class Player {
                 // Getting track info from play-dl 
                 const info = await play.video_info(streamURL);
 
-                if (scrub) {
+                if (seek) {
                     const FFMPEG_OPUS_ARGUMENTS = [
                         "-analyzeduration",
                         "0",
@@ -263,7 +263,7 @@ class Player {
 
                     const final_args = [];
 
-                    final_args.push("-ss", `${(scrub / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+                    final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
                     final_args.push("-i", highestaudio);
                     final_args.push(...FFMPEG_OPUS_ARGUMENTS);
 
@@ -275,7 +275,7 @@ class Player {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this.addtionalStreamTime = scrub;
+                    this.addtionalStreamTime = seek;
                 }
                 else {
                     // Create readable stream from play-dl
@@ -289,13 +289,13 @@ class Player {
                 // Create readable stream from discord-ytdl-core
                 const ytdl_instance = ytdl.arbitraryStream(await scdl.download(streamURL), {
                     opusEncoded: true,
-                    seek: scrub / 1000,
+                    seek: seek / 1000,
                 });
 
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
 
-                if (scrub) this.addtionalStreamTime = scrub;
+                if (seek) this.addtionalStreamTime = seek;
             }
         } catch (error) {
             console.error(error);
