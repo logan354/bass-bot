@@ -120,28 +120,10 @@ class Player {
             adapterCreator: channel.guild.voiceAdapterCreator,
         });
 
-        /**
-         * If we're dealing with a connection that isn't yet Ready, we can set a reasonable
-         * time limit before giving up. In this example, we give the voice connection 30 seconds
-         * to enter the ready state before giving up.
-         */
         try {
-            /**
-             * Allow ourselves 30 seconds to join the voice channel. If we do not join within then,
-             * an error is thrown.
-             */
             await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
-            /**
-             * At this point, the voice connection is ready within 30 seconds! This means we can
-             * start playing audio in the voice channel.
-             */
             this.voiceChannel = channel;
         } catch (error) {
-            /**
-             * At this point, the voice connection has not entered the Ready state. We should make
-             * sure to destroy it, and propagate the error by throwing it, so that the calling function
-             * is aware that we failed to connect to the channel.
-             */
             connection.destroy();
             throw error;
         }
@@ -149,8 +131,8 @@ class Player {
         if (!this.streamDispatcher) {
             this.streamDispatcher = new StreamDispatcher(this, connection);
 
-            this.streamDispatcher.on("start", (track) => { 
-                if (!this.addtionalStreamTime) {} // Player
+            this.streamDispatcher.on("start", (track) => {
+                if (!this.addtionalStreamTime) { } // Player
             });
 
             this.streamDispatcher.on("finish", (track) => {
@@ -173,9 +155,9 @@ class Player {
                     this.previousTrack = track;
                     this.play();
                 }
-             });
+            });
 
-            this.streamDispatcher.on("voiceConnectionError", (error) => { 
+            this.streamDispatcher.on("voiceConnectionError", (error) => {
                 console.error(e);
                 this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError)** `" + error.message + "`");
             });
@@ -183,7 +165,7 @@ class Player {
             this.streamDispatcher.on("audioPlayerError", (error) => {
                 console.error(e);
                 this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError)** `" + error.message + "`");
-             });
+            });
         }
 
         this.state = State.CONNECTED;
@@ -336,7 +318,7 @@ class Player {
     /**
      * Pauses the audio player
      */
-    pause() { 
+    pause() {
         this.streamDispatcher.audioPlayer.pause();
         this.paused = true;
     }
