@@ -30,4 +30,10 @@ const State = {
     DESTROYING: "DESTROYING"
 }
 
-module.exports = { QueryTypes, LoadType, State }
+const RepeatMode = {
+    OFF: "OFF",
+    QUEUE: "QUEUE",
+    TRACK: "TRACK"
+}
+
+module.exports = { QueryTypes, LoadType, State, RepeatMode }

@@ -1,5 +1,5 @@
 const { EventEmitter } = require("events");
-const Queue = require("./Queue");
+const Player = require("./Player");
 const { VoiceConnection, createAudioPlayer, NoSubscriberBehavior, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, AudioPlayer, AudioPlayerError } = require("@discordjs/voice");
 const { promisify } = require("node:util");
 
@@ -8,20 +8,20 @@ const wait = promisify(setTimeout);
 class StreamDispatcher extends EventEmitter {
 	/**
 	 * Stream dispatcher constructor
-	 * @param {Queue} queue
+	 * @param {Player} player
 	 * @param {VoiceConnection} voiceConnection
 	 */
-	constructor(queue, voiceConnection) {
+	constructor(player, voiceConnection) {
 		super();
 
 		/**
-		 * Connection of this stream dispatcher
+		 * The connection bound to this stream dispatcher
 		 * @type {VoiceConnection}
 		 */
 		this.voiceConnection = voiceConnection;
 
 		/**
-		 * Audio player of this stream dispatcher
+		 * The audio player of this stream dispatcher
 		 * @type {AudioPlayer}
 		 */
 		this.audioPlayer = createAudioPlayer({
@@ -31,10 +31,10 @@ class StreamDispatcher extends EventEmitter {
 		});
 
 		/**
-		 * Queue bound to this stream dispatcher
-		 * @type {Queue}
+		 * The player bound to this stream dispatcher
+		 * @type {Player}
 		 */
-		this.queue = queue;
+		this.player = player;
 
 		this.readyLock = false;
 
@@ -92,6 +92,8 @@ class StreamDispatcher extends EventEmitter {
 			}
 		});
 
+		this.voiceConnection.on("error", (error) => this.emit("voiceConnectionError", error));
+
 		// Configure audio player
 		this.audioPlayer.on("stateChange", (oldState, newState) => {
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
@@ -104,7 +106,7 @@ class StreamDispatcher extends EventEmitter {
 			}
 		});
 
-		this.audioPlayer.on("error", (e) => this.emit("error", e));
+		this.audioPlayer.on("error", (error) => this.emit("audioPlayerError", error));
 
 		this.voiceConnection.subscribe(this.audioPlayer);
 	}
@@ -117,6 +119,12 @@ class StreamDispatcher extends EventEmitter {
 		this.queue.destroy(false);
 	}
 }
+
+/**
+ * Emitted when the voice connection errors
+ * @event StreamDispatcher#voiceConnectionError
+ * @param error
+ */
 
 /**
  * Emitted when the audio player starts playing
@@ -132,8 +140,8 @@ class StreamDispatcher extends EventEmitter {
 
 /**
  * Emitted when the audio player errors
- * @event StreamDispatcher#error
- * @param {AudioPlayerError} e
+ * @event StreamDispatcher#audioPlayerError
+ * @param {AudioPlayerError} error
  */
 
 module.exports = StreamDispatcher;

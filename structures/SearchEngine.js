@@ -298,20 +298,19 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
         }
-    } catch (e) {
-        console.error(e);
+    } catch (erorr) {
+        console.error(error);
         return {
             loadType: LoadType.LOAD_FAILED,
-            exception: e,
+            exception: error,
             tracks: [],
             playlist: null
         }
     }
 }
 
-
 /**
- * Default options for the Search Engine
+ * Default search engine options
  * @type {SearchEngineOptions}
  */
 const defaultSearchEngineOptions = {
