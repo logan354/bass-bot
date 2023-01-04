@@ -41,7 +41,7 @@ module.exports = {
         const query = args.getString("query");
 
         // Search the users query
-        const res = await serverQueue.search(query, interaction.user, { queryType: QueryTypes.YOUTUBE_SEARCH });
+        const res = await serverQueue.search(query, interaction.user, { queryType: QueryType.YOUTUBE_SEARCH });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")

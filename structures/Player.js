@@ -141,19 +141,17 @@ class Player {
 
                 if (this.repeat === RepeatMode.QUEUE) {
                     const shifted = this.queue.shift();
-                    this.currentTrack = shifted;
                     this.previousTrack = track;
                     this.queue.push(track);
-                    this.play();
+                    this.play(shifted);
                 }
                 else if (this.repeat === RepeatMode.TRACK) {
-                    this.play();
+                    this.play(track);
                 }
                 else {
                     const shifted = this.queue.shift();
-                    this.currentTrack = shifted;
                     this.previousTrack = track;
-                    this.play();
+                    this.play(shifted);
                 }
             });
 
@@ -206,17 +204,18 @@ class Player {
      * @param {import("./searchEngine").Track} track
      * @param {number} [seek]
      */
-    async play(track = this.currentTrack, seek) {
+    async play(track, seek) {
         if (!track) return;
-        if (!this.currentTrack) this.currentTrack = track;
+        this.currentTrack = track;
 
         let stream, streamType;
         let streamURL = track.url;
 
+        // Get a readable stream
         try {
             if (track.source === "youtube" || track.source === "spotify") {
                 if (track.source === "spotify") {
-                    const res = await this.search(track.channel + " - " + track.title, track.requestedBy, { queryType: QueryTypes.YOUTUBE_SEARCH });
+                    const res = await this.search(track.channel + " - " + track.title, track.requestedBy, { queryType: QueryType.YOUTUBE_SEARCH });
                     if (res.loadType === LoadType.SEARCH_RESULT) {
                         track.duration = res.tracks[0].duration;
                         track.durationFormatted = res.tracks[0].durationFormatted;
@@ -226,17 +225,17 @@ class Player {
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.textChannel.send(client.emotes.error + " **No results found**");
+
                         const shifted = this.queue.shift();
-                        this.currentTrack = shifted;
                         this.previousTrack = track;
-                        this.play();
+                        this.play(shifted);
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
                         this.textChannel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
+
                         const shifted = this.queue.shift();
-                        this.currentTrack = shifted;
                         this.previousTrack = track;
-                        this.play();
+                        this.play(shifted);
                     }
                 }
 

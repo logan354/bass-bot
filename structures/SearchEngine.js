@@ -15,13 +15,13 @@ const scdl = require("soundcloud-downloader").default;
  * @returns {SearchResult}
  */
 async function searchEngine(query, requester, options = defaultSearchEngineOptions) {
-    if (options.queryType === QueryTypes.AUTO) {
+    if (options.queryType === QueryType.AUTO) {
         options.queryType = resolveQueryType(query);
     }
 
     try {
         switch (options.queryType) {
-            case QueryTypes.YOUTUBE_VIDEO: {
+            case QueryType.YOUTUBE_VIDEO: {
                 const data = await YouTube.getVideo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -56,7 +56,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.YOUTUBE_PLAYLIST: {
+            case QueryType.YOUTUBE_PLAYLIST: {
                 const data = await YouTube.getPlaylist(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -107,7 +107,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.YOUTUBE_SEARCH: {
+            case QueryType.YOUTUBE_SEARCH: {
                 const data = await YouTube.search(query, { limit: options.searchLimit });
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -149,7 +149,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.SPOTIFY_SONG: {
+            case QueryType.SPOTIFY_SONG: {
                 const data = await spotify.getData(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -178,8 +178,8 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.SPOTIFY_ALBUM:
-            case QueryTypes.SPOTIFY_PLAYLIST: {
+            case QueryType.SPOTIFY_ALBUM:
+            case QueryType.SPOTIFY_PLAYLIST: {
                 const data = await spotify.getData(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -224,7 +224,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.SOUNDCLOUD_SONG: {
+            case QueryType.SOUNDCLOUD_SONG: {
                 const data = await scdl.getInfo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -253,7 +253,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
 
-            case QueryTypes.SOUNDCLOUD_PLAYLIST: {
+            case QueryType.SOUNDCLOUD_PLAYLIST: {
                 const data = await scdl.getSetInfo(query);
                 if (!data) return {
                     loadType: LoadType.NO_MATCHES,
@@ -314,7 +314,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
  * @type {SearchEngineOptions}
  */
 const defaultSearchEngineOptions = {
-    queryType: QueryTypes.AUTO,
+    queryType: QueryType.AUTO,
     searchLimit: 1
 }
 

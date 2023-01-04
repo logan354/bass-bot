@@ -1,4 +1,10 @@
-const QueryTypes = {
+const Source = {
+    YOUTUBE: "YOUTUBE",
+    SPOTIFY: "SPOTIFY",
+    SOUNDCLOUD: "SOUNDCLOUD"
+}
+
+const QueryType = {
     AUTO: "AUTO",
 
     YOUTUBE_VIDEO: "YOUTUBE_VIDEO",
@@ -36,4 +42,4 @@ const RepeatMode = {
     TRACK: "TRACK"
 }
 
-module.exports = { QueryTypes, LoadType, State, RepeatMode }
+module.exports = { Source, QueryType, LoadType, State, RepeatMode }
