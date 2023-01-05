@@ -1,5 +1,5 @@
 const { User } = require("discord.js");
-const { QueryTypes, LoadType } = require("../utils/constants");
+const { QueryType, LoadType, Source } = require("../utils/constants");
 const { resolveQueryType } = require("../utils/queryResolver");
 const { formatDuration } = require("../utils/formats");
 const YouTube = require("youtube-sr").default;
@@ -8,7 +8,7 @@ const spotify = require("spotify-url-info")(fetch);
 const scdl = require("soundcloud-downloader").default;
 
 /**
- * Search engine for Youtube, Spotify or Soundcloud
+ * Search engine for Youtube, Spotify, and Soundcloud
  * @param {string} query 
  * @param {User} requester
  * @param {SearchEngineOptions} [options]
@@ -39,7 +39,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     durationFormatted: data.durationFormatted,
                     isLive: data.live,
                     requestedBy: requester,
-                    source: "youtube"
+                    source: Source.YOUTUBE
                 }
 
                 if (track.isLive === true || track.duration === 0) {
@@ -72,7 +72,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     thumbnail: data.thumbnail,
                     tracks: [],
                     requestedBy: requester,
-                    source: "youtube"
+                    source: Source.YOUTUBE
                 }
 
                 const list = data.videos
@@ -87,9 +87,9 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                         durationFormatted: item.durationFormatted,
                         isLive: item.live,
                         requestedBy: requester,
-                        source: "youtube"
+                        source: Source.YOUTUBE
                     }
-    
+
                     if (track.isLive === true || track.duration === 0) {
                         track.duration = 0;
                         track.durationFormatted = "LIVE";
@@ -129,9 +129,9 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                         durationFormatted: item.durationFormatted,
                         isLive: item.live,
                         requestedBy: requester,
-                        source: "youtube"
+                        source: Source.YOUTUBE
                     }
-    
+
                     if (track.isLive === true || track.duration === 0) {
                         track.duration = 0;
                         track.durationFormatted = "LIVE";
@@ -167,7 +167,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     durationFormatted: formatDuration(data.duration),
                     isLive: false,
                     requestedBy: requester,
-                    source: "spotify"
+                    source: Source.SPOTIFY
                 }
 
                 return {
@@ -195,7 +195,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     thumbnail: data.coverArt.sources[0].url,
                     tracks: [],
                     requestedBy: requester,
-                    source: "spotify"
+                    source: Source.SPOTIFY
                 }
 
                 const list = data.trackList;
@@ -210,9 +210,9 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                         durationFormatted: formatDuration(item.duration),
                         isLive: false,
                         requestedBy: requester,
-                        source: "spotify"
+                        source: Source.SPOTIFY
                     }
-                    
+
                     playlist.tracks.push(track);
                 }
 
@@ -242,7 +242,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     durationFormatted: formatDuration(data.duration),
                     isLive: false,
                     requestedBy: requester,
-                    source: "soundcloud"
+                    source: Source.SOUNDCLOUD
                 }
 
                 return {
@@ -269,7 +269,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     thumbnail: data.artwork_url,
                     tracks: [],
                     requestedBy: requester,
-                    source: "soundcloud"
+                    source: Source.SOUNDCLOUD
                 }
 
                 const list = data.tracks;
@@ -284,7 +284,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                         durationFormatted: formatDuration(item.duration),
                         isLive: false,
                         requestedBy: requester,
-                        source: "soundcloud"
+                        source: Source.SOUNDCLOUD
                     }
 
                     playlist.tracks.push(track);
@@ -334,7 +334,7 @@ const defaultSearchEngineOptions = {
  * @property {string} durationFormatted - The formatted duration of the track
  * @property {boolean} isLive - If the track is live
  * @property {User} requestedBy - The user that requested this track
- * @property {string} source - The source this track is from
+ * @property {Source} source - The source this track is from
  */
 
 /**
@@ -345,7 +345,7 @@ const defaultSearchEngineOptions = {
  * @property {string} thumbnail - The thumbnail of the playlist
  * @property {Track[]} tracks - The tracks of the playlist
  * @property {User} requestedBy - The user that requested this playlist
- * @property {string} source - The source this playlist is from
+ * @property {Source} source - The source this playlist is from
 */
 
 /**

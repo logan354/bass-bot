@@ -19,7 +19,7 @@ client.emotes = client.config.emojis;
 client.commands = new Collection();
 client.slashCommands = new Collection();
 
-client.queues = new Map();
+client.guildPlayers = new Map();
 
 /**
  * Importing all commands

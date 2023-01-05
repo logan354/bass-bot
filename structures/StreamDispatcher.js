@@ -116,7 +116,7 @@ class StreamDispatcher extends EventEmitter {
 	 */
 	stop() {
 		this.audioPlayer.stop(true);
-		this.queue.destroy(false);
+		this.player.destroy(false);
 	}
 }
 

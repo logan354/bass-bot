@@ -1,5 +1,5 @@
 const { Client, TextChannel, VoiceChannel, StageChannel, User } = require("discord.js");
-const { State, RepeatMode, QueryTypes } = require("../utils/constants");
+const { State, RepeatMode, QueryType, Source } = require("../utils/constants");
 const StreamDispatcher = require("./StreamDispatcher");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
@@ -60,12 +60,6 @@ class Player {
         this.queue = [];
 
         /**
-         * The current track of this player
-         * @type {?import("./searchEngine").Track}
-         */
-        this.currentTrack = null;
-
-        /**
          * The previous track of this player
          * @type {?import("./searchEngine").Track}
          */
@@ -89,16 +83,16 @@ class Player {
          */
         this.volume = 100;
 
-        this.voteSkipList = [];
-
         this.addtionalStreamTime = null;
 
+        this.voteSkipList = [];
 
-        if (this.client.players.has(this.guildId)) {
-            return this.client.players.get(this.guildId);
+
+        if (this.client.guildPlayers.has(this.guildId)) {
+            return this.client.guildPlayers.get(this.guildId);
         }
         else {
-            this.client.players.set(this.guildId, this);
+            this.client.guildPlayers.set(this.guildId, this);
         }
     }
 
@@ -132,26 +126,28 @@ class Player {
             this.streamDispatcher = new StreamDispatcher(this, connection);
 
             this.streamDispatcher.on("start", (track) => {
-                if (!this.addtionalStreamTime) { } // Player
+                if (!this.addtionalStreamTime) {
+
+                } // Player
             });
 
             this.streamDispatcher.on("finish", (track) => {
-                this.voteSkipList = [];
                 this.addtionalStreamTime = null;
+                this.voteSkipList = [];
 
                 if (this.repeat === RepeatMode.QUEUE) {
-                    const shifted = this.queue.shift();
+                    this.queue.shift();
                     this.previousTrack = track;
                     this.queue.push(track);
-                    this.play(shifted);
+                    this.play(this.queue[0]);
                 }
                 else if (this.repeat === RepeatMode.TRACK) {
-                    this.play(track);
+                    this.play(this.queue[0]);
                 }
                 else {
-                    const shifted = this.queue.shift();
+                    this.queue.shift();
                     this.previousTrack = track;
-                    this.play(shifted);
+                    this.play(this.queue[0]);
                 }
             });
 
@@ -175,7 +171,7 @@ class Player {
      * @returns {Player}
      */
     disconnect() {
-        if (this.state !== State.CONNECTED) return this;
+        if (this.voiceChannel === null) return this;
         this.state = State.DISCONNECTING;
 
         this.streamDispatcher.voiceConnection.destroy();
@@ -191,12 +187,13 @@ class Player {
      * @param {boolean} [disconnect]
      */
     destroy(disconnect = true) {
-        this.state = State.DESTROYING;
         if (disconnect) {
             this.disconnect();
         }
 
-        this.client.players.delete(this.guildId);
+        this.state = State.DESTROYING;
+
+        this.client.guildPlayers.delete(this.guildId);
     }
 
     /**
@@ -206,15 +203,14 @@ class Player {
      */
     async play(track, seek) {
         if (!track) return;
-        this.currentTrack = track;
 
         let stream, streamType;
         let streamURL = track.url;
 
         // Get a readable stream
         try {
-            if (track.source === "youtube" || track.source === "spotify") {
-                if (track.source === "spotify") {
+            if (track.source === Source.YOUTUBE || track.source === Source.SPOTIFY) {
+                if (track.source === Source.SPOTIFY) {
                     const res = await this.search(track.channel + " - " + track.title, track.requestedBy, { queryType: QueryType.YOUTUBE_SEARCH });
                     if (res.loadType === LoadType.SEARCH_RESULT) {
                         track.duration = res.tracks[0].duration;
@@ -226,16 +222,16 @@ class Player {
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.textChannel.send(client.emotes.error + " **No results found**");
 
-                        const shifted = this.queue.shift();
+                        this.queue.shift();
                         this.previousTrack = track;
-                        this.play(shifted);
+                        this.play(this.queue[0]);
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
                         this.textChannel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
 
-                        const shifted = this.queue.shift();
+                        this.queue.shift();
                         this.previousTrack = track;
-                        this.play(shifted);
+                        this.play(this.queue[0]);
                     }
                 }
 
@@ -284,7 +280,7 @@ class Player {
                     streamType = play_instance.type;
                 }
             }
-            else if (track.source === "soundcloud") {
+            else if (track.source === Source.SOUNDCLOUD) {
                 // Create readable stream from discord-ytdl-core
                 const ytdl_instance = ytdl.arbitraryStream(await scdl.download(streamURL), {
                     opusEncoded: true,
@@ -312,14 +308,6 @@ class Player {
 
         // Play audio resource on audio player
         this.streamDispatcher.audioPlayer.play(resource);
-    }
-
-    /**
-     * Pauses the audio player
-     */
-    pause() {
-        this.streamDispatcher.audioPlayer.pause();
-        this.paused = true;
     }
 
     /**

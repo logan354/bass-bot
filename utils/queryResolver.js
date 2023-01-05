@@ -1,4 +1,4 @@
-const { QueryTypes } = require("./constants");
+const { QueryType } = require("./constants");
 
 const QueryTypesRegex = {
     // Tracks
