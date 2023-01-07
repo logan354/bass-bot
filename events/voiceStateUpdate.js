@@ -8,20 +8,18 @@ const { State } = require("../utils/constants");
  */
 module.exports = async (client, oldState, newState) => {
     if (oldState.id === client.user.id) {
-        const player = client.guildPlayers.get(oldState.guild.id);
+        const serverQueue = client.queues.get(oldState.guild.id);
 
-        if (player) {
+        if (serverQueue) {
             if (oldState.channel && newState.channel && newState.channel.id !== oldState.channel.id) {
                 // Bot has been forcefully moved to another channel
-                if (player.state !== State.CONNECTING) {
-                    await player.connect(newState.channel);
+                if (serverQueue.state !== State.CONNECTING) {
+                    await serverQueue.connect(newState.channel);
                 }
             }
             else if (oldState.channel && !newState.channel) {
                 // Bot has been forcefully disconnected
-                // if (player.state !== State.DISCONNECTING) {
-                //     player.destroy();
-                // }
+                //serverQueue.destroy();
             }
         }
     }

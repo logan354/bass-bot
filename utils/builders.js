@@ -1,14 +1,14 @@
-const { EmbedBuilder } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 
 /**
  * Builds track embeds
  * @param {import("../structures/searchEngine").Track} track
  * @param {import("../structures/Queue")} queue
- * @returns {EmbedBuilder}
+ * @returns {MessageEmbed}
  */
 function buildTrack(track, queue) {
-    const embed = new EmbedBuilder()
-        .setColor("Default")
+    const embed = new MessageEmbed()
+        .setColor("BLACK")
         .setAuthor({
             name: "Added to queue",
             iconURL: queue.client.emotes.player
@@ -22,7 +22,7 @@ function buildTrack(track, queue) {
                 inline: true
             },
             {
-                name: "Track duration",
+                name: "Song Duration",
                 value: track.durationFormatted,
                 inline: true
             },
@@ -45,11 +45,11 @@ function buildTrack(track, queue) {
  * @param {import("../structures/searchEngine").Track[]} tracks
  * @param {import("../structures/searchEngine").Playlist} playlist
  * @param {import("../structures/Queue")} queue
- * @returns {EmbedBuilder}
+ * @returns {MessageEmbed}
  */
 function buildPlaylist(tracks, playlist, queue) {
-    const embed = new EmbedBuilder()
-        .setColor("Default")
+    const embed = new MessageEmbed()
+        .setColor("BLACK")
         .setAuthor({
             name: "Playlist added to queue",
             iconURL: queue.client.emotes.player
@@ -64,7 +64,7 @@ function buildPlaylist(tracks, playlist, queue) {
             },
             {
                 name: "Enqueued",
-                value: "`" + tracks.length + "` tracks",
+                value: "`" + tracks.length + "` songs",
                 inline: true
             },
             {

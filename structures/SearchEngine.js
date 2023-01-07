@@ -161,7 +161,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 const track = {
                     title: data.name,
                     channel: data.artists[0].name,
-                    url: data.external_urls.spotify,
+                    url: data.uri.replace("spotify:track:", "https://open.spotify.com/track/"),
                     thumbnail: data.coverArt.sources[0].url,
                     duration: data.duration,
                     durationFormatted: formatDuration(data.duration),
@@ -298,7 +298,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                 }
             }
         }
-    } catch (erorr) {
+    } catch (error) {
         console.error(error);
         return {
             loadType: LoadType.LOAD_FAILED,
@@ -310,7 +310,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
 }
 
 /**
- * Default search engine options
+ * The default search engine options
  * @type {SearchEngineOptions}
  */
 const defaultSearchEngineOptions = {
@@ -320,7 +320,7 @@ const defaultSearchEngineOptions = {
 
 /**
  * @typedef SearchEngineOptions
- * @property {QueryTypes} queryType
+ * @property {QueryType} queryType
  * @property {number} searchLimit
  */
 

@@ -37,7 +37,7 @@ module.exports = {
         const query = args.join(" ");
 
         // Search the users query
-        const res = await serverQueue.search(query, message.author, { queryType: QueryType.YOUTUBE_SEARCH });
+        const res = await serverQueue.search(query, message.author, { queryType: QueryTypes.YOUTUBE_SEARCH });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new MessageEmbed()
                 .setColor("BLACK")

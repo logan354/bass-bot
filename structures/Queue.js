@@ -1,105 +1,102 @@
-const { Client, TextChannel, VoiceChannel, StageChannel, User } = require("discord.js");
-const { State, RepeatMode, QueryType, Source } = require("../utils/constants");
-const StreamDispatcher = require("./StreamDispatcher");
+const { Client, Snowflake, TextChannel, VoiceChannel, User, StageChannel } = require("discord.js");
+const { State, QueryType, LoadType, Source, RepeatMode } = require("../utils/constants");
+const { searchEngine } = require("./searchEngine");
+const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType } = require("@discordjs/voice");
+const Dispatcher = require("./Dispatcher");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
-const { joinVoiceChannel, entersState, VoiceConnectionStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const ytdl = require("discord-ytdl-core");
-const { searchEngine } = require("./searchEngine");
 const scdl = require("soundcloud-downloader").default;
 
-class Player {
+class Queue {
     /**
-     * Player constructor
-     * @param {Client} client 
-     * @param {import("discord.js").Snowflake} guildId 
-     * @param {TextChannel} textChannel
-     * @returns {Player}
+     * Queue constructor
+     * @param {Client} client
      */
     constructor(client, guildId, textChannel) {
         /**
-         * The state of this player
+         * The client bound to this queue
+         * @type {Client}
+         */
+        this.client = client
+
+        /**
+         * The state of this queue
          * @type {State}
          */
         this.state = State.DISCONNECTED;
 
         /**
-         * The client bound to this player
-         * @type {Client}
-         */
-        this.client = client;
-
-        /**
-         * The guild id bound to this player
-         * @type {import("discord.js").Snowflake}
+         * The guild id bound to this queue
+         * @type {Snowflake}
          */
         this.guildId = guildId;
 
         /**
-         * The text channel bound to this player
+         * The text channel bound to this queue
          * @type {TextChannel}
          */
         this.textChannel = textChannel;
 
         /**
-         * The voice or stage channel of this player
+         * The voice channel of this queue
          * @type {?VoiceChannel|StageChannel}
          */
         this.voiceChannel = null;
 
         /**
-         * The stream dispatcher of this player
-         * @type {?StreamDispatcher}
+         * The dispatcher of this queue
+         * @type {?Dispatcher}
          */
-        this.streamDispatcher = null;
+        this.dispatcher = null;
 
         /**
-         * The queue of this player
+         * The tracks of this queue
          * @type {import("./searchEngine").Track[]}
          */
-        this.queue = [];
+        this.tracks = [];
 
         /**
-         * The previous track of this player
-         * @type {?import("./searchEngine").Track}
+         * The previous tracks of this queue
+         * @param {import("./searchEngine").Track[]}
          */
-        this.previousTrack = null;
+        this.previousTracks = [];
 
         /**
-         * The pause mode of this player
+         * The pause mode of this queue
          * @type {boolean}
          */
         this.paused = false;
 
         /**
-         * The repeat mode of this player
+         * The repeat mode of this queue
          * @type {RepeatMode}
          */
         this.repeat = RepeatMode.OFF;
 
         /**
-         * The volume of this player
+         * The volume of this queue
          * @type {number}
          */
         this.volume = 100;
 
-        this.addtionalStreamTime = null;
+        this.additionalStreamTime = null;
 
         this.voteSkipList = [];
 
 
-        if (this.client.guildPlayers.has(this.guildId)) {
-            return this.client.guildPlayers.get(this.guildId);
+        if (this.client.queues.has(guildId)) {
+            return this.client.queues.get(guildId);
         }
         else {
-            this.client.guildPlayers.set(this.guildId, this);
+            this.client.queues.set(guildId, this);
         }
     }
 
     /**
-     * Connect to a voice or stage channel 
+     * Connects to the voice or stage channel
      * @param {VoiceChannel|StageChannel} channel
-     * @returns {Player}
+     * @returns {Queue} 
      */
     async connect(channel) {
         this.state = State.CONNECTING;
@@ -122,41 +119,45 @@ class Player {
             throw error;
         }
 
-        if (!this.streamDispatcher) {
-            this.streamDispatcher = new StreamDispatcher(this, connection);
+        if (!this.dispatcher) {
+            this.dispatcher = new Dispatcher(this, connection);
 
-            this.streamDispatcher.on("start", (track) => {
-                if (!this.addtionalStreamTime) {
-
-                } // Player
-            });
-
-            this.streamDispatcher.on("finish", (track) => {
-                this.addtionalStreamTime = null;
-                this.voteSkipList = [];
-
-                if (this.repeat === RepeatMode.QUEUE) {
-                    this.queue.shift();
-                    this.previousTrack = track;
-                    this.queue.push(track);
-                    this.play(this.queue[0]);
-                }
-                else if (this.repeat === RepeatMode.TRACK) {
-                    this.play(this.queue[0]);
-                }
-                else {
-                    this.queue.shift();
-                    this.previousTrack = track;
-                    this.play(this.queue[0]);
-                }
-            });
-
-            this.streamDispatcher.on("voiceConnectionError", (error) => {
+            this.dispatcher.on("voiceConnectionError", (error) => {
                 console.error(error);
                 this.textChannel.send(this.client.emotes.error + " **Error(VoiceConnectionError)** `" + error.message + "`");
             });
 
-            this.streamDispatcher.on("audioPlayerError", (error) => {
+            this.dispatcher.on("start", (track) => { 
+
+            });
+
+            this.dispatcher.on("finish", (track) => { 
+                this.additionalStreamTime = null;
+                this.voteSkipList = [];
+                
+                if (this.repeat === RepeatMode.QUEUE) {
+                    this.tracks.shift();
+                    this.previousTracks = track;
+
+                    if (this.previousTracks > 5) this.previousTracks.shift();
+
+                    this.tracks.push(track);
+                    this.play(this.tracks[0]);
+                }
+                else if (this.repeat === RepeatMode.TRACK) {
+                    this.play(this.tracks[0]);
+                }
+                else {
+                    this.tracks.shift();
+                    this.previousTracks = track;
+
+                    if (this.previousTracks > 5) this.previousTracks.shift();
+
+                    this.play(this.tracks[0]);
+                }
+            });
+
+            this.dispatcher.on("audioPlayerError", (error) => {
                 console.error(error);
                 this.textChannel.send(this.client.emotes.error + " **Error(AudioPlayerError)** `" + error.message + "`");
             });
@@ -167,23 +168,21 @@ class Player {
     }
 
     /**
-     * Disconnects from a voice or stage channel
-     * @returns {Player}
+     * Disconnects from the voice or stage channel
+     * @returns {Queue}
      */
     disconnect() {
-        if (this.voiceChannel === null) return this;
+        if (this.state !== State.CONNECTED) return this;
         this.state = State.DISCONNECTING;
 
-        this.streamDispatcher.voiceConnection.destroy();
-        this.voiceChannel = null;
-        this.streamDispatcher = null;
+        this.dispatcher.voiceConnection.destroy();
 
         this.state = State.DISCONNECTED;
         return this;
     }
 
     /**
-     * Destroys the player
+     * Destroys the queue
      * @param {boolean} [disconnect]
      */
     destroy(disconnect = true) {
@@ -193,15 +192,15 @@ class Player {
 
         this.state = State.DESTROYING;
 
-        this.client.guildPlayers.delete(this.guildId);
+        this.client.queues.delete(this.guildId);
     }
 
     /**
-     * Plays a track on the audio player
-     * @param {import("./searchEngine").Track} track
+     * Create readable stream and plays it on the audio player
+     * @param {import("./searchEngine").Track} track 
      * @param {number} [seek]
      */
-    async play(track, seek) {
+    async play(track = this.tracks[0], seek) {
         if (!track) return;
 
         let stream, streamType;
@@ -221,17 +220,19 @@ class Player {
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.textChannel.send(client.emotes.error + " **No results found**");
-
-                        this.queue.shift();
-                        this.previousTrack = track;
-                        this.play(this.queue[0]);
+                        
+                        this.tracks.shift();
+                        this.play(this.tracks[0]);
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
                         this.textChannel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
 
-                        this.queue.shift();
-                        this.previousTrack = track;
-                        this.play(this.queue[0]);
+                        this.tracks.shift();
+                        this.previousTracks = track;
+    
+                        if (this.previousTracks > 5) this.previousTracks.shift();
+    
+                        this.play(this.tracks[0]);
                     }
                 }
 
@@ -307,18 +308,19 @@ class Player {
         resource.volume.setVolumeLogarithmic(this.volume / 100);
 
         // Play audio resource on audio player
-        this.streamDispatcher.audioPlayer.play(resource);
+        this.dispatcher.audioPlayer.play(resource);
     }
 
     /**
-     * Shortcut to the search engine on the player itself
-     * @param {string} query 
-     * @param {User} requester 
+     * Shortcut to the search engine on the queue itself.
+     * @param {string} query
+     * @param {User} requester
      * @param {import("./searchEngine").SearchEngineOptions} options 
+     * @returns {import("./searchEngine").SearchResult}
      */
     async search(query, requester, options) {
         return await searchEngine(query, requester, options);
     }
 }
 
-module.exports = Player;
+module.exports = Queue;

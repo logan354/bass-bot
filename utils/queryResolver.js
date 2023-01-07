@@ -1,6 +1,6 @@
 const { QueryType } = require("./constants");
 
-const QueryTypesRegex = {
+const QueryTypeRegex = {
     // Tracks
     YOUTUBE_VIDEO: /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi,
     SPOTIFY_SONG: /https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/)(?:track\/|\?uri=spotify:track:)((\w|-){22})/,
@@ -16,18 +16,18 @@ const QueryTypesRegex = {
 /**
  * Resolves query type
  * @param {string} query
- * @returns {QueryTypes}
+ * @returns {QueryType}
  */
 function resolveQueryType(query) {
     // Check if the query matches a playlist regex
-    if (query.match(QueryTypesRegex.YOUTUBE_PLAYLIST)) return QueryType.YOUTUBE_PLAYLIST;
-    if (query.match(QueryTypesRegex.SPOTIFY_ALBUM)) return QueryType.SPOTIFY_ALBUM;
-    if (query.match(QueryTypesRegex.SPOTIFY_PLAYLIST)) return QueryType.SPOTIFY_PLAYLIST;
-    if (query.match(QueryTypesRegex.SOUNDCLOUD_PLAYLIST)) return QueryType.SOUNDCLOUD_PLAYLIST;
+    if (query.match(QueryTypeRegex.YOUTUBE_PLAYLIST)) return QueryType.YOUTUBE_PLAYLIST;
+    if (query.match(QueryTypeRegex.SPOTIFY_ALBUM)) return QueryType.SPOTIFY_ALBUM;
+    if (query.match(QueryTypeRegex.SPOTIFY_PLAYLIST)) return QueryType.SPOTIFY_PLAYLIST;
+    if (query.match(QueryTypeRegex.SOUNDCLOUD_PLAYLIST)) return QueryType.SOUNDCLOUD_PLAYLIST;
     // Check if the query matches a track regex
-    if (query.match(QueryTypesRegex.YOUTUBE_VIDEO)) return QueryType.YOUTUBE_VIDEO;
-    if (query.match(QueryTypesRegex.SPOTIFY_SONG)) return QueryType.SPOTIFY_SONG;
-    if (query.match(QueryTypesRegex.SOUNDCLOUD_SONG)) return QueryType.SOUNDCLOUD_SONG;
+    if (query.match(QueryTypeRegex.YOUTUBE_VIDEO)) return QueryType.YOUTUBE_VIDEO;
+    if (query.match(QueryTypeRegex.SPOTIFY_SONG)) return QueryType.SPOTIFY_SONG;
+    if (query.match(QueryTypeRegex.SOUNDCLOUD_SONG)) return QueryType.SOUNDCLOUD_SONG;
     // If playlist and track regex checks are false default to search
     return QueryType.YOUTUBE_SEARCH;
 }

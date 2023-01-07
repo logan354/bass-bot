@@ -57,9 +57,10 @@ module.exports = {
 
         // Searching message
         let searchEmoji;
-        if (queryType.includes("YOUTUBE")) searchEmoji = client.emotes.youtube;
-        if (queryType.includes("SPOTIFY")) searchEmoji = client.emotes.spotify;
-        if (queryType.includes("SOUNDCLOUD")) searchEmoji = client.emotes.soundcloud;
+        if (queryType.includes("youtube")) searchEmoji = client.emotes.youtube;
+        if (queryType.includes("soundcloud")) searchEmoji = client.emotes.soundcloud;
+        if (queryType.includes("spotify")) searchEmoji = client.emotes.spotify;
+        message.channel.send(searchEmoji + " **Searching...** :mag_right: `" + query + "`");
 
         // Search the users query
         const res = await serverQueue.search(query, message.author, { queryType: queryType });
