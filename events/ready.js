@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client, ActivityType } = require("discord.js");
 
 /**
  * @param {Client} client 
@@ -9,22 +9,10 @@ module.exports = async (client) => {
     client.user.setPresence({
         activities: [
             {
-                name: `🎧 ${client.config.app.prefix}play`,
-                type: "LISTENING"
+                name: "/play",
+                type: ActivityType.Playing
             }
         ],
         status: "online"
     });
-
-    /**
-     * Registering all slash commands
-     */
-    console.log("Registering slash commands...");
-
-    const data = [];
-    client.slashCommands.forEach((slashCommand) => data.push(slashCommand));
-    client.application.commands.set(data);
-    
-
-    console.log("Successful startup...");
 }

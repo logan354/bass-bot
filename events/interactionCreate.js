@@ -1,13 +1,13 @@
-const { Client, Interaction } = require("discord.js");
+const { Client, Interaction, ChannelType } = require("discord.js");
 
 /**
  * @param {Client} client 
  * @param {Interaction} interaction 
  */
-module.exports = (client, interaction) => {
+module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) return;
     
-    if (interaction.user.bot || interaction.channel.type === "DM") return;
+    if (interaction.user.bot || interaction.channel.type === ChannelType.DM) return;
 
     const args = interaction.options;
     const slashCommand = interaction.commandName;
@@ -16,9 +16,9 @@ module.exports = (client, interaction) => {
 
     if (cmd) {
         try {
-            cmd.execute(client, interaction, args);
-        } catch (e) {
-            console.error(e);
+            await cmd.execute(client, interaction, args);
+        } catch (error) {
+            console.error(error);
         }
     }
 }

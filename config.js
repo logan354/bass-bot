@@ -1,21 +1,19 @@
 module.exports = {
     app: {
-        // Prefix settings
-        prefix: ".",
-        default_prefix: ".",
-        slash_prefix: "/",
+        // Client ID
+        clientId: "829939779440869406",
 
         // Invite
         invite: "https://discord.com/oauth2/authorize?client_id=829939779440869406&scope=bot+applications.commands&permissions=3492872",
+
+        // Logo
+        logo: "https://cdn.discordapp.com/attachments/886402406500429864/923743847601815603/Logo128.jpg",
 
         // Slogan
         slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
 
         // Support server
         support_server: "https://discord.gg/ja4KJAj3sU",
-
-        // Logo
-        logo: "https://cdn.discordapp.com/attachments/886402406500429864/923743847601815603/Logo128.jpg",
     },
 
     emojis: {
