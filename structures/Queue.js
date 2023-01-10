@@ -1,7 +1,7 @@
 const { Client, Snowflake, TextChannel, VoiceChannel, User, StageChannel } = require("discord.js");
 const { State, QueryType, LoadType, Source, RepeatMode } = require("../utils/constants");
 const { searchEngine } = require("./searchEngine");
-const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType } = require("@discordjs/voice");
+const { joinVoiceChannel, VoiceConnectionStatus, entersState, createAudioResource, StreamType, AudioPlayerStatus } = require("@discordjs/voice");
 const Dispatcher = require("./Dispatcher");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
@@ -63,12 +63,6 @@ class Queue {
         this.previousTracks = [];
 
         /**
-         * The pause mode of this queue
-         * @type {boolean}
-         */
-        this.paused = false;
-
-        /**
          * The repeat mode of this queue
          * @type {RepeatMode}
          */
@@ -128,7 +122,6 @@ class Queue {
             });
 
             this.dispatcher.on("start", (track) => { 
-
             });
 
             this.dispatcher.on("finish", (track) => { 
@@ -271,7 +264,7 @@ class Queue {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this.addtionalStreamTime = seek;
+                    this.additionalStreamTime = seek
                 }
                 else {
                     // Create readable stream from play-dl
@@ -321,6 +314,16 @@ class Queue {
     async search(query, requester, options) {
         return await searchEngine(query, requester, options);
     }
+
+	isPlaying() {
+        if (this.state !== State.CONNECTED) return false;
+		return this.dispatcher.audioPlayer.state.status === AudioPlayerStatus.Playing || AudioPlayerStatus.Paused
+	}
+
+	isPaused() {
+        if (this.state !== State.CONNECTED) return false;
+		return this.dispatcher.audioPlayer.state.status === AudioPlayerStatus.Paused
+	}
 }
 
 module.exports = Queue;
