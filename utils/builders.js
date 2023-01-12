@@ -1,20 +1,20 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
+const MusicSubscription = require("../structures/MusicSubscription");
 
 /**
  * Builds track embeds
+ * @param {MusicSubscription} subscription
  * @param {import("../structures/searchEngine").Track} track
- * @param {import("../structures/Queue")} queue
- * @returns {MessageEmbed}
+ * @returns {EmbedBuilder}
  */
-function buildTrack(track, queue) {
-    const embed = new MessageEmbed()
-        .setColor("BLACK")
+function buildTrack(subscription, track) {
+    const embed = new EmbedBuilder()
+        .setColor("Default")
         .setAuthor({
             name: "Added to queue",
-            iconURL: queue.client.emotes.player
+            iconURL: subscription.client.emotes.player
         })
         .setDescription(`**[${track.title}](${track.url})**`)
-        .setThumbnail(track.thumbnail)
         .setFields(
             {
                 name: "Channel",
@@ -28,7 +28,7 @@ function buildTrack(track, queue) {
             },
             {
                 name: "Position in queue",
-                value: `${queue.tracks.length - 1}`,
+                value: `${subscription.queue.length - 1}`,
                 inline: true
             },
             {
@@ -44,7 +44,7 @@ function buildTrack(track, queue) {
  * Builds playlist embeds
  * @param {import("../structures/searchEngine").Track[]} tracks
  * @param {import("../structures/searchEngine").Playlist} playlist
- * @param {import("../structures/Queue")} queue
+ * @param {import("../structures/MusicSubscription")} queue
  * @returns {MessageEmbed}
  */
 function buildPlaylist(tracks, playlist, queue) {
