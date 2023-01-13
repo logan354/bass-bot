@@ -384,17 +384,12 @@ class MusicSubscription {
 
     isPlaying() {
         if (!this.connection) return false;
-        return this.audioPlayer.state.status === AudioPlayerStatus.Playing;
+        return this.audioPlayer.state.status === AudioPlayerStatus.Playing || AudioPlayerStatus.Paused;
     }
 
     isPaused() {
         if (!this.connection) return true;
         return this.audioPlayer.state.status === AudioPlayerStatus.Paused;
-    }
-
-    hasLoadedTrack() {
-        if (!this.connection) return false;
-        return this.audioPlayer.state.status === AudioPlayerStatus.Playing || AudioPlayerStatus.Paused;
     }
 }
 
