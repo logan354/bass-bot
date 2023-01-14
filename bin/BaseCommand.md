@@ -18,4 +18,11 @@ if (!message.member.voice.channel) return message.channel.send(client.emotes.err
 if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
 
 if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
+
+const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
+if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
+
+if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
+        
+if (subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is already paused**");
 ```

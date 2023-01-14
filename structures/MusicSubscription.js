@@ -1,7 +1,7 @@
 const { Client, TextChannel, VoiceChannel, StageChannel } = require("discord.js");
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const { searchEngine } = require("./searchEngine");
-const { RepeatMode, Source, QueryType } = require("../utils/constants");
+const { RepeatMode, Source, QueryType, LoadType } = require("../utils/constants");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
 const ytdl = require("discord-ytdl-core");
@@ -55,7 +55,7 @@ class MusicSubscription {
          */
         this.audioPlayer = createAudioPlayer({
             behaviors: {
-                noSubscriber: NoSubscriberBehavior.Pause,
+                noSubscriber: NoSubscriberBehavior.Stop,
             }
         });
 
@@ -84,14 +84,21 @@ class MusicSubscription {
         this.volume = 100;
 
         /**
-         * The additional playback duration to add to the audio player
+         * The metadata of this subscription
          */
-        this._additionalPlaybackDuration = null;
+        this.metadata = {
+            /**
+             * The additional playback duration to add to the audio player
+             * @type {?number}
+             */
+            additionalPlaybackDuration: null,
 
-        /**
-         * Array of user ids, who want to skip the current track
-         */
-        this._voteSkipList = [];
+            /**
+             * The array of user ids, who want to skip the current track
+             * @type {User}
+             */
+            voteSkipList: [],
+        }
 
 
         if (this.client.subscriptions.has(guildId)) {
@@ -131,13 +138,14 @@ class MusicSubscription {
         try {
             await entersState(connection, VoiceConnectionStatus.Ready, 20_000);
             this.voiceChannel = channel;
-            this.connection = connection;
         } catch (error) {
             connection.destroy();
             throw error;
         }
 
         if (!isCurrentConnection) {
+            this.connection = connection;
+
             // Configure connection
             this.connection.on("stateChange", async (_, newState) => {
                 if (newState.status === VoiceConnectionStatus.Disconnected) {
@@ -230,9 +238,7 @@ class MusicSubscription {
                 }
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
                     // If the Playing state has been entered, then a new track has started playback.
-                    if (!this._additionalPlaybackDuration) {
-
-                    }
+                    if (this.metadata.additionalPlaybackDuration) return;
                 }
             });
 
@@ -342,7 +348,7 @@ class MusicSubscription {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this._additionalPlaybackDuration = seek
+                    this.metadata.additionalPlaybackDuration = seek
                 }
                 else {
                     // Create readable stream from play-dl
@@ -362,7 +368,7 @@ class MusicSubscription {
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
 
-                if (seek) this._additionalPlaybackDuration = seek;
+                if (seek) this.metadata.additionalPlaybackDuration = seek;
             }
         } catch (error) {
             console.error(error);
@@ -384,7 +390,7 @@ class MusicSubscription {
 
     isPlaying() {
         if (!this.connection) return false;
-        return this.audioPlayer.state.status === AudioPlayerStatus.Playing || AudioPlayerStatus.Paused;
+        return this.audioPlayer.state.status === AudioPlayerStatus.Playing || this.audioPlayer.state.status === AudioPlayerStatus.Paused;
     }
 
     isPaused() {
