@@ -1,13 +1,10 @@
-const { formatDuration } = require("./formats");
-
 /**
  * Creates progress bar
  * @param {number} currentDuration
  * @param {number} totalDuration
- * @param {string} endTimecode
  * @returns {string}
  */
-function createProgressBar(currentDuration, totalDuration, endTimecode) {
+function createProgressBar(currentDuration, totalDuration) {
     const length = 15;
 
     const index = Math.round((currentDuration / totalDuration) * length);
@@ -17,11 +14,9 @@ function createProgressBar(currentDuration, totalDuration, endTimecode) {
     if (index >= 1 && index <= length) {
         const bar = line.repeat(length - 1).split("");
         bar.splice(index, 0, indicator);
-        const currentTimecode = formatDuration(currentDuration);
-        return `${currentTimecode} ┃ ${bar.join("")} ┃ ${endTimecode}`;
+        return `┃ ${bar.join("")} ┃`;
     } else {
-        const currentTimecode = formatDuration(currentDuration);
-        return `${currentTimecode} ┃ ${indicator}${line.repeat(length - 1)} ┃ ${endTimecode}`;
+        return `┃ ${indicator}${line.repeat(length - 1)} ┃`;
     }
 }
 

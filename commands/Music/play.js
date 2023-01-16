@@ -49,7 +49,7 @@ module.exports = {
             message.channel.send(client.emotes.success + " **Connected to <#" + message.member.voice.channel.id + "> and bound to** <#" + message.channel.id + ">");
         }
 
-        // Generate query and resolve type
+        // Search the link/query and add to the queue
         const query = args.join(" ");
         const queryType = resolveQueryType(query);
 
@@ -57,87 +57,78 @@ module.exports = {
         if (queryType.includes("YOUTUBE")) searchEmoji = client.emotes.youtube;
         if (queryType.includes("SPOTIFY")) searchEmoji = client.emotes.spotify;
         if (queryType.includes("SOUNDCLOUD")) searchEmoji = client.emotes.soundcloud;
+        
         message.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
 
-        // Search the query
         const res = await subscription.search(query, message.author, { queryType: queryType });
         if (res.loadType === LoadType.TRACK_LOADED || res.loadType === LoadType.SEARCH_RESULT) {
             subscription.queue.push(res.tracks[0]);
 
-            if (subscription.queue.length > 1) {
-                const embed = new EmbedBuilder()
-                    .setColor("Default")
-                    .setAuthor({
-                        name: "Added to queue",
-                        iconURL: client.emotes.player
-                    })
-                    .setDescription(`**[${res.tracks[0].title}](${res.tracks[0].url})**`)
-                    .setThumbnail(res.tracks[0].thumbnail)
-                    .setFields(
-                        {
-                            name: "Channel",
-                            value: res.tracks[0].channel,
-                            inline: true
-                        },
-                        {
-                            name: "Duration",
-                            value: res.tracks[0].durationFormatted,
-                            inline: true
-                        },
-                        {
-                            name: "Position in queue",
-                            value: `${subscription.queue.length - 1}`,
-                            inline: true
-                        },
-                        {
-                            name: "\u200B",
-                            value: "**Requested by:** <@" + res.tracks[0].requestedBy + ">"
-                        }
-                    );
-
-                message.channel.send({ embeds: [embed] });
-            } else {
-                await subscription.play();
-            }
-        } else if (res.loadType === LoadType.PLAYLIST_LOADED) {
-            subscription.queue.push(...res.tracks);
-
             const embed = new EmbedBuilder()
-            .setColor("Default")
-            .setAuthor({
-                name: "Playlist added to queue",
-                iconURL: client.emotes.player
-            })
-            .setDescription(`**[${res.playlist.title}](${res.playlist.url})**`)
-            .setThumbnail(res.playlist.thumbnail)
-            .setFields(
-                {
-                    name: "Channel",
-                    value: res.playlist.channel,
-                    inline: true
-                },
-                {
-                    name: "Enqueued",
-                    value: "`" + res.tracks.length + "` tracks",
-                    inline: true
-                },
-                {
-                    name: "Position in queue",
-                    value: `${subscription.queue.length - res.tracks.length}`,
-                    inline: true
-                },
-                {
-                    name: "\u200B",
-                    value: "**Requested by:** <@" + res.playlist.requestedBy + ">"
-                }
-            );
+                .setColor("DarkGreen")
+                .setAuthor({
+                    name: "Queued",
+                    iconURL: message.author.avatarURL()
+                })
+                .setDescription(`**[${res.tracks[0].title}](${res.tracks[0].url})**`)
+                .setFields(
+                    {
+                        name: "Channel",
+                        value: res.tracks[0].channel,
+                        inline: true
+                    },
+                    {
+                        name: "Duration",
+                        value: res.tracks[0].durationFormatted,
+                        inline: true
+                    },
+                    {
+                        name: "Position in queue",
+                        value: `${subscription.queue.length - 1}`,
+                        inline: true
+                    }
+                );
 
             message.channel.send({ embeds: [embed] });
 
             if (subscription.queue.length === 1) {
                 await subscription.play();
             }
+        } else if (res.loadType === LoadType.PLAYLIST_LOADED) {
+            subscription.queue.push(...res.tracks);
+
+            const embed = new EmbedBuilder()
+                .setColor("DarkGreen")
+                .setAuthor({
+                    name: "Queued",
+                    iconURL: message.guild.iconURL()
+                })
+                .setDescription(`**[${res.playlist.title}](${res.playlist.url})**`)
+                .setThumbnail(res.playlist.thumbnail)
+                .setFields(
+                    {
+                        name: "Channel",
+                        value: res.playlist.channel,
+                        inline: true
+                    },
+                    {
+                        name: "Enqueued",
+                        value: "`" + res.tracks.length + "` songs",
+                        inline: true
+                    },
+                    {
+                        name: "Position in queue",
+                        value: `${subscription.queue.length - res.tracks.length}`,
+                        inline: true
+                    }
+                );
+
+            message.channel.send({ embeds: [embed] });
+
+            if (subscription.queue.length - res.tracks.length === 0) {
+                await subscription.play();
+            }
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found**");
-        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching** `" + res.exception.message + "`");
+        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching**");
     }
 }

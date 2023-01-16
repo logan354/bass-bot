@@ -35,7 +35,7 @@ module.exports = {
         try {
             await subscription.connect(message.member.voice.channel);
         } catch {
-            if (!subscription.connection) subscription.destroy();
+            subscription.destroy();
             return message.channel.send(client.emotes.error + " **Error connecting to** <#" + message.member.voice.channel.id + ">");
         }
         message.channel.send(client.emotes.success + " **Connected to <#" + message.member.voice.channel.id + "> and bound to** <#" + message.channel.id + ">");

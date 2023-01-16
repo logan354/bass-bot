@@ -15,12 +15,14 @@ const scdl = require("soundcloud-downloader").default;
  * @returns {SearchResult}
  */
 async function searchEngine(query, requester, options = defaultSearchEngineOptions) {
-    if (options.queryType === QueryType.AUTO) {
-        options.queryType = resolveQueryType(query);
+    let queryType = options.queryType;
+
+    if (queryType === QueryType.AUTO) {
+        queryType = resolveQueryType(query);
     }
 
     try {
-        switch (options.queryType) {
+        switch (queryType) {
             case QueryType.YOUTUBE_VIDEO: {
                 const data = await YouTube.getVideo(query);
                 if (!data) return {

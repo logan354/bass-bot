@@ -1,5 +1,6 @@
-const { Client, TextChannel, VoiceChannel, StageChannel } = require("discord.js");
+const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, Message, ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
+const Queue = require("./Queue");
 const { searchEngine } = require("./searchEngine");
 const { RepeatMode, Source, QueryType, LoadType } = require("../utils/constants");
 const play = require("play-dl");
@@ -63,13 +64,13 @@ class MusicSubscription {
          * The queue of this subscription
          * @type {import("./searchEngine").Track[]}
          */
-        this.queue = [];
+        this.queue = new Queue();
 
         /**
          * The previous queue of this subscription
          * @type {import("./searchEngine").Track[]}
          */
-        this.previousQueue = [];
+        this.previousQueue = new Queue(5);
 
         /**
          * The repeat mode of this subscription
@@ -98,6 +99,12 @@ class MusicSubscription {
              * @type {User}
              */
             voteSkipList: [],
+
+            /**
+             * The player embed which the user interacts with
+             * @type {?Message}
+             */
+            player: null
         }
 
 
@@ -136,7 +143,7 @@ class MusicSubscription {
         });
 
         try {
-            await entersState(connection, VoiceConnectionStatus.Ready, 20_000);
+            await entersState(connection, VoiceConnectionStatus.Ready, 15_000);
             this.voiceChannel = channel;
         } catch (error) {
             connection.destroy();
@@ -185,9 +192,12 @@ class MusicSubscription {
                      * Once destroyed, stop the subscription.
                      */
                     this.audioPlayer.stop(true);
+
                     this.voiceChannel = null;
                     this.connection = null;
                     this.audioPlayer = null;
+
+                    this.destroy();
                 }
                 else if (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling) {
                     /**
@@ -215,6 +225,20 @@ class MusicSubscription {
                 if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                     // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                     // The queue is then processed to start playing the next track, if one is available.
+                    if (this.metadata.player) {
+                        console.log(new ActionRowBuilder(this.metadata.player.components[0]).components[0].data.disabled)
+                        this.metadata.player.edit({
+                            components: [
+                                this.metadata.player.components[0].components.forEach((x) => new ButtonBuilder(x.data).setDisabled(true)),
+                                new ActionRowBuilder(this.metadata.player.components[1]).components[0].data.disabled =
+                            ]
+
+                        });
+
+                        this.metadata.player = null;
+                    }
+
+
                     if (this.repeat === RepeatMode.QUEUE) {
                         const shifted = this.queue.shift();
                         this.previousQueue.push(shifted);
@@ -239,6 +263,83 @@ class MusicSubscription {
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
                     // If the Playing state has been entered, then a new track has started playback.
                     if (this.metadata.additionalPlaybackDuration) return;
+
+                    const embed = new EmbedBuilder()
+                        .setColor("DarkGreen")
+                        .setAuthor({
+                            name: "Playing",
+                            iconURL: this.client.guilds.cache.get(this.guildId).iconURL()
+                        })
+                        .setDescription(`**[${newState.resource.metadata.title}](${newState.resource.metadata.url})**`)
+                        .setThumbnail(newState.resource.metadata.thumbnail)
+                        .setFields(
+                            {
+                                name: "Channel",
+                                value: newState.resource.metadata.channel,
+                                inline: true
+                            },
+                            {
+                                name: "Duration",
+                                value: newState.resource.metadata.durationFormatted,
+                                inline: true
+                            },
+                            {
+                                name: "Requested by",
+                                value: "<@" + newState.resource.metadata.requestedBy + ">",
+                                inline: true
+                            }
+                        );
+
+                    const row = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId("shuffle")
+                                .setStyle(ButtonStyle.Secondary)
+                                .setEmoji("🔀"),
+                            new ButtonBuilder()
+                                .setCustomId("previous")
+                                .setStyle(ButtonStyle.Secondary)
+                                .setEmoji("⏮️"),
+                            new ButtonBuilder()
+                                .setCustomId("play_pause")
+                                .setStyle(ButtonStyle.Success)
+                                .setEmoji("⏸️"),
+                            new ButtonBuilder()
+                                .setCustomId("next")
+                                .setStyle(ButtonStyle.Secondary)
+                                .setEmoji("⏭️"),
+                            new ButtonBuilder()
+                                .setCustomId("repeat")
+                                .setStyle(ButtonStyle.Secondary)
+                                .setEmoji("🔁")
+                        );
+
+                    const row2 = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId("block")
+                                .setStyle(ButtonStyle.Primary)
+                                .setLabel("\u200B"),
+                            new ButtonBuilder()
+                                .setCustomId("volume_down")
+                                .setStyle(ButtonStyle.Primary)
+                                .setEmoji("🔉"),
+                            new ButtonBuilder()
+                                .setCustomId("stop")
+                                .setStyle(ButtonStyle.Danger)
+                                .setEmoji("⏹️"),
+                            new ButtonBuilder()
+                                .setCustomId("volume_up")
+                                .setStyle(ButtonStyle.Primary)
+                                .setEmoji("🔊"),
+                            new ButtonBuilder()
+                                .setCustomId("queue")
+                                .setStyle(ButtonStyle.Primary)
+                                .setEmoji("📚")
+                        );
+
+                    this.textChannel.send({ embeds: [embed], components: [row, row2] })
+                        .then((message) => this.metadata.player = message);
                 }
             });
 
