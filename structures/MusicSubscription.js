@@ -99,12 +99,6 @@ class MusicSubscription {
              * @type {User}
              */
             voteSkipList: [],
-
-            /**
-             * The player embed which the user interacts with
-             * @type {?Message}
-             */
-            player: null
         }
 
 
@@ -151,9 +145,9 @@ class MusicSubscription {
         }
 
         if (!isCurrentConnection) {
+            // Configure connection
             this.connection = connection;
 
-            // Configure connection
             this.connection.on("stateChange", async (_, newState) => {
                 if (newState.status === VoiceConnectionStatus.Disconnected) {
                     if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
@@ -221,22 +215,75 @@ class MusicSubscription {
 
 
             // Configure audio player
+            let playingMessage;
+
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("shuffle")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("🔀")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("previous")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("⏮️")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("play_pause")
+                        .setStyle(ButtonStyle.Success)
+                        .setEmoji("⏸️")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("next")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("⏭️")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("repeat")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("🔁")
+                        .setDisabled()
+                );
+
+            const row2 = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("block")
+                        .setStyle(ButtonStyle.Primary)
+                        .setLabel("\u200B")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("volume_down")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("🔉")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("stop")
+                        .setStyle(ButtonStyle.Danger)
+                        .setEmoji("⏹️")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("volume_up")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("🔊")
+                        .setDisabled(),
+                    new ButtonBuilder()
+                        .setCustomId("queue")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("📚")
+                        .setDisabled()
+                );
+
             this.audioPlayer.on("stateChange", (oldState, newState) => {
                 if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                     // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                     // The queue is then processed to start playing the next track, if one is available.
-                    if (this.metadata.player) {
-                        console.log(new ActionRowBuilder(this.metadata.player.components[0]).components[0].data.disabled)
-                        this.metadata.player.edit({
-                            components: [
-                                this.metadata.player.components[0].components.forEach((x) => new ButtonBuilder(x.data).setDisabled(true)),
-                                new ActionRowBuilder(this.metadata.player.components[1]).components[0].data.disabled =
-                            ]
-
-                        });
-
-                        this.metadata.player = null;
+                    if (playingMessage) {
+                        playingMessage.edit({ components: [row, row2] });
                     }
+                
+                    playingMessage = null;
 
 
                     if (this.repeat === RepeatMode.QUEUE) {
@@ -290,7 +337,7 @@ class MusicSubscription {
                             }
                         );
 
-                    const row = new ActionRowBuilder()
+                        const row = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
                                 .setCustomId("shuffle")
@@ -313,7 +360,7 @@ class MusicSubscription {
                                 .setStyle(ButtonStyle.Secondary)
                                 .setEmoji("🔁")
                         );
-
+        
                     const row2 = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
@@ -339,7 +386,7 @@ class MusicSubscription {
                         );
 
                     this.textChannel.send({ embeds: [embed], components: [row, row2] })
-                        .then((message) => this.metadata.player = message);
+                        .then((message) => playingMessage = message);
                 }
             });
 
