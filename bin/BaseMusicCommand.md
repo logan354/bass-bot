@@ -1,4 +1,4 @@
-# Base Command Structure
+# Base Music Command Structure
 
 1. Global variables.
 2. Command boundary's: Permissions, User boundary's, Client boundary's

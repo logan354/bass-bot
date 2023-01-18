@@ -1,0 +1,29 @@
+**Command Guide**
+
+Player:
+join
+disconnect
+
+nowplaying
+
+resume
+pause
+stop
+SKIPPING & PREVIOUS TBD
+volume
+
+seek
+rewind
+fastforward
+
+
+Queue:
+queue
+play
+playnow
+search
+shuffle
+repeat
+clear
+move
+remove

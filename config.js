@@ -29,6 +29,7 @@ module.exports = {
         spotify: "<:Spotify:844386374182633532>",
 
         // Music emojis
+        clear: ":stop_button:",
         disconnect: ":mailbox_with_no_mail:",
         pause: ":pause_button:",
         searching: ":mag_right:",
@@ -36,6 +37,7 @@ module.exports = {
         repeatTrack: ":repeat_one:",
         resume: ":play_pause:",
         shuffle: ":twisted_rightwards_arrows:",
+        seek: ":fast_forward:",
         stop: ":stop_button:",
         volumeUp: ":loud_sound:",
         volumeDown: ":sound:",
