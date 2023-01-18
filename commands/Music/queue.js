@@ -42,7 +42,7 @@ module.exports = {
                     iconURL: message.guild.iconURL()
                 })
                 .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">")
-                .addField("Voice Channel", `<#${subscription.voiceChannel.id}>`, true)
+                .setFields("Voice Channel", `<#${subscription.voiceChannel.id}>`, true)
                 .setFooter({
                     text: "Page 1/1" + " | Repeat: ",
                     iconURL: client.user.avatarURL()
