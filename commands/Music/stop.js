@@ -5,7 +5,7 @@ module.exports = {
     name: "stop",
     aliases: [],
     category: "Music",
-    description: "Stops the player and clear the queue",
+    description: "Stops the player and clear the queue.",
     utilisation: "stop",
 
     /**
@@ -34,8 +34,8 @@ module.exports = {
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
 
         subscription.audioPlayer.stop();
-        subscription.queue = [];
-        subscription.previousQueue = [];
+        subscription.queue.clear();
+        subscription.previousQueue.clear();
         message.channel.send(client.emotes.stop + " **Stopped**");
     }
 }

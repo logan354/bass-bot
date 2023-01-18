@@ -1,12 +1,13 @@
 const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
+const { RepeatMode } = require("../../utils/constants");
 
 module.exports = {
-    name: "resume",
-    aliases: [],
+    name: "repeat",
+    aliases: ["loop"],
     category: "Music",
-    description: "Resumes the current playing track.",
-    utilisation: "resume",
+    description: "Toggles the repeat mode.",
+    utilisation: "repeat",
 
     /**
      * @param {Client} client 
@@ -28,11 +29,17 @@ module.exports = {
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
-        
-        if (!subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is not paused**");
-
-        subscription.audioPlayer.unpause();
-        message.channel.send(client.emotes.resume + " **Resumed**");
+        if (subscription.repeat === RepeatMode.OFF) {
+            subscription.repeat = RepeatMode.QUEUE
+            message.channel.send(client.emotes.repeat + " **Enabled**");
+        } 
+        else if (subscription.repeat === RepeatMode.QUEUE) {
+            subscription.repeat = RepeatMode.TRACK
+            return message.channel.send(client.emotes.repeatTrack + " **Enabled**");
+        }
+        else {
+            subscription.repeat = RepeatMode.OFF
+            return message.channel.send(client.emotes.repeat + " **Disabled**");
+        }
     }
 }

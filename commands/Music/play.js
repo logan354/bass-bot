@@ -7,7 +7,7 @@ module.exports = {
     name: "play",
     aliases: ["p"],
     category: "Music",
-    description: "Plays a requested track, or adds it to the queue",
+    description: "Plays a requested track, or adds it to the queue.",
     utilisation: "play [link/query]",
 
     /**

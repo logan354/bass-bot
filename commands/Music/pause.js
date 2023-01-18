@@ -5,7 +5,7 @@ module.exports = {
     name: "pause",
     aliases: [],
     category: "Music",
-    description: "Pauses the current playing track",
+    description: "Pauses the current playing track.",
     utilisation: "pause",
 
     /**

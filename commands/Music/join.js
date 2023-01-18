@@ -5,7 +5,7 @@ module.exports = {
     name: "join",
     aliases: ["connect"],
     category: "Music",
-    description: "Connects the bot to your voice channel",
+    description: "Connects the bot to your voice channel.",
     utilisation: "join",
 
     /**

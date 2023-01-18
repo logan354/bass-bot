@@ -19,8 +19,12 @@ if (!subscription || !subscription.connection) return message.channel.send(clien
 
 if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
+
 const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
 if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
+
+
+if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is queued in this server**, let's get this party started! :tada:");
 
 if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
         

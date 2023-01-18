@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "resume",
-    aliases: [],
+    name: "shuffle",
+    aliases: ["random"],
     category: "Music",
-    description: "Resumes the current playing track.",
-    utilisation: "resume",
+    description: "Shuffles the queue.",
+    utilisation: "shuffle",
 
     /**
      * @param {Client} client 
@@ -25,14 +25,12 @@ module.exports = {
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
-
+        
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
-        
-        if (!subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is not paused**");
+        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is queued in this server**, let's get this party started! :tada:");
 
-        subscription.audioPlayer.unpause();
-        message.channel.send(client.emotes.resume + " **Resumed**");
+        subscription.queue.shuffle();
+        message.channel.send(client.emotes.shuffle + " **Shuffled**");
     }
 }

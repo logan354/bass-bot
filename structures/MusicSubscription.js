@@ -145,7 +145,8 @@ class MusicSubscription {
         }
 
         if (!isCurrentConnection) {
-            // Configure connection
+            //Configure connection
+
             this.connection = connection;
 
             this.connection.on("stateChange", async (_, newState) => {
@@ -214,7 +215,6 @@ class MusicSubscription {
             });
 
 
-            // Configure audio player
             let playingMessage;
 
             const row = new ActionRowBuilder()
@@ -275,6 +275,7 @@ class MusicSubscription {
                         .setDisabled()
                 );
 
+            // Configure audio player
             this.audioPlayer.on("stateChange", (oldState, newState) => {
                 if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                     // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
@@ -282,7 +283,7 @@ class MusicSubscription {
                     if (playingMessage) {
                         playingMessage.edit({ components: [row, row2] });
                     }
-                
+
                     playingMessage = null;
 
 
@@ -337,7 +338,7 @@ class MusicSubscription {
                             }
                         );
 
-                        const row = new ActionRowBuilder()
+                    const row = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
                                 .setCustomId("shuffle")
@@ -348,7 +349,7 @@ class MusicSubscription {
                                 .setStyle(ButtonStyle.Secondary)
                                 .setEmoji("⏮️"),
                             new ButtonBuilder()
-                                .setCustomId("play_pause")
+                                .setCustomId("resume-pause")
                                 .setStyle(ButtonStyle.Success)
                                 .setEmoji("⏸️"),
                             new ButtonBuilder()
@@ -360,7 +361,7 @@ class MusicSubscription {
                                 .setStyle(ButtonStyle.Secondary)
                                 .setEmoji("🔁")
                         );
-        
+
                     const row2 = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
@@ -368,7 +369,7 @@ class MusicSubscription {
                                 .setStyle(ButtonStyle.Primary)
                                 .setLabel("\u200B"),
                             new ButtonBuilder()
-                                .setCustomId("volume_down")
+                                .setCustomId("volume-down")
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji("🔉"),
                             new ButtonBuilder()
@@ -376,7 +377,7 @@ class MusicSubscription {
                                 .setStyle(ButtonStyle.Danger)
                                 .setEmoji("⏹️"),
                             new ButtonBuilder()
-                                .setCustomId("volume_up")
+                                .setCustomId("volume-up")
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji("🔊"),
                             new ButtonBuilder()
@@ -531,6 +532,7 @@ class MusicSubscription {
         });
 
         resource.volume.setVolumeLogarithmic(this.volume / 100);
+
 
         // Play audio resource on audio player
         this.audioPlayer.play(resource);

@@ -32,8 +32,13 @@ module.exports = {
         disconnect: ":mailbox_with_no_mail:",
         pause: ":pause_button:",
         searching: ":mag_right:",
+        repeat: ":repeat:",
+        repeatTrack: ":repeat_one:",
         resume: ":play_pause:",
+        shuffle: ":twisted_rightwards_arrows:",
         stop: ":stop_button:",
+        volumeUp: ":loud_sound:",
+        volumeDown: ":sound:",
 
         // Utility emojis
         ping: ":signal_strength:"

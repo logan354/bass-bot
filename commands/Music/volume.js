@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "resume",
-    aliases: [],
+    name: "volume",
+    aliases: ["vol"],
     category: "Music",
-    description: "Resumes the current playing track.",
-    utilisation: "resume",
+    description: "Display or change the volume of the player.",
+    utilisation: "volume [number (1-200)]",
 
     /**
      * @param {Client} client 
@@ -28,11 +28,23 @@ module.exports = {
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
-        
-        if (!subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is not paused**");
+        if (!args[0]) return message.channel.send(client.emotes.volume + " **Volume level is currently " + subscription.volume + "%**");
 
-        subscription.audioPlayer.unpause();
-        message.channel.send(client.emotes.resume + " **Resumed**");
+        const volume = Number(args[0]);
+
+        if (!volume) return message.channel.send(client.emotes.error + " **Volume must be a number**");
+
+        if (volume < 0 || volume > 200) return message.channel.send(client.emotes.error + " **Volume must be a number between 1 - 200**");
+
+        let volumeEmoji;
+        if (subscription.volume > volume) volumeEmoji = client.emotes.volumeDown;
+        else volumeEmoji = client.emotes.volumeUp;
+
+        subscription.volume = volume;
+        if (subscription.isPlaying()) {
+            subscription.audioPlayer.state.resource.volume.setVolumeLogarithmic(subscription.volume / 100);
+        }
+
+        message.channel.send(volumeEmoji + " **Volume level is now set to " + subscription.volume + "%**");
     }
 }
