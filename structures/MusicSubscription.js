@@ -70,7 +70,7 @@ class MusicSubscription {
          * The previous queue of this subscription
          * @type {import("./searchEngine").Track[]}
          */
-        this.previousQueue = new Queue(5);
+        this.previousQueue = new Array(5);
 
         /**
          * The repeat mode of this subscription
@@ -222,28 +222,23 @@ class MusicSubscription {
                     new ButtonBuilder()
                         .setCustomId("shuffle")
                         .setStyle(ButtonStyle.Secondary)
-                        .setEmoji("🔀")
-                        .setDisabled(),
+                        .setEmoji("🔀"),
                     new ButtonBuilder()
                         .setCustomId("previous")
                         .setStyle(ButtonStyle.Secondary)
-                        .setEmoji("⏮️")
-                        .setDisabled(),
+                        .setEmoji("⏮️"),
                     new ButtonBuilder()
-                        .setCustomId("play_pause")
+                        .setCustomId("resume-pause")
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji("⏸️")
-                        .setDisabled(),
+                        .setEmoji("⏸️"),
                     new ButtonBuilder()
                         .setCustomId("next")
                         .setStyle(ButtonStyle.Secondary)
-                        .setEmoji("⏭️")
-                        .setDisabled(),
+                        .setEmoji("⏭️"),
                     new ButtonBuilder()
                         .setCustomId("repeat")
                         .setStyle(ButtonStyle.Secondary)
                         .setEmoji("🔁")
-                        .setDisabled()
                 );
 
             const row2 = new ActionRowBuilder()
@@ -251,28 +246,23 @@ class MusicSubscription {
                     new ButtonBuilder()
                         .setCustomId("block")
                         .setStyle(ButtonStyle.Primary)
-                        .setLabel("\u200B")
-                        .setDisabled(),
+                        .setLabel("\u200B"),
                     new ButtonBuilder()
-                        .setCustomId("volume_down")
+                        .setCustomId("volume-down")
                         .setStyle(ButtonStyle.Primary)
-                        .setEmoji("🔉")
-                        .setDisabled(),
+                        .setEmoji("🔉"),
                     new ButtonBuilder()
                         .setCustomId("stop")
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji("⏹️")
-                        .setDisabled(),
+                        .setEmoji("⏹️"),
                     new ButtonBuilder()
-                        .setCustomId("volume_up")
+                        .setCustomId("volume-up")
                         .setStyle(ButtonStyle.Primary)
-                        .setEmoji("🔊")
-                        .setDisabled(),
+                        .setEmoji("🔊"),
                     new ButtonBuilder()
                         .setCustomId("queue")
                         .setStyle(ButtonStyle.Primary)
                         .setEmoji("📚")
-                        .setDisabled()
                 );
 
             // Configure audio player
@@ -281,7 +271,7 @@ class MusicSubscription {
                     // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                     // The queue is then processed to start playing the next track, if one is available.
                     if (playingMessage) {
-                        playingMessage.edit({ components: [row, row2] });
+                        playingMessage.edit({ components: [row.components.forEach((x) => x.setDisabled()), row2.components.forEach((x) => x.setDisabled())] });
                     }
 
                     playingMessage = null;
@@ -336,54 +326,6 @@ class MusicSubscription {
                                 value: "<@" + newState.resource.metadata.requestedBy + ">",
                                 inline: true
                             }
-                        );
-
-                    const row = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("shuffle")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔀"),
-                            new ButtonBuilder()
-                                .setCustomId("previous")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏮️"),
-                            new ButtonBuilder()
-                                .setCustomId("resume-pause")
-                                .setStyle(ButtonStyle.Success)
-                                .setEmoji("⏸️"),
-                            new ButtonBuilder()
-                                .setCustomId("next")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏭️"),
-                            new ButtonBuilder()
-                                .setCustomId("repeat")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔁")
-                        );
-
-                    const row2 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("block")
-                                .setStyle(ButtonStyle.Primary)
-                                .setLabel("\u200B"),
-                            new ButtonBuilder()
-                                .setCustomId("volume-down")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔉"),
-                            new ButtonBuilder()
-                                .setCustomId("stop")
-                                .setStyle(ButtonStyle.Danger)
-                                .setEmoji("⏹️"),
-                            new ButtonBuilder()
-                                .setCustomId("volume-up")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔊"),
-                            new ButtonBuilder()
-                                .setCustomId("queue")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("📚")
                         );
 
                     this.textChannel.send({ embeds: [embed], components: [row, row2] })

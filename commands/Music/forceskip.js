@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "clear",
-    aliases: [],
+    name: "forceskip",
+    aliases: ["fs"],
     category: "Music",
-    description: "Clears the queue.",
-    utilisation: "clear",
+    description: "Force skips the currently playing song.",
+    utilisation: "forceskip [number]",
 
     /**
      * @param {Client} client 
@@ -33,8 +33,31 @@ module.exports = {
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
-        subscription.queue.clear();
-        subscription.previousQueue.splice(0);
-        message.channel.send(client.emotes.clear + " **Cleared**");
+        if (!args[0]) {
+            subscription.audioPlayer.stop();
+            return message.channel.send(client.emotes.skip + " **Skipped**");
+        }
+
+        let skipNum = Number(args[0]);
+
+        if (!skipNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
+
+        if (skipNum <= 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
+
+        if (skipNum > subscription.queue.length) skipNum = subscription.queue.length;
+
+        // Skip single track
+        if (skipNum === 1 || subscription.queue.length === 1) {
+            subscription.audioPlayer.stop();
+            return message.channel.send(client.emotes.skip + " **Skipped**");
+        }
+
+        // Skip multiple tracks
+        for (let i = 0; i < skipNum - 1; i++) {
+            subscription.queue.shift();
+        }
+
+        subscription.audioPlayer.stop();
+        return message.channel.send(client.emotes.skip + " **Skipped " + skipNum + " songs**");
     }
 }

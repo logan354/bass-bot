@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "clear",
-    aliases: [],
+    name: "skip",
+    aliases: ["next"],
     category: "Music",
-    description: "Clears the queue.",
-    utilisation: "clear",
+    description: "Skips the currently playing song (Voting System).",
+    utilisation: "skip",
 
     /**
      * @param {Client} client 
@@ -28,13 +28,27 @@ module.exports = {
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
-        if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
-
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
-        subscription.queue.clear();
-        subscription.previousQueue.splice(0);
-        message.channel.send(client.emotes.clear + " **Cleared**");
+        const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
+
+        if (voiceChannelSize > 2) {
+            const requiredVotes = Math.trunc(voiceChannelSize * 0.75);
+
+            if (subscription.metadata.voteSkipList.includes(message.author.id)) {
+                return message.channel.send(client.emotes.error + " **You already voted to skip the current song** (" + subscription.metadata.voteSkipList.length + "/" + requiredVotes + " people)");
+            }
+            else serverQueue.skiplist.push(message.author.id);
+
+            if (subscription.metadata.voteSkipList.length >= requiredVotes) {
+                subscription.audioPlayer.stop();
+                message.channel.send(client.emotes.skip + " **Skipped**");
+            }
+            else message.channel.send("**Skipping?** (" + subscription.metadata.voteSkipList.length + "/" + requiredVotes + " people)");
+        }
+        else {
+            subscription.audioPlayer.stop();
+            message.channel.send(client.emotes.skip + " **Skipped**");
+        }
     }
 }

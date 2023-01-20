@@ -1,27 +1,30 @@
 **Command Guide**
 
 Player:
-join
+join / connect
 disconnect
 
 nowplaying
 
-resume
+resume / play
 pause
 stop
-SKIPPING & PREVIOUS TBD
+skip / next
+forceskip
+back / previous
+forceback
 volume
 
-seek
+seek / scrub
 rewind
 fastforward
 
 
 Queue:
 queue
-play
-playnow
-search
+play / search
+playnow / search
+search 
 shuffle
 repeat
 clear

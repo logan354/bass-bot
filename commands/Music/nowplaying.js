@@ -27,7 +27,7 @@ module.exports = {
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
 
-        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is queued in this server**, let's get this party started! :tada:");
+        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
 

@@ -35,7 +35,7 @@ module.exports = {
 
         subscription.audioPlayer.stop();
         subscription.queue.clear();
-        subscription.previousQueue.clear();
+        subscription.previousQueue.splice(0);
         message.channel.send(client.emotes.stop + " **Stopped**");
     }
 }
