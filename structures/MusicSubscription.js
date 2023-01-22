@@ -432,8 +432,17 @@ class MusicSubscription {
     * @param {import("./searchEngine").Track} track 
     * @param {number} [seek]
     */
-    async play(track = this.queue[0], seek) {
-        if (!track) return;
+    async play(track, seek) {
+        if (!track) {
+            if (!this.queue[0]) return;
+            else track = this.queue[0];
+        }
+        else {
+            
+        }
+
+        if (this.queue[0]) this.queue.previousQueue.push(this.queue[0]);
+        this.queue[0] = track;
 
         let stream, streamType;
         let streamURL = track.url;

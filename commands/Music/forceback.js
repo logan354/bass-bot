@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "forceskip",
-    aliases: ["fs"],
+    name: "forceback",
+    aliases: ["fb"],
     category: "Music",
     description: "Force skips the currently playing song.",
-    utilisation: "forceskip [number]",
+    utilisation: "forceback [number (1-5)]",
 
     /**
      * @param {Client} client 
@@ -31,7 +31,9 @@ module.exports = {
         const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
         if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
-        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+        if (!subscription.previousQueue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+
+        const previousTrack = subscription.previousQueue.splice(subscription.previousQueue.length - 1, 1);
 
         if (!args[0]) {
             subscription.audioPlayer.stop();
@@ -54,8 +56,7 @@ module.exports = {
 
         // Skip multiple tracks
         for (let i = 0; i < skipNum - 1; i++) {
-            subscription.previousQueue.push(subscription.queue.shift());
-            
+            subscription.queue.shift();
         }
 
         subscription.audioPlayer.stop();
