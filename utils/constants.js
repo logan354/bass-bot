@@ -34,4 +34,10 @@ const RepeatMode = {
     TRACK: "TRACK"
 }
 
-module.exports = { Source, QueryType, LoadType, RepeatMode }
+const QueueDirection = {
+    PREVIOUS: "PREVIOUS",
+    NEUTRAL: "NEUTRAL",
+    NEXT: "NEXT"
+}
+
+module.exports = { Source, QueryType, LoadType, RepeatMode, QueueDirection }

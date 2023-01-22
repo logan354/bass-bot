@@ -1,8 +1,8 @@
-const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, Message, ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const Queue = require("./Queue");
 const { searchEngine } = require("./searchEngine");
-const { RepeatMode, Source, QueryType, LoadType } = require("../utils/constants");
+const { Source, QueryType, LoadType } = require("../utils/constants");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
 const ytdl = require("discord-ytdl-core");
@@ -62,21 +62,9 @@ class MusicSubscription {
 
         /**
          * The queue of this subscription
-         * @type {import("./searchEngine").Track[]}
+         * @type {Queue}
          */
         this.queue = new Queue();
-
-        /**
-         * The previous queue of this subscription
-         * @type {import("./searchEngine").Track[]}
-         */
-        this.previousQueue = [];
-
-        /**
-         * The repeat mode of this subscription
-         * @type {RepeatMode}
-         */
-        this.repeat = RepeatMode.OFF;
 
         /**
          * The volume of this subscription
@@ -288,25 +276,11 @@ class MusicSubscription {
                     playingMessage = null;
 
 
-                    if (this.repeat === RepeatMode.QUEUE) {
-                        const shifted = this.queue.shift();
-                        this.previousQueue.push(shifted);
+                    // Process the queue
+                    this.queue.process();
 
-                        if (this.previousQueue > 5) this.previousQueue.shift();
-
-                        this.queue.push(shifted);
-                        this.play(this.queue[0]);
-                    }
-                    else if (this.repeat === RepeatMode.TRACK) {
-                        this.play(this.queue[0]);
-                    }
-                    else {
-                        const shifted = this.queue.shift();
-                        this.previousQueue.push(shifted);
-
-                        if (this.previousQueue > 5) this.previousQueue.shift();
-
-                        this.play(this.queue[0]);
+                    if (this.queue.length) {
+                        this.play();
                     }
                 }
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
@@ -438,11 +412,9 @@ class MusicSubscription {
             else track = this.queue[0];
         }
         else {
-            
+            this.previousQueue.push(this.queue[0]);
+            this.queue[0] = track;
         }
-
-        if (this.queue[0]) this.queue.previousQueue.push(this.queue[0]);
-        this.queue[0] = track;
 
         let stream, streamType;
         let streamURL = track.url;
