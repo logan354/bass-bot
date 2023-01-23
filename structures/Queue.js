@@ -90,11 +90,6 @@ class Queue extends Array {
                 this.splice(0, 0, this.previousQueue.pop());
             }
             else if (this.direction === QueueDirection.NEXT) {
-                if (!this.length) {
-                    this.previousQueue.splice(0);
-                    return;
-                }
-
                 // Push the current track to the end of the previous queue
                 this.previousQueue.push(this.shift());
             }
@@ -108,11 +103,6 @@ class Queue extends Array {
                 this.splice(0, 0, this.previousQueue.pop());
             }
             else {
-                if (!this.length) {
-                    this.previousQueue.splice(0);
-                    return;
-                }
-
                 // Push the current track to the end of the previous queue
                 this.previousQueue.push(this.shift());
             }
@@ -120,6 +110,11 @@ class Queue extends Array {
 
         // Remove previous queue element
         if (this.previousQueue > 5) this.previousQueue.shift();
+
+        // Clear previous queue if the queue is empty
+        if (!this.length) {
+            this.previousQueue.splice(0);
+        }
 
         this.direction = QueueDirection.NEUTRAL;
     }

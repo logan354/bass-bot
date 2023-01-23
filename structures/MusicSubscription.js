@@ -2,7 +2,7 @@ const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, Act
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const Queue = require("./Queue");
 const { searchEngine } = require("./searchEngine");
-const { Source, QueryType, LoadType } = require("../utils/constants");
+const { Source, QueryType, LoadType, QueueDirection } = require("../utils/constants");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
 const ytdl = require("discord-ytdl-core");
@@ -403,7 +403,7 @@ class MusicSubscription {
 
     /**
     * Creates a readable stream and plays it on the audio player
-    * @param {import("./searchEngine").Track} track 
+    * @param {import("./searchEngine").Track} [track] 
     * @param {number} [seek]
     */
     async play(track, seek) {
@@ -432,16 +432,20 @@ class MusicSubscription {
                         streamURL = res.tracks[0].url;
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
-                        this.queue.shift();
-                        this.play(this.queue[0]);
+                        this.queue.direction = QueueDirection.NEXT;
+                        this.queue.process();
+
+                        if (this.queue.length) {
+                            this.play();
+                        }
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
-                        this.queue.shift();
-                        this.previousQueue.push(track);
+                        this.queue.direction = QueueDirection.NEXT;
+                        this.queue.process();
 
-                        if (this.previousQueue > 5) this.previousQueue.shift();
-
-                        this.play(this.queue[0]);
+                        if (this.queue.length) {
+                            this.play();
+                        }
                     }
                 }
 

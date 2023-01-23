@@ -71,7 +71,7 @@ async function searchEngine(query, requester, options = defaultSearchEngineOptio
                     title: data.title,
                     channel: data.channel.name,
                     url: data.url,
-                    thumbnail: data.thumbnail,
+                    thumbnail: data.thumbnail.url,
                     tracks: [],
                     requestedBy: requester,
                     source: Source.YOUTUBE
