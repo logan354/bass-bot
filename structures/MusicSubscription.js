@@ -277,11 +277,8 @@ class MusicSubscription {
 
 
                     // Process the queue
-                    this.queue.process();
-
-                    if (this.queue.length) {
-                        this.play();
-                    }
+                    this.queue._process();
+                    this.play();
                 }
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
                     // If the Playing state has been entered, then a new track has started playback.
@@ -402,19 +399,12 @@ class MusicSubscription {
     }
 
     /**
-    * Creates a readable stream and plays it on the audio player
+    * Plays a track on the audio player
     * @param {import("./searchEngine").Track} [track] 
-    * @param {number} [seek]
+    * @param {PlayOptions} options
     */
-    async play(track, seek) {
-        if (!track) {
-            if (!this.queue[0]) return;
-            else track = this.queue[0];
-        }
-        else {
-            this.previousQueue.push(this.queue[0]);
-            this.queue[0] = track;
-        }
+    async play(track = this.queue[0], options = defaultPlayOptions) {
+        if (!track) return;
 
         let stream, streamType;
         let streamURL = track.url;
@@ -433,26 +423,22 @@ class MusicSubscription {
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.queue.direction = QueueDirection.NEXT;
-                        this.queue.process();
+                        this.queue._process();
 
-                        if (this.queue.length) {
-                            this.play();
-                        }
+                        this.play();
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
                         this.queue.direction = QueueDirection.NEXT;
-                        this.queue.process();
+                        this.queue._process();
 
-                        if (this.queue.length) {
-                            this.play();
-                        }
+                        this.play();
                     }
                 }
 
                 // Getting track info from play-dl 
                 const info = await play.video_info(streamURL);
 
-                if (seek) {
+                if (options.seek) {
                     const FFMPEG_OPUS_ARGUMENTS = [
                         "-analyzeduration",
                         "0",
@@ -472,7 +458,7 @@ class MusicSubscription {
 
                     const final_args = [];
 
-                    final_args.push("-ss", `${(seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+                    final_args.push("-ss", `${(options.seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
                     final_args.push("-i", highestaudio);
                     final_args.push(...FFMPEG_OPUS_ARGUMENTS);
 
@@ -484,7 +470,7 @@ class MusicSubscription {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this.metadata.additionalPlaybackDuration = seek
+                    this.metadata.additionalPlaybackDuration = options.seek
                 }
                 else {
                     // Create readable stream from play-dl
@@ -498,13 +484,13 @@ class MusicSubscription {
                 // Create readable stream from discord-ytdl-core
                 const ytdl_instance = ytdl.arbitraryStream(await scdl.download(streamURL), {
                     opusEncoded: true,
-                    seek: seek / 1000,
+                    seek: options.seek / 1000,
                 });
 
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
 
-                if (seek) this.metadata.additionalPlaybackDuration = seek;
+                if (options.seek) this.metadata.additionalPlaybackDuration = options.seek;
             }
         } catch (error) {
             console.error(error);
@@ -535,5 +521,18 @@ class MusicSubscription {
         return this.audioPlayer.state.status === AudioPlayerStatus.Paused;
     }
 }
+
+/**
+ * The default play options
+ * @type {PlayOptions}
+ */
+const defaultPlayOptions = {
+    seek: null
+}
+
+/**
+ * @typedef PlayOptions
+ * @property {?number} seek
+ */
 
 module.exports = MusicSubscription;

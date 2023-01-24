@@ -21,6 +21,12 @@ class Queue extends Array {
          * @type {import("./searchEngine").Track[]}
          */
         this.previousQueue = [];
+
+        /**
+         * The maximum number of tracks stored in the previous queue
+         * @type {number}
+         */
+        this.previousQueueLimit = 5;
     }
 
 
@@ -54,8 +60,7 @@ class Queue extends Array {
      * @param {number} position 
      */
     move(index, position) {
-        const track = this.splice(index, 1);
-        this.splice(position, 0, ...track)
+        this.splice(position, 0, ...this.splice(index, 1))
     }
 
     /**
@@ -67,63 +72,17 @@ class Queue extends Array {
     }
 
     /**
-     * Processes this queue
+     * Clears this queue
+     * @param {boolean} current
      */
-    process() {
-        if (this.repeat === RepeatMode.QUEUE) {
-            if (this.direction === QueueDirection.PREVIOUS) {
-                // Add the last element in the queue to the start
-                this.splice(0, 0, ...this.pop());
-
-                this.previousQueue.splice(0);
-            }
-            else {
-                // Push the current track to the end of the queue
-                this.push(this.shift());
-
-                this.previousQueue.splice(0);
-            }
-        }
-        else if (this.repeat === RepeatMode.TRACK) {
-            if (this.direction === QueueDirection.PREVIOUS) {
-                // Add the previous track to the start of the queue
-                this.splice(0, 0, this.previousQueue.pop());
-            }
-            else if (this.direction === QueueDirection.NEXT) {
-                // Push the current track to the end of the previous queue
-                this.previousQueue.push(this.shift());
-            }
-            else {
-                return;
-            }
+    clear(current) {
+        if (current) {
+            this.splice(0);
         }
         else {
-            if (this.direction === QueueDirection.PREVIOUS) {
-                // Add the previous track to the start of the queue
-                this.splice(0, 0, this.previousQueue.pop());
-            }
-            else {
-                // Push the current track to the end of the previous queue
-                this.previousQueue.push(this.shift());
-            }
+            this.splice(1);
         }
 
-        // Remove previous queue element
-        if (this.previousQueue > 5) this.previousQueue.shift();
-
-        // Clear previous queue if the queue is empty
-        if (!this.length) {
-            this.previousQueue.splice(0);
-        }
-
-        this.direction = QueueDirection.NEUTRAL;
-    }
-
-    /**
-     * Clears this queue
-     */
-    clear() {
-        this.splice(1);
         this.previousQueue.splice(0);
     }
 
@@ -131,14 +90,59 @@ class Queue extends Array {
      * Shuffles this queue
      */
     shuffle() {
-        const currentTrack = this.shift();
+        const current = this.shift();
 
         for (let i = this.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [this[i], this[j]] = [this[j], this[i]];
         }
 
-        this.unshift(currentTrack);
+        this.unshift(current);
+    }
+
+    /**
+     * Processes this queue
+     */
+    _process() {
+        if (this.direction === QueueDirection.NEXT) {
+            if (this.repeat === RepeatMode.QUEUE) {
+                this.push(this.shift());
+            }
+            else if (this.repeat === RepeatMode.TRACK || this.repeat === RepeatMode.OFF) {
+                this.previousQueue.push(this.shift());
+            }
+        }
+        else if (this.direction === QueueDirection.PREVIOUS) {
+            if (this.repeat === RepeatMode.QUEUE) {
+                this.splice(0, 0, this.pop());
+            }
+            else if (this.repeat === RepeatMode.TRACK || this.repeat === RepeatMode.OFF) {
+                if (this.previousQueue.length) {
+                    this.splice(0, 0, this.previousQueue.pop());
+                }
+            }
+        }
+        else if (this.direction === QueueDirection.NEUTRAL) {
+            if (this.repeat === RepeatMode.QUEUE) {
+                this.push(this.shift());
+            }
+            else if (this.repeat === RepeatMode.OFF) {
+                this.previousQueue.push(this.shift());
+            }
+        }
+
+        // Clear the previous queue if the repeat mode is set to QUEUE
+        if (this.repeat === RepeatMode.QUEUE) {
+            this.previousQueue.splice(0);
+        }
+
+        // Remove the furthest track if the previous queue is over its limit
+        if (this.previousQueue > this.previousQueueLimit) {
+            this.previousQueue.shift();
+        }
+
+        // Reset the queue direction to neutral
+        this.direction = QueueDirection.NEUTRAL;
     }
 }
 
