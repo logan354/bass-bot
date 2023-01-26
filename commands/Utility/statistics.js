@@ -6,7 +6,7 @@ module.exports = {
     name: "statistics",
     aliases: ["stats"],
     category: "Utility",
-    description: "Displays information about Bass's statistics.",
+    description: "Displays statistic information about Bass.",
     utilisation: "statistics",
 
     /**

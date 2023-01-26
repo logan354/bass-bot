@@ -1,5 +1,6 @@
 const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
+const { QueueDirection } = require("../../utils/constants");
 
 module.exports = {
     name: "back",
@@ -28,11 +29,6 @@ module.exports = {
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (!subscription.previousQueue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
-
-        console.log(subscription.previousQueue)
-        const previousTrack = subscription.previousQueue.splice(subscription.previousQueue.length - 1, 1);
-
         const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
 
         if (voiceChannelSize > 2) {
@@ -44,17 +40,14 @@ module.exports = {
             else serverQueue.skiplist.push(message.author.id);
 
             if (subscription.metadata.voteSkipList.length >= requiredVotes) {
-                subscription.queue.splice(0, 0, ...previousTrack);
-                subscription.queue.splice(1, 0, ...previousTrack);
-                subscription.audioPlayer.stop();
-                message.channel.send(client.emotes.skip + " **Backed**");
+                subscription.previous();
+                message.channel.send(client.emotes.skip + " **Skipped to the previous song**");
             }
-            else message.channel.send("**Backed?** (" + subscription.metadata.voteSkipList.length + "/" + requiredVotes + " people)");
+            else message.channel.send("**Skip to the previous song?** (" + subscription.metadata.voteSkipList.length + "/" + requiredVotes + " people)");
         }
         else {
-            subscription.queue.splice(1, 0, ...previousTrack);
-            subscription.audioPlayer.stop();
-            message.channel.send(client.emotes.skip + " **Backed**");
+            subscription.previous();
+            message.channel.send(client.emotes.skip + " **Skipped to the previous song**");
         }
     }
 }

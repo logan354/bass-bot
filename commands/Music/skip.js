@@ -1,5 +1,6 @@
 const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
+const { QueueDirection } = require("../../utils/constants");
 
 module.exports = {
     name: "skip",
@@ -41,13 +42,13 @@ module.exports = {
             else serverQueue.skiplist.push(message.author.id);
 
             if (subscription.metadata.voteSkipList.length >= requiredVotes) {
-                subscription.audioPlayer.stop();
+                subscription.next();
                 message.channel.send(client.emotes.skip + " **Skipped**");
             }
             else message.channel.send("**Skipping?** (" + subscription.metadata.voteSkipList.length + "/" + requiredVotes + " people)");
         }
         else {
-            subscription.audioPlayer.stop();
+            subscription.next();
             message.channel.send(client.emotes.skip + " **Skipped**");
         }
     }

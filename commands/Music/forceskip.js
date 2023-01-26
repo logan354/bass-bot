@@ -34,31 +34,26 @@ module.exports = {
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
         if (!args[0]) {
-            subscription.audioPlayer.stop();
+            subscription.next();
             return message.channel.send(client.emotes.skip + " **Skipped**");
         }
 
-        let skipNum = Number(args[0]);
+        let jumpNum = Number(args[0]);
 
-        if (!skipNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
+        if (!jumpNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
 
-        if (skipNum <= 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
+        if (jumpNum <= 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
 
-        if (skipNum > subscription.queue.length) skipNum = subscription.queue.length;
+        if (jumpNum > subscription.queue.length) jumpNum = subscription.queue.length;
 
-        // Skip single track
-        if (skipNum === 1 || subscription.queue.length === 1) {
-            subscription.audioPlayer.stop();
-            return message.channel.send(client.emotes.skip + " **Skipped**");
+
+        if (jumpNum === 1 || subscription.queue.length === 1) {
+            subscription.next();
+            message.channel.send(client.emotes.skip + " **Skipped**");
         }
-
-        // Skip multiple tracks
-        for (let i = 0; i < skipNum - 1; i++) {
-            subscription.previousQueue.push(subscription.queue.shift());
-            
+        else {
+            subscription.next(jumpNum);
+            message.channel.send(client.emotes.skip + " **Skipped " + jumpNum + " songs**");
         }
-
-        subscription.audioPlayer.stop();
-        return message.channel.send(client.emotes.skip + " **Skipped " + skipNum + " songs**");
     }
 }

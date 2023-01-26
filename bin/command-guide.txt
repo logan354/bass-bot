@@ -9,24 +9,24 @@ nowplaying
 resume / play
 pause
 stop
+back / previous 
+forceback / forceprevious
 skip / next
-forceskip
-back / previous
-forceback
+forceskip / forcenext
 volume
 
 seek / scrub
-rewind
-fastforward
+rewind ❌
+fastforward ❌
 
 
 Queue:
 queue
-play / search
-playnow / search
-search 
+play / search 
+playnow / search ❌
+search ❌
 shuffle
-repeat
+repeat 
 clear
-move
-remove
+move ❌
+remove ❌

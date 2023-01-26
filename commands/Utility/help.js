@@ -4,7 +4,7 @@ module.exports = {
     name: "help",
     aliases: [],
     category: "Utility",
-    description: "Displays information about Bass.",
+    description: "Displays help information about Bass.",
     utilisation: "help [command]",
 
     /**

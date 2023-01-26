@@ -2,9 +2,9 @@ const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.
 
 module.exports = {
     name: "invite",
-    aliases: ["links"],
+    aliases: [],
     category: "Utility",
-    description: "Displays information on how to invite Bass.",
+    description: "Displays invite information about Bass.",
     utilisation: "invite",
 
     /**

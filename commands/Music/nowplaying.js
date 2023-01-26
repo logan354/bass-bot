@@ -31,7 +31,7 @@ module.exports = {
 
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
 
-        const currentPlaybackDuration = subscription.audioPlayer.state.playbackDuration + subscription.metadata.additionalPlaybackDuration;
+        const currentPlaybackDuration = subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration;
 
         const embed = new EmbedBuilder()
             .setColor("DarkGreen")

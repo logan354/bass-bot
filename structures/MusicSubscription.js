@@ -77,17 +77,17 @@ class MusicSubscription {
          */
         this.metadata = {
             /**
-             * The additional playback duration to add to the audio player
-             * @type {?number}
-             */
-            additionalPlaybackDuration: null,
-
-            /**
              * The array of user ids, who want to skip the current track
              * @type {User}
              */
             voteSkipList: [],
         }
+
+        /**
+         * The additional playback duration to add to the audio player playback duration
+         * @type {?number}
+         */
+        this._additionalPlaybackDuration = null;
 
 
         if (this.client.subscriptions.has(guildId)) {
@@ -282,7 +282,7 @@ class MusicSubscription {
                 }
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
                     // If the Playing state has been entered, then a new track has started playback.
-                    if (this.metadata.additionalPlaybackDuration) return;
+                    if (this._additionalPlaybackDuration) return;
 
                     const embed = new EmbedBuilder()
                         .setColor("DarkGreen")
@@ -403,7 +403,7 @@ class MusicSubscription {
     * @param {import("./searchEngine").Track} [track] 
     * @param {PlayOptions} options
     */
-    async play(track = this.queue[0], options = defaultPlayOptions) {
+    async play(track = this.queue[0], options) {
         if (!track) return;
 
         let stream, streamType;
@@ -470,7 +470,7 @@ class MusicSubscription {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this.metadata.additionalPlaybackDuration = options.seek
+                    this._additionalPlaybackDuration = options.seek
                 }
                 else {
                     // Create readable stream from play-dl
@@ -490,7 +490,7 @@ class MusicSubscription {
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
 
-                if (options.seek) this.metadata.additionalPlaybackDuration = options.seek;
+                if (options.seek) this._additionalPlaybackDuration = options.seek;
             }
         } catch (error) {
             console.error(error);
@@ -511,6 +511,37 @@ class MusicSubscription {
         this.audioPlayer.play(resource);
     }
 
+    /**
+     * Pauses the audio player
+     */
+    pause() {
+        this.audioPlayer.pause();
+    }
+
+    /**
+     * Skips to the next track or jumps to a track in the queue
+     * @param {number} jump 
+     */
+    next(jump) {
+        if (jump) {
+            for (let i = 0; i < jump - 1; i++) {
+                this.queue.direction = QueueDirection.NEXT;
+                this.queue._process();
+            }
+        }
+
+        this.queue.direction = QueueDirection.NEXT;
+        this.audioPlayer.stop();
+    }
+
+    /**
+     * Skips to the previous track
+     */
+    previous() {
+        this.queue.direction = QueueDirection.PREVIOUS;
+        this.audioPlayer.stop();
+    }
+
     isPlaying() {
         if (!this.connection) return false;
         return this.audioPlayer.state.status === AudioPlayerStatus.Playing || this.audioPlayer.state.status === AudioPlayerStatus.Paused;
@@ -522,13 +553,6 @@ class MusicSubscription {
     }
 }
 
-/**
- * The default play options
- * @type {PlayOptions}
- */
-const defaultPlayOptions = {
-    seek: null
-}
 
 /**
  * @typedef PlayOptions

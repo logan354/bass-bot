@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "clear",
+    name: "move",
     aliases: [],
     category: "Music",
-    description: "Clears the queue.",
-    utilisation: "clear",
+    description: "Moves a song in the queue.",
+    utilisation: "move <index> <position>",
 
     /**
      * @param {Client} client 
@@ -19,8 +19,13 @@ module.exports = {
          */
         const subscription = client.subscriptions.get(message.guild.id);
 
+
         const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
+
+
+        if (!args[0] || !args[1]) return message.channel.send(client.emotes.error + " **Two positions are required**");
+
 
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
@@ -33,7 +38,17 @@ module.exports = {
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
-        subscription.queue.clear();
-        message.channel.send(client.emotes.clear + " **Cleared**");
+
+        let position1 = Number(args[0]);
+        let position2 = Number(args[1]);
+
+        if (!position1 || !position2) return message.channel.send(client.emotes.error + " **Values must be a number**");
+
+        if (position1 < 1 || position1 > subscription.queue.length - 1) return message.channel.send(client.emotes.error + " **Position 1 must be a number between 1 and " + (subscription.queue.length - 1).toString() + "**");
+
+        if (position2 > subscription.queue.length - 1) position2 = subscription.queue.length - 1
+
+        subscription.queue.move(position1, position2);
+        message.channel.send(client.emotes.move + " **Moved **`" + subscription.queue[position2].name + "`** from position **`" + position1 + "`** to **`" + position2 + "`");
     }
 }
