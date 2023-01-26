@@ -400,10 +400,10 @@ class MusicSubscription {
 
     /**
     * Plays a track on the audio player
-    * @param {import("./searchEngine").Track} [track] 
-    * @param {PlayOptions} options
+    * @param {import("./searchEngine").Track} track
+    * @param {PlayOptions} [options]
     */
-    async play(track = this.queue[0], options) {
+    async play(track = this.queue[0], options = defaultPlayOptions) {
         if (!track) return;
 
         let stream, streamType;
@@ -519,6 +519,13 @@ class MusicSubscription {
     }
 
     /**
+     * Resumes the audio player
+     */
+    resume() {
+        this.audioPlayer.unpause();
+    }
+
+    /**
      * Skips to the next track or jumps to a track in the queue
      * @param {number} jump 
      */
@@ -553,6 +560,13 @@ class MusicSubscription {
     }
 }
 
+/**
+ * The default play options
+ * @type {PlayOptions}
+ */
+const defaultPlayOptions = {
+    seek: null
+}
 
 /**
  * @typedef PlayOptions
