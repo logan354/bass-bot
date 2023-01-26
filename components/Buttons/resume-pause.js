@@ -1,5 +1,5 @@
 const { Client } = require("discord.js");
-const MusicSubscription = require("../structures/MusicSubscription");
+const MusicSubscription = require("../../structures/MusicSubscription");
 
 /**
  * @param {Client} client 
