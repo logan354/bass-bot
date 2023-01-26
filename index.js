@@ -17,6 +17,7 @@ client.emotes = client.config.emojis;
 
 client.commands = new Collection();
 client.slashCommands = new Collection();
+client.buttons = new Collection();
 
 client.subscriptions = new Map();
 
@@ -49,6 +50,19 @@ fs.readdirSync("./slashCommands").forEach(dirs => {
         client.slashCommands.set(slashCommand.name.toLowerCase(), slashCommand);
     }
 });
+
+/**
+ * Importing all buttons
+ */
+console.log("Loading buttons...");
+
+const buttons = fs.readdirSync("./buttons").filter(file => file.endsWith(".js"));
+
+for (const file of buttons) {
+    const button = require(`./buttons/${file}`);
+    console.log(`-> Loaded button ${file.split(".")[0]}`);
+    client.buttons.set(file.split(".")[0], button);
+}
 
 /**
  * Listening for all events
