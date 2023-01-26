@@ -2,7 +2,7 @@ const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, Act
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const Queue = require("./Queue");
 const { searchEngine } = require("./searchEngine");
-const { Source, QueryType, LoadType, QueueDirection } = require("../utils/constants");
+const { Source, QueryType, LoadType, QueueDirection, RepeatMode } = require("../utils/constants");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
 const ytdl = require("discord-ytdl-core");
@@ -65,6 +65,12 @@ class MusicSubscription {
          * @type {Queue}
          */
         this.queue = new Queue();
+
+        /**
+         * The repeat mode of this queue
+         * @type {RepeatMode}
+         */
+        this.repeat = RepeatMode.OFF;
 
         /**
          * The volume of this subscription

@@ -37,7 +37,7 @@ module.exports = {
 
         // Checks if a input is 0 because parseDuration returns 0 if input is invalid
         if (Number(time) === 0) {
-            await subscription.play(subscription.queue[0], time);
+            await subscription.play(subscription.queue[0], { seek: time });
             return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
         }
 
@@ -50,7 +50,7 @@ module.exports = {
 
         if (time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + "**Time cannot be longer than the song**");
 
-        await subscription.play(subscription.queue[0], time);
+        await subscription.play(subscription.queue[0], { seek: time });
         message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
     }
 }

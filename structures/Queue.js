@@ -1,20 +1,25 @@
+const MusicSubscription = require("./MusicSubscription");
 const { QueueDirection, RepeatMode } = require("../utils/constants");
 
 class Queue extends Array {
-    constructor() {
+    /**
+     * Queue constructor
+     * @param {MusicSubscription} subscription 
+     */
+    constructor(subscription) {
         super();
+
+        /**
+         * The subscription bound to this queue
+         * @type {MusicSubscription}
+         */
+        this.subscription = subscription;
 
         /**
          * The direction of this queue
          * @type {QueueDirection}
          */
         this.direction = QueueDirection.NEUTRAL;
-
-        /**
-         * The repeat mode of this queue
-         * @type {RepeatMode}
-         */
-        this.repeat = RepeatMode.OFF;
 
         /**
          * The previous queue of this queue
@@ -105,34 +110,34 @@ class Queue extends Array {
      */
     _process() {
         if (this.direction === QueueDirection.NEXT) {
-            if (this.repeat === RepeatMode.QUEUE) {
+            if (this.subscription.repeat === RepeatMode.QUEUE) {
                 this.push(this.shift());
             }
-            else if (this.repeat === RepeatMode.TRACK || this.repeat === RepeatMode.OFF) {
+            else if (this.subscription.repeat === RepeatMode.TRACK || this.subscription.repeat === RepeatMode.OFF) {
                 this.previousQueue.push(this.shift());
             }
         }
         else if (this.direction === QueueDirection.PREVIOUS) {
-            if (this.repeat === RepeatMode.QUEUE) {
+            if (this.subscription.repeat === RepeatMode.QUEUE) {
                 this.splice(0, 0, this.pop());
             }
-            else if (this.repeat === RepeatMode.TRACK || this.repeat === RepeatMode.OFF) {
+            else if (this.subscription.repeat === RepeatMode.TRACK || this.subscription.repeat === RepeatMode.OFF) {
                 if (this.previousQueue.length) {
                     this.splice(0, 0, this.previousQueue.pop());
                 }
             }
         }
         else if (this.direction === QueueDirection.NEUTRAL) {
-            if (this.repeat === RepeatMode.QUEUE) {
+            if (this.subscription.repeat === RepeatMode.QUEUE) {
                 this.push(this.shift());
             }
-            else if (this.repeat === RepeatMode.OFF) {
+            else if (this.subscription.repeat === RepeatMode.OFF) {
                 this.previousQueue.push(this.shift());
             }
         }
 
         // Clear the previous queue if the repeat mode is set to QUEUE
-        if (this.repeat === RepeatMode.QUEUE) {
+        if (this.subscription.repeat === RepeatMode.QUEUE) {
             this.previousQueue.splice(0);
         }
 
@@ -143,6 +148,11 @@ class Queue extends Array {
 
         // Reset the queue direction to neutral
         this.direction = QueueDirection.NEUTRAL;
+
+
+        // Reset
+        this.subscription._additionalPlaybackDuration = null;
+        this.subscription.metadata.voteSkipList.splice(0);
     }
 }
 

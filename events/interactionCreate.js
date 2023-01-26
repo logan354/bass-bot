@@ -26,9 +26,7 @@ module.exports = async (client, interaction) => {
 
         const button = interaction.customId;
 
-        const btn = client.buttons.get(button);
-
-        console.log(btn)
+        const btn = client.components.get(button);
 
         if (btn) {
             try {

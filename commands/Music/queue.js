@@ -29,10 +29,10 @@ module.exports = {
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
-        let repeatEmoji;
-        if (subscription.repeat === RepeatMode.OFF) repeatEmoji = "❌";
-        else if (subscription.repeat === RepeatMode.QUEUE) repeatEmoji = client.emotes.repeat
-        else repeatEmoji = client.emotes.repeatTrack
+        let repeatEmoji = "❌";
+        let repeatTrackEmoji = "❌";
+        if (subscription.repeat === RepeatMode.QUEUE) repeatEmoji = "✅";
+        else if (subscription.repeat === RepeatMode.TRACK) repeatTrackEmoji = "✅";
 
         if (subscription.queue.length === 1) {
             const embed = new EmbedBuilder()
@@ -42,9 +42,15 @@ module.exports = {
                     iconURL: message.guild.iconURL()
                 })
                 .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">")
-                .setFields("Voice Channel", `<#${subscription.voiceChannel.id}>`, true)
+                .setFields(
+                    {
+                        name: "Voice Channel",
+                        value: `<#${subscription.voiceChannel.id}>`,
+                        inline: true
+                    }
+                )
                 .setFooter({
-                    text: "Page 1/1" + " | Repeat: ",
+                    text: "Page 1/1" + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                     iconURL: client.user.avatarURL()
                 });
 
@@ -89,7 +95,7 @@ module.exports = {
 
                 )
                 .setFooter({
-                    text: "Page 1/" + pages.length + " | Repeat: " + repeatEmoji,
+                    text: "Page 1/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                     iconURL: client.user.avatarURL()
                 });
 
@@ -136,7 +142,7 @@ module.exports = {
                         const newEmbed = new EmbedBuilder(embed)
                             .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                             .setFooter({
-                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji,
+                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                                 iconURL: client.user.avatarURL()
                             });
 
@@ -154,7 +160,7 @@ module.exports = {
                         const newEmbed = new EmbedBuilder(embed)
                             .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                             .setFooter({
-                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji,
+                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                                 iconURL: client.user.avatarURL()
                             });
 

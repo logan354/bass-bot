@@ -29,16 +29,16 @@ module.exports = {
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
-        if (subscription.queue.repeat === RepeatMode.OFF) {
-            subscription.queue.repeat = RepeatMode.QUEUE
+        if (subscription.repeat === RepeatMode.OFF) {
+            subscription.repeat = RepeatMode.QUEUE
             message.channel.send(client.emotes.repeat + " **Enabled**");
         } 
-        else if (subscription.queue.repeat === RepeatMode.QUEUE) {
-            subscription.queue.repeat = RepeatMode.TRACK
+        else if (subscription.repeat === RepeatMode.QUEUE) {
+            subscription.repeat = RepeatMode.TRACK
             return message.channel.send(client.emotes.repeatTrack + " **Enabled**");
         }
         else {
-            subscription.queue.repeat = RepeatMode.OFF
+            subscription.repeat = RepeatMode.OFF
             return message.channel.send(client.emotes.repeat + " **Disabled**");
         }
     }
