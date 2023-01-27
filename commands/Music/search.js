@@ -43,7 +43,7 @@ module.exports = {
         let searchEmoji = client.emotes.youtube;
         message.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
 
-        const res = await subscription.search(query, message.author, { queryType: queryType });
+        const res = await subscription.search(query, message.author, { queryType: queryType, searchLimit: 10 });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new EmbedBuilder()
                 .setColor("DarkGreen")

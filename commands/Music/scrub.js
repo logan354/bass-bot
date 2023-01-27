@@ -3,11 +3,11 @@ const MusicSubscription = require("../../structures/MusicSubscription");
 const { formatDuration, parseDuration } = require("../../utils/formats");
 
 module.exports = {
-    name: "seek",
-    aliases: ["scrub"],
+    name: "scrub",
+    aliases: ["sc", "seek"],
     category: "Music",
-    description: "Seeks to a certain position on the current playing song.",
-    utilisation: "seek <time>",
+    description: "Scrubs to a certain position on the current playing song.",
+    utilisation: "scrub <time>",
 
     /**
      * @param {Client} client 

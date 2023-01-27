@@ -24,7 +24,7 @@ fastforward ❌
 
 play / search 
 playnow / search ❌
-search ❌
+search
 
 clear
 move ❌

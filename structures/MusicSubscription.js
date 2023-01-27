@@ -64,7 +64,7 @@ class MusicSubscription {
          * The queue of this subscription
          * @type {Queue}
          */
-        this.queue = new Queue();
+        this.queue = new Queue(this);
 
         /**
          * The repeat mode of this queue
