@@ -17,7 +17,7 @@ shuffle
 repeat 
 volume
 
-seek / scrub
+scrub
 rewind ❌
 fastforward ❌
 
