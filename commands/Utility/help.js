@@ -1,11 +1,11 @@
-const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
+const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.js");
 
 module.exports = {
     name: "help",
     aliases: [],
     category: "Utility",
-    description: "Shows information about Bass",
-    utilisation: "{prefix}help [command]",
+    description: "Displays help information about Bass.",
+    utilisation: "help [command]",
 
     /**
      * @param {Client} client 
@@ -13,37 +13,27 @@ module.exports = {
      * @param {string[]} args 
      */
     execute(client, message, args) {
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
-        if (!botPermissionsFor.has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** " + "`" + message.channel.name + "`");
-        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
         if (!args[0]) {
             // Command categories
-            const track = client.commands.filter(x => x.category == "Track").map((x) => "`" + x.name + "`");
-            const queue = client.commands.filter(x => x.category == "Queue").map((x) => "`" + x.name + "`");
-            const premium = client.commands.filter(x => x.category == "Premium").map((x) => "`" + x.name + "`");
+            const music = client.commands.filter(x => x.category == "Music").map((x) => "`" + x.name + "`");
             const utility = client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`");
 
-            const embed = new MessageEmbed()
-                .setColor("BLACK")
+            const embed = new EmbedBuilder()
+                .setColor("Default")
                 .setAuthor({
-                    name: "Bass Commands",
+                    name: "Bass's Help Centre",
                     iconURL: client.config.app.logo
                 })
-                .setDescription("My current prefix in this server is `" + client.config.app.prefix + "` type `" + this.utilisation.replace("{prefix}", client.config.app.prefix) + "` to get information about a specific command.")
+                .setDescription("**Hello <@" + message.author.id + ">, welcome to the Help Centre.**\n\nBelow is a list of all my commands\nType <@" + client.user.id + "> `" + this.utilisation + "` to get information about a specific command.")
                 .setThumbnail(message.guild.iconURL())
                 .setFields(
                     {
-                        name: `**Track [${track.length}]**\n`,
-                        value: track.join(", ")
-                    },
-                    {
-                        name: `**Queue [${queue.length}]**\n`,
-                        value: queue.join(", ")
-                    },
-                    {
-                        name: `**Premium [${premium.length}]**\n`,
-                        value: premium.join(", ")
+                        name: `**Music [${music.length}]**\n`,
+                        value: music.join(", ")
                     },
                     {
                         name: `**Utility [${utility.length}]**\n`,
@@ -52,7 +42,7 @@ module.exports = {
                 )
                 .setTimestamp(new Date())
                 .setFooter({
-                    text: `Total Commands: ${track.length + queue.length + premium.length + utility.length}`
+                    text: `Total Commands: ${music.length + utility.length}`
                 });
 
             message.channel.send({ embeds: [embed] });
@@ -61,8 +51,8 @@ module.exports = {
 
             if (!command) return message.channel.send(client.emotes.error + " **I could not find that command**");
 
-            const embed = new MessageEmbed()
-                .setColor("BLACK")
+            const embed = new EmbedBuilder()
+                .setColor("Default")
                 .setAuthor({
                     name: `${command.name.charAt(0).toUpperCase() + command.name.slice(1)} Command`,
                     iconURL: client.config.app.logo
@@ -86,7 +76,7 @@ module.exports = {
                     },
                     {
                         name: "Utilisation",
-                        value: "`" + command.utilisation.replace("{prefix}", client.config.app.prefix) + "`",
+                        value: "<@" + client.user.id + "> `" + this.utilisation + "`",
                         inline: true
                     }
                 )

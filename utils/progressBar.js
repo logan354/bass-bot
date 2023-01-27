@@ -1,27 +1,22 @@
-const { formatDuration } = require("./formats");
-
 /**
  * Creates progress bar
- * @param {number} currentStreamTime
- * @param {number} totalTime
- * @param {string} endTimecode
+ * @param {number} currentDuration
+ * @param {number} totalDuration
  * @returns {string}
  */
-function createProgressBar(currentStreamTime, totalTime, endTimecode) {
+function createProgressBar(currentDuration, totalDuration) {
     const length = 15;
 
-    const index = Math.round((currentStreamTime / totalTime) * length);
+    const index = Math.round((currentDuration / totalDuration) * length);
     const indicator = "🔘";
     const line = "▬";
 
     if (index >= 1 && index <= length) {
         const bar = line.repeat(length - 1).split("");
         bar.splice(index, 0, indicator);
-        const currentTimecode = formatDuration(currentStreamTime);
-        return `${currentTimecode} ┃ ${bar.join("")} ┃ ${endTimecode}`;
+        return `┃ ${bar.join("")} ┃`;
     } else {
-        const currentTimecode = formatDuration(currentStreamTime);
-        return `${currentTimecode} ┃ ${indicator}${line.repeat(length - 1)} ┃ ${endTimecode}`;
+        return `┃ ${indicator}${line.repeat(length - 1)} ┃`;
     }
 }
 

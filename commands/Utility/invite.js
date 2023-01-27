@@ -1,11 +1,11 @@
-const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
+const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.js");
 
 module.exports = {
     name: "invite",
-    aliases: ["links"],
+    aliases: [],
     category: "Utility",
-    description: "Shows information on how to invite Bass",
-    utilisation: "{prefix}invite",
+    description: "Displays invite information about Bass.",
+    utilisation: "invite",
 
     /**
      * @param {Client} client 
@@ -13,11 +13,11 @@ module.exports = {
      * @param {string[]} args 
      */
     execute(client, message, args) {
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
-        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
-        const embed = new MessageEmbed()
-            .setColor("BLACK")
+        const embed = new EmbedBuilder()
+            .setColor("Default")
             .setAuthor({
                 name: "About Me"
             })
@@ -30,12 +30,12 @@ module.exports = {
                 },
                 {
                     name: "Support Server",
-                    value: "[`Click Here`](" + client.config.app.support_server + ")"
+                    value: "[`Click Here`](" + client.config.app.supportServer + ")"
                 }
             )
             .setTimestamp(new Date())
             .setFooter({
-                text: "Thanks For Choosing Bass",
+                text: "Thanks For choosing Bass",
                 iconURL: client.config.app.logo
             });
 

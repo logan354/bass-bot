@@ -1,0 +1,31 @@
+**Command Guide**
+
+join / connect
+disconnect
+
+nowplaying
+queue
+
+resume / play
+pause
+stop
+previous 
+forceprevious
+next
+forcenext
+shuffle
+repeat 
+volume
+
+scrub
+rewind ❌
+fastforward ❌
+
+
+play / search 
+playnow / search ❌
+search
+
+clear
+move ❌
+remove ❌

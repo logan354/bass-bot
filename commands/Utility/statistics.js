@@ -1,13 +1,13 @@
-const { Client, Message, Permissions, MessageEmbed } = require("discord.js");
+const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.js");
 const { formatFormalTime } = require("../../utils/formats");
-const package = require("../../package.json");
+const { version, dependencies } = require("../../package.json");
 
 module.exports = {
     name: "statistics",
     aliases: ["stats"],
     category: "Utility",
-    description: "Shows information about Bass's statistics",
-    utilisation: "{prefix}stats",
+    description: "Displays statistic information about Bass.",
+    utilisation: "statistics",
 
     /**
      * @param {Client} client 
@@ -17,11 +17,11 @@ module.exports = {
     execute(client, message, args) {
         const memory = 512;
 
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.me);
-        if (!botPermissionsFor.has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** " + "`" + message.channel.name + "`");
+        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
-        const embed = new MessageEmbed()
-            .setColor("BLACK")
+        const embed = new EmbedBuilder()
+            .setColor("Default")
             .setAuthor({
                 name: "-- Bass's Statistics --",
                 iconURL: client.config.app.logo
@@ -33,16 +33,16 @@ module.exports = {
                 },
                 {
                     name: ":pencil: Bot Information",
-                    value: `Creator: **Block354#3452**\nVersion: **${package.version}**\nLines of Code: **?**\nNumber of Commands: **${client.commands.size}**`
+                    value: `Creator: **Block354#3452**\nVersion: **${version}**\nLines of Code: **?**\nNumber of Commands: **${client.commands.size}**`
                 },
                 {
                     name: ":desktop: Hosting Statistics",
-                    value: `Memory Usage: **${Math.trunc((process.memoryUsage().heapTotal / (memory * 1000000)) * 100)}% (${memory}mb)**\nUptime: **${formatFormalTime(client.uptime)}**\nDiscord.js: **v${package.dependencies["discord.js"].split("^")[1]}**\nOperating System: **${process.platform}**`
+                    value: `Memory Usage: **${Math.trunc((process.memoryUsage().heapTotal / (memory * 1000000)) * 100)}% (${memory}mb)**\nUptime: **${formatFormalTime(client.uptime)}**\nDiscord.js: **v${dependencies["discord.js"].split("^")[1]}**\nOperating System: **${process.platform}**`
                 }
             )
             .setTimestamp(new Date())
             .setFooter({
-                text: "Thanks For Choosing Bass",
+                text: "Thanks For choosing Bass",
                 iconURL: client.config.app.logo
             });
 

@@ -17,8 +17,9 @@ client.emotes = client.config.emojis;
 
 client.commands = new Collection();
 client.slashCommands = new Collection();
+client.components = new Collection();
 
-client.queues = new Map();
+client.subscriptions = new Map();
 
 /**
  * Importing all commands
@@ -47,6 +48,21 @@ fs.readdirSync("./slashCommands").forEach(dirs => {
         const slashCommand = require(`./slashCommands/${dirs}/${file}`);
         console.log(`-> Loaded slash command ${slashCommand.name.toLowerCase()}`);
         client.slashCommands.set(slashCommand.name.toLowerCase(), slashCommand);
+    }
+});
+
+/**
+ * Importing all components
+ */
+console.log("Loading components...");
+
+fs.readdirSync("./components").forEach(dirs => {
+    const components = fs.readdirSync(`./components/${dirs}`).filter(files => files.endsWith(".js"));
+
+    for (const file of components) {
+        const component = require(`./components/${dirs}/${file}`);
+        console.log(`-> Loaded component(${dirs}) ${file.split(".")[0]}`);
+        client.components.set(file.split(".")[0], component);
     }
 });
 

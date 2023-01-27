@@ -23,31 +23,27 @@ module.exports = {
         error: "<:Error:896608983505326101>",
         permissionError: ":no_entry:",
 
-        // Structure emojis
-        player: "https://media2.giphy.com/media/LwBTamVefKJxmYwDba/giphy.gif?cid=6c09b952a802c7s4bkq4n5kc0tcp1il42k0uqfoo4p0bx3xl&rid=giphy.gif",
-        playing: ":notes:",
         youtube: "<:Youtube:844386374143967253>",
         soundcloud: "<:Soundcloud:844386374000836609>",
         spotify: "<:Spotify:844386374182633532>",
 
-        // Premium emojis
-        volume: ":loud_sound:",
-
-        // Queue emojis
-        loopQueue: ":repeat:",
-        shuffle: ":twisted_rightwards_arrows:",
+        // Music emojis
         clear: ":stop_button:",
-
-        // Track emojis
         disconnect: ":mailbox_with_no_mail:",
-        resume: ":play_pause:",
+        next: ":track_next:",
         pause: ":pause_button:",
-        skip: ":track_next:",
-        loop: ":repeat_one:",
-        seek: ":fast_forward:",
-        volume: ":loud_sound:",
+        previous: ":track_previous:",
+        repeat: ":repeat:",
+        repeatSong: ":repeat_one:",
+        resume: ":play_pause:",
+        scrub: ":fast_forward:",
+        searching: ":mag_right:",
+        shuffle: ":twisted_rightwards_arrows:",
+        stop: ":stop_button:",
+        volumeUp: ":loud_sound:",
+        volumeDown: ":sound:",
 
         // Utility emojis
-        ping: ":signal_strength:",
+        ping: ":signal_strength:"
     }
 }

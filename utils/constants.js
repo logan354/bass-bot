@@ -28,18 +28,16 @@ const LoadType = {
     NO_MATCHES: "NO_MATCHES"
 }
 
-const State = {
-    CONNECTED: "CONNECTED",
-    CONNECTING: "CONNECTING",
-    DISCONNECTED: "DISCONNECTED",
-    DISCONNECTING: "DISCONNECTING",
-    DESTROYING: "DESTROYING"
-}
-
 const RepeatMode = {
     OFF: "OFF",
     QUEUE: "QUEUE",
     TRACK: "TRACK"
 }
 
-module.exports = { Source, QueryType, LoadType, State, RepeatMode }
+const QueueDirection = {
+    PREVIOUS: "PREVIOUS",
+    NEUTRAL: "NEUTRAL",
+    NEXT: "NEXT"
+}
+
+module.exports = { Source, QueryType, LoadType, RepeatMode, QueueDirection }
