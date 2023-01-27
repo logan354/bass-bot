@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "forceskip",
-    aliases: ["fs"],
+    name: "forcenext",
+    aliases: ["fn", "forceskip"],
     category: "Music",
-    description: "Force skips the currently playing song.",
-    utilisation: "forceskip [number]",
+    description: "Force skips to the next song or jumps to a song in the queue.",
+    utilisation: "forcenext [jump]",
 
     /**
      * @param {Client} client 
@@ -22,6 +22,7 @@ module.exports = {
         const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
 
+
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
@@ -33,27 +34,27 @@ module.exports = {
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
+
         if (!args[0]) {
             subscription.next();
-            return message.channel.send(client.emotes.skip + " **Skipped**");
+            return message.channel.send(client.emotes.next + " **Next**");
         }
 
         let jumpNum = Number(args[0]);
 
         if (!jumpNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
 
-        if (jumpNum <= 0) return message.channel.send(client.emotes.error + " **Value must be a number greater than 1**");
+        if (jumpNum < 1) return message.channel.send(client.emotes.error + " **Value must be a number, 1 or greater**");
 
         if (jumpNum > subscription.queue.length) jumpNum = subscription.queue.length;
 
-
         if (jumpNum === 1 || subscription.queue.length === 1) {
             subscription.next();
-            message.channel.send(client.emotes.skip + " **Skipped**");
+            message.channel.send(client.emotes.next + " **Next**");
         }
         else {
             subscription.next(jumpNum);
-            message.channel.send(client.emotes.skip + " **Skipped " + jumpNum + " songs**");
+            message.channel.send(client.emotes.next + " **Jumped " + jumpNum + " songs**");
         }
     }
 }

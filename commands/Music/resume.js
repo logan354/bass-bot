@@ -3,9 +3,9 @@ const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
     name: "resume",
-    aliases: [],
+    aliases: ["re", ],
     category: "Music",
-    description: "Resumes the current playing track.",
+    description: "Resumes the current playing song.",
     utilisation: "resume",
 
     /**
@@ -22,6 +22,7 @@ module.exports = {
         const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
 
+
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
@@ -32,7 +33,8 @@ module.exports = {
         
         if (!subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is not paused**");
 
-        subscription.audioPlayer.unpause();
+
+        subscription.resume();
         message.channel.send(client.emotes.resume + " **Resumed**");
     }
 }

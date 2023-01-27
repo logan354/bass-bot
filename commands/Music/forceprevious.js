@@ -2,11 +2,11 @@ const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
-    name: "forceback",
-    aliases: ["fb"],
+    name: "forceprevious",
+    aliases: ["fp", "forceback"],
     category: "Music",
-    description: "Force skips the currently playing song.",
-    utilisation: "forceback",
+    description: "Force skips to the previous song.",
+    utilisation: "forceprevious",
 
     /**
      * @param {Client} client 
@@ -22,6 +22,7 @@ module.exports = {
         const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
 
+
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
@@ -31,7 +32,10 @@ module.exports = {
         const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
         if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
+        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+
+
         subscription.previous();
-        return message.channel.send(client.emotes.back + " **Skipped to the previous song**");
+        return message.channel.send(client.emotes.previous + " **Previous**");
     }
 }

@@ -3,7 +3,7 @@ const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
     name: "clear",
-    aliases: [],
+    aliases: ["cl"],
     category: "Music",
     description: "Clears the queue.",
     utilisation: "clear",
@@ -22,6 +22,7 @@ module.exports = {
         const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
 
+
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
@@ -32,6 +33,7 @@ module.exports = {
         if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+
 
         subscription.queue.clear();
         message.channel.send(client.emotes.clear + " **Cleared**");

@@ -25,9 +25,11 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
+
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+
 
         let repeatEmoji = "❌";
         let repeatTrackEmoji = "❌";
@@ -108,15 +110,15 @@ module.exports = {
                     .addComponents(
                         [
                             new ButtonBuilder()
-                                .setCustomId("queue-previous-page" + `id${uid}`)
+                                .setCustomId("queue-previous-page" + `.id${uid}`)
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji("⬅️"),
                             new ButtonBuilder()
-                                .setCustomId("queue-trash" + `id${uid}`)
+                                .setCustomId("queue-trash" + `.id${uid}`)
                                 .setStyle(ButtonStyle.Danger)
                                 .setEmoji("🗑️"),
                             new ButtonBuilder()
-                                .setCustomId("queue-next-page" + `id${uid}`)
+                                .setCustomId("queue-next-page" + `.id${uid}`)
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji("➡️")
                         ]
@@ -135,7 +137,7 @@ module.exports = {
                 collector.on("collect", async (interaction) => {
                     if (!interaction.isButton()) return;
 
-                    if (interaction.customId === "queue-previous-page" + `id${uid}`) {
+                    if (interaction.customId === "queue-previous-page" + `.id${uid}`) {
                         await interaction.deferUpdate();
 
                         currentPage--;
@@ -148,12 +150,12 @@ module.exports = {
 
                         queueMessage.edit({ embeds: [newEmbed], components: [row] });
                     }
-                    else if (interaction.customId === "queue-trash" + `id${uid}`) {
+                    else if (interaction.customId === "queue-trash" + `.id${uid}`) {
                         await interaction.deferUpdate();
 
                         collector.stop();
                     }
-                    else if (interaction.customId === "queue-next-page" + `id${uid}`) {
+                    else if (interaction.customId === "queue-next-page" + `.id${uid}`) {
                         await interaction.deferUpdate();
 
                         currentPage++;

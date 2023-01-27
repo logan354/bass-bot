@@ -6,8 +6,8 @@ const { createProgressBar } = require("../../utils/progressBar");
 module.exports = {
     name: "nowplaying",
     aliases: ["np"],
-    category: "Track",
-    description: "Shows the current playing song",
+    category: "Music",
+    description: "Displays the current playing song.",
     utilisation: "nowplaying",
 
     /**
@@ -25,12 +25,14 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
+
         if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
 
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
 
+        
         const currentPlaybackDuration = subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration;
 
         const embed = new EmbedBuilder()

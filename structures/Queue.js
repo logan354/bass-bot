@@ -78,16 +78,9 @@ class Queue extends Array {
 
     /**
      * Clears this queue
-     * @param {boolean} current
      */
-    clear(current) {
-        if (current) {
-            this.splice(0);
-        }
-        else {
-            this.splice(1);
-        }
-
+    clear() {
+        this.splice(1);
         this.previousQueue.splice(0);
     }
 
