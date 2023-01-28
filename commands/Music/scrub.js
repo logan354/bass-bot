@@ -48,9 +48,9 @@ module.exports = {
             if (time === 0) return message.channel.send(client.emotes.error + " **Error invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
         }
 
-        if (time < 0 || time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + " **Time must be in the range of the song**");
-
         if (subscription.queue[0].isLive) return message.channel.send(client.emotes.error + " **Cannot scrub a live song**");
+        
+        if (time < 0 || time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + " **Time must be in the range of the song**");
 
         let scrubEmoji;
         if (time > subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration) scrubEmoji = client.emotes.fastforward;
