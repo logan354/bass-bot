@@ -38,22 +38,25 @@ module.exports = {
 
         let time = args[0];
 
-        // Checks if a input is 0 because parseDuration returns 0 if input is invalid
-        if (Number(time) === 0) {
-            await subscription.play(subscription.queue[0]);
-            return message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
+        if (Number(time)) {
+            time = time * 1000;
+        }
+        else {
+            // Returns time in milliseconds
+            time = parseDuration(time);
+
+            if (time === 0) return message.channel.send(client.emotes.error + " **Error invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
         }
 
-        // Returns time in milliseconds
-        time = parseDuration(time);
+        if (time < 0 || time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + " **Time must be in the range of the song**");
 
-        if (time === 0) return message.channel.send(client.emotes.error + " **Error invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
+        if (subscription.queue[0].isLive) return message.channel.send(client.emotes.error + " **Cannot scrub a live song**");
 
-        if (subscription.queue[0].isLive) return message.channel.send(client.emotes.error + " **Cannot seek a live song**");
-
-        if (time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + "**Time cannot be longer than the song**");
+        let scrubEmoji;
+        if (time > subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration) scrubEmoji = client.emotes.fastforward;
+        else scrubEmoji = client.emotes.rewind;
 
         await subscription.play(subscription.queue[0], { seek: time });
-        message.channel.send(client.emotes.seek + " **Set position to** `" + formatDuration(time) + "`");
+        message.channel.send(scrubEmoji + " **Scrubbed to** `" + formatDuration(time) + "`");
     }
 }
