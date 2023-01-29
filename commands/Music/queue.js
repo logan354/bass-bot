@@ -43,7 +43,7 @@ module.exports = {
                     name: "Queue for " + message.guild.name,
                     iconURL: message.guild.iconURL()
                 })
-                .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">")
+                .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`")
                 .setFields(
                     {
                         name: "Voice Channel",
@@ -52,24 +52,25 @@ module.exports = {
                     }
                 )
                 .setFooter({
-                    text: "Page 1/1" + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
+                    text: "Page: 1/1" + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                     iconURL: client.user.avatarURL()
                 });
 
             message.channel.send({ embeds: [embed] });
         } else {
-            // Format the queue for the embed
-            const queue = subscription.queue.map((track, i) => "`" + i + ".` " + `[${track.title}](${track.url})\n` + "`" + track.durationFormatted + "` **|** Requested by: <@" + track.requestedBy + ">").slice(1, subscription.queue.length);
-            // Split the queue iton pages for the embed
-            const pages = formatChunk(queue, 5).map((x) => x.join("\n\n"));
-            // The current page for the embed
-            let currentPage = 1;
+            // Format the queue
+            const queueFmt = subscription.queue.map((track, i) => "`" + i + ".` " + `[${track.title}](${track.url})\n` + track.channel + " **|** `" + track.durationFormatted + "`").slice(1, subscription.queue.length);
 
-            // Total duration
+            // Split the queue into pages
+            const pageSize = 5;
+            const pages = formatChunk(queueFmt, pageSize).map((x) => x.join("\n\n"));;
+
             let totalDuration = 0;
             for (let i = 0; i < subscription.queue.length; i++) {
                 totalDuration += subscription.queue[i].duration;
             }
+
+            let currentPage = 1;
 
             const embed = new EmbedBuilder()
                 .setColor("DarkGreen")
@@ -77,7 +78,7 @@ module.exports = {
                     name: "Queue for " + message.guild.name,
                     iconURL: message.guild.iconURL()
                 })
-                .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                 .setFields(
                     {
                         name: "Total songs:",
@@ -97,12 +98,12 @@ module.exports = {
 
                 )
                 .setFooter({
-                    text: "Page 1/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
+                    text: "Page: 1/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                     iconURL: client.user.avatarURL()
                 });
 
 
-            // Configure page changeability
+            // Configure page shiftiablity
             if (pages.length > 1) {
                 const uid = new Date().getTime();
 
@@ -110,17 +111,26 @@ module.exports = {
                     .addComponents(
                         [
                             new ButtonBuilder()
+                                .setCustomId("block")
+                                .setStyle(ButtonStyle.Primary)
+                                .setLabel("\u200B"),
+                            new ButtonBuilder()
                                 .setCustomId("queue-previous-page" + `.id${uid}`)
                                 .setStyle(ButtonStyle.Primary)
-                                .setEmoji("⬅️"),
+                                .setEmoji("⬅️")
+                                .setDisabled(),
                             new ButtonBuilder()
                                 .setCustomId("queue-trash" + `.id${uid}`)
-                                .setStyle(ButtonStyle.Danger)
+                                .setStyle(ButtonStyle.Primary)
                                 .setEmoji("🗑️"),
                             new ButtonBuilder()
                                 .setCustomId("queue-next-page" + `.id${uid}`)
                                 .setStyle(ButtonStyle.Primary)
-                                .setEmoji("➡️")
+                                .setEmoji("➡️"),
+                            new ButtonBuilder()
+                                .setCustomId("block2")
+                                .setStyle(ButtonStyle.Primary)
+                                .setLabel("\u200B")
                         ]
                     );
 
@@ -128,51 +138,53 @@ module.exports = {
 
                 const collector = message.channel.createMessageComponentCollector(
                     {
+                        filter: x => x.user.id === message.author.id,
                         time: 60000,
-                        errors: ["time", "user"],
-                        filter: x => x.user.id === message.author.id
+                        errors: ["time", "user"]
                     }
                 );
 
-                collector.on("collect", async (interaction) => {
-                    if (!interaction.isButton()) return;
+                collector.on("collect", async (i) => {
+                    if (!i.isButton()) return;
 
-                    if (interaction.customId === "queue-previous-page" + `.id${uid}`) {
-                        await interaction.deferUpdate();
-
+                    if (i.customId === "queue-previous-page" + `.id${uid}`) {
                         currentPage--;
+                        if (currentPage === 1) row.components[1].setDisabled();
+                        else row.components[3].setDisabled(false);
+
                         const newEmbed = new EmbedBuilder(embed)
-                            .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                            .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                             .setFooter({
-                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
+                                text: "Page: " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                                 iconURL: client.user.avatarURL()
                             });
 
-                        queueMessage.edit({ embeds: [newEmbed], components: [row] });
+                        i.update({ embeds: [newEmbed], components: [row] });
                     }
-                    else if (interaction.customId === "queue-trash" + `.id${uid}`) {
-                        await interaction.deferUpdate();
+                    else if (i.customId === "queue-trash" + `.id${uid}`) {
+                        await i.deferUpdate();
 
                         collector.stop();
                     }
-                    else if (interaction.customId === "queue-next-page" + `.id${uid}`) {
-                        await interaction.deferUpdate();
-
+                    else if (i.customId === "queue-next-page" + `.id${uid}`) {
                         currentPage++;
+                        if (currentPage === pages.length) row.components[3].setDisabled();
+                        else row.components[1].setDisabled(false);
+
                         const newEmbed = new EmbedBuilder(embed)
-                            .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + "`" + subscription.queue[0].durationFormatted + "` **|** Requested by: <@" + subscription.queue[0].requestedBy + ">" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
+                            .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                             .setFooter({
-                                text: "Page " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
+                                text: "Page: " + currentPage + "/" + pages.length + " | Repeat: " + repeatEmoji + " | Repeat Track: " + repeatTrackEmoji,
                                 iconURL: client.user.avatarURL()
                             });
 
-                        queueMessage.edit({ embeds: [newEmbed], components: [row] });
+                        i.update({ embeds: [newEmbed], components: [row] });
                     }
                     else return;
                 });
 
-                collector.on("end", (collection, reason) => {
-                    if (reason === "time" || "user") {
+                collector.on("end", (collected, reason) => {
+                    if (reason === "time" || reason === "user") {
                         queueMessage.edit({ components: [] });
                     }
                 });
