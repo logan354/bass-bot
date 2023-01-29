@@ -112,7 +112,7 @@ module.exports = {
                         [
                             new ButtonBuilder()
                                 .setCustomId("block")
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle(ButtonStyle.Secondary)
                                 .setLabel("\u200B"),
                             new ButtonBuilder()
                                 .setCustomId("queue-previous-page" + `.id${uid}`)
@@ -129,7 +129,7 @@ module.exports = {
                                 .setEmoji("➡️"),
                             new ButtonBuilder()
                                 .setCustomId("block2")
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle(ButtonStyle.Secondary)
                                 .setLabel("\u200B")
                         ]
                     );
@@ -148,9 +148,11 @@ module.exports = {
                     if (!i.isButton()) return;
 
                     if (i.customId === "queue-previous-page" + `.id${uid}`) {
+                        const newRow = new ActionRowBuilder(row);
+
                         currentPage--;
-                        if (currentPage === 1) row.components[1].setDisabled();
-                        else row.components[3].setDisabled(false);
+                        if (currentPage === 1) newRow.components[1].setDisabled();
+                        else newRow.components[3].setDisabled(false);
 
                         const newEmbed = new EmbedBuilder(embed)
                             .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
@@ -159,7 +161,7 @@ module.exports = {
                                 iconURL: client.user.avatarURL()
                             });
 
-                        i.update({ embeds: [newEmbed], components: [row] });
+                        i.update({ embeds: [newEmbed], components: [newRow] });
                     }
                     else if (i.customId === "queue-trash" + `.id${uid}`) {
                         await i.deferUpdate();
@@ -167,9 +169,11 @@ module.exports = {
                         collector.stop();
                     }
                     else if (i.customId === "queue-next-page" + `.id${uid}`) {
+                        const newRow = new ActionRowBuilder(row);
+
                         currentPage++;
-                        if (currentPage === pages.length) row.components[3].setDisabled();
-                        else row.components[1].setDisabled(false);
+                        if (currentPage === pages.length) newRow.components[3].setDisabled();
+                        else newRow.components[1].setDisabled(false);
 
                         const newEmbed = new EmbedBuilder(embed)
                             .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
@@ -178,7 +182,7 @@ module.exports = {
                                 iconURL: client.user.avatarURL()
                             });
 
-                        i.update({ embeds: [newEmbed], components: [row] });
+                        i.update({ embeds: [newEmbed], components: [newRow] });
                     }
                     else return;
                 });
