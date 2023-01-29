@@ -38,7 +38,7 @@ module.exports = {
 
         let time = args[0];
 
-        if (Number(time)) {
+        if (Number(time) || Number(time) === 0) {
             time = time * 1000;
         }
         else {

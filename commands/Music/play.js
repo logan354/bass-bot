@@ -26,12 +26,12 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
 
+        if (!args[0]) return message.channel.send(client.emotes.error + " **A link/query is required**");
+
+
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
-
-
-        if (!args[0]) return message.channel.send(client.emotes.error + " **A link/query is required**");
 
 
         if (!subscription) {

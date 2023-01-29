@@ -42,7 +42,7 @@ module.exports = {
 
         let jumpNum = Number(args[0]);
 
-        if (!jumpNum) return message.channel.send(client.emotes.error + " **Value must be a number**");
+        if (!jumpNum && jumpNum !== 0) return message.channel.send(client.emotes.error + " **Value must be a number**");
 
         if (jumpNum < 1) return message.channel.send(client.emotes.error + " **Value must be a number, 1 or greater**");
 

@@ -37,21 +37,35 @@ module.exports = {
             subscription = new MusicSubscription(client, message.guild.id, message.channel);
         }
 
+        if (!subscription.connection) {
+            const botPermissionsForVoice = message.member.voice.channel.permissionsFor(message.guild.members.me);
+            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Connect)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Connect in** <#" + message.member.voice.channel.id + ">");
+            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Speak)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** <#" + message.member.voice.channel.id + ">");
+
+            try {
+                await subscription.connect(message.member.voice.channel);
+            } catch {
+                return message.channel.send(client.emotes.error + " **Error connecting to ** <#" + message.member.voice.channel.id + ">");
+            }
+            message.channel.send(client.emotes.success + " **Connected to <#" + message.member.voice.channel.id + "> and bound to** <#" + message.channel.id + ">");
+        }
+
+        // Search the link/query and add to the queue
         const query = args.join(" ");
         const queryType = QueryType.YOUTUBE_SEARCH;
 
         let searchEmoji = client.emotes.youtube;
         message.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
 
-        const res = await subscription.search(query, message.author, { queryType: queryType, searchLimit: 10 });
+        const res = await subscription.search(query, message.author, { queryType: queryType, searchLimit: 5 });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new EmbedBuilder()
-                .setColor("DarkGreen")
+                .setColor("Red")
                 .setAuthor({
-                    name: "Search results",
-                    iconURL: client.user.avatarURL()
+                    name: "Search Results",
+                    iconURL: "https://cdn.discordapp.com/emojis/844386374143967253"
                 })
-                .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})` + " - `" + track.durationFormatted + "`").join("\n\n"));
+                .setDescription(res.tracks.map((track, i) => "`" + (i + 1) + ".` " + `[${track.title}](${track.url})\n` + track.channel + " **|** `" + track.durationFormatted + "`").join("\n\n"));
 
             const uid = new Date().getTime();
 
@@ -65,7 +79,7 @@ module.exports = {
                                 res.tracks.map((track, i) => {
                                     return {
                                         label: track.title,
-                                        description: track.channel + " - " + track.durationFormatted,
+                                        description: track.channel + " | " + track.durationFormatted,
                                         value: (i + 1).toString()
                                     }
                                 })
@@ -78,34 +92,19 @@ module.exports = {
             const searchMessage = await message.channel.send({ embeds: [embed], components: [row] });
 
             const collector = message.channel.createMessageComponentCollector({
+                filter: x => x.user.id === message.author.id,
                 time: 60000,
-                errors: ["time"],
-                filter: x => x.user.id === message.author.id
+                errors: ["time"]
             });
 
-            collector.on("collect", async (interaction) => {
-                if (!interaction.isStringSelectMenu()) return;
+            collector.on("collect", async (i) => {
+                if (!i.isStringSelectMenu()) return;
 
-                if (interaction.customId === "search-results" + `.id${uid}`) {
-                    await interaction.deferUpdate();
-
-                    searchMessage.edit({ content: "\u200B", embeds: [], components: [] });
+                if (i.customId === "search-results" + `.id${uid}`) {
                     collector.stop();
+                    searchMessage.delete();
 
-                    if (!subscription.connection) {
-                        const botPermissionsForVoice = message.member.voice.channel.permissionsFor(message.guild.members.me);
-                        if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Connect)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Connect in** <#" + message.member.voice.channel.id + ">");
-                        if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Speak)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** <#" + message.member.voice.channel.id + ">");
-
-                        try {
-                            await subscription.connect(message.member.voice.channel);
-                        } catch {
-                            return message.channel.send(client.emotes.error + " **Error connecting to ** <#" + message.member.voice.channel.id + ">");
-                        }
-                        message.channel.send(client.emotes.success + " **Connected to <#" + message.member.voice.channel.id + "> and bound to** <#" + message.channel.id + ">");
-                    }
-
-                    subscription.queue.add(res.tracks[interaction.values[0] - 1]);
+                    subscription.queue.add(res.tracks[i.values[0] - 1]);
 
                     const embed = new EmbedBuilder()
                         .setColor("DarkGreen")
@@ -113,16 +112,16 @@ module.exports = {
                             name: "Queued",
                             iconURL: message.author.avatarURL()
                         })
-                        .setDescription(`**[${res.tracks[interaction.values[0] - 1].title}](${res.tracks[interaction.values[0] - 1].url})**`)
+                        .setDescription(`**[${res.tracks[i.values[0] - 1].title}](${res.tracks[i.values[0] - 1].url})**`)
                         .setFields(
                             {
                                 name: "Channel",
-                                value: res.tracks[interaction.values[0] - 1].channel,
+                                value: res.tracks[i.values[0] - 1].channel,
                                 inline: true
                             },
                             {
                                 name: "Duration",
-                                value: res.tracks[interaction.values[0] - 1].durationFormatted,
+                                value: res.tracks[i.values[0] - 1].durationFormatted,
                                 inline: true
                             },
                             {
@@ -140,9 +139,12 @@ module.exports = {
                 } else return;
             });
 
-            collector.on("end", (collection, reason) => {
+            collector.on("end", (collected, reason) => {
+                const newRow = new ActionRowBuilder(row)
+                newRow.components[0].setDisabled();
+
                 if (reason === "time") {
-                    searchMessage.edit({ content: client.emotes.error + " **Timeout**", embeds: [], components: [] });
+                    searchMessage.edit({ components: [newRow]});
                 }
             });
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found**");
