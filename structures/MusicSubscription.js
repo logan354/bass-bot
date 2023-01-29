@@ -56,7 +56,7 @@ class MusicSubscription {
          */
         this.audioPlayer = createAudioPlayer({
             behaviors: {
-                noSubscriber: NoSubscriberBehavior.Stop,
+                noSubscriber: NoSubscriberBehavior.Pause
             }
         });
 
