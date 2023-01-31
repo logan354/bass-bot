@@ -121,7 +121,7 @@ module.exports = {
                             },
                             {
                                 name: "Duration",
-                                value: res.tracks[i.values[0] - 1].durationFormatted,
+                                value: "`" + res.tracks[i.values[0] - 1].durationFormatted + "`",
                                 inline: true
                             },
                             {

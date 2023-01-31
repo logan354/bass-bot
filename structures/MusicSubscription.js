@@ -2,7 +2,7 @@ const { Client, TextChannel, VoiceChannel, StageChannel, EmbedBuilder, User, Act
 const { VoiceConnection, AudioPlayer, createAudioPlayer, NoSubscriberBehavior, joinVoiceChannel, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerStatus, StreamType, createAudioResource } = require("@discordjs/voice");
 const Queue = require("./Queue");
 const { searchEngine } = require("./searchEngine");
-const { Source, QueryType, LoadType, QueueDirection, RepeatMode } = require("../utils/constants");
+const { Source, QueryType, LoadType, QueueDirection } = require("../utils/constants");
 const play = require("play-dl");
 const { FFmpeg } = require("prism-media");
 const ytdl = require("discord-ytdl-core");
@@ -64,13 +64,7 @@ class MusicSubscription {
          * The queue of this subscription
          * @type {Queue}
          */
-        this.queue = new Queue(this);
-
-        /**
-         * The repeat mode of this queue
-         * @type {RepeatMode}
-         */
-        this.repeat = RepeatMode.OFF;
+        this.queue = new Queue();
 
         /**
          * The volume of this subscription
@@ -84,7 +78,7 @@ class MusicSubscription {
         this.metadata = {
             /**
              * The array of user ids, who want to skip the current track
-             * @type {User}
+             * @type {User[]}
              */
             voteSkipList: [],
         }
@@ -209,81 +203,83 @@ class MusicSubscription {
             });
 
 
+            // Configure audio player
+
             let playingMessage;
 
-            // Configure audio player
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("shuffle")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("🔀"),
+                    new ButtonBuilder()
+                        .setCustomId("previous")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("⏮️"),
+                    new ButtonBuilder()
+                        .setCustomId("resume-pause")
+                        .setStyle(ButtonStyle.Success)
+                        .setEmoji("⏸️"),
+                    new ButtonBuilder()
+                        .setCustomId("next")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("⏭️"),
+                    new ButtonBuilder()
+                        .setCustomId("repeat")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setEmoji("🔁")
+                );
+
+            const row2 = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("block")
+                        .setStyle(ButtonStyle.Primary)
+                        .setLabel("\u200B"),
+                    new ButtonBuilder()
+                        .setCustomId("volume-down")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("🔉"),
+                    new ButtonBuilder()
+                        .setCustomId("stop")
+                        .setStyle(ButtonStyle.Danger)
+                        .setEmoji("⏹️"),
+                    new ButtonBuilder()
+                        .setCustomId("volume-up")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("🔊"),
+                    new ButtonBuilder()
+                        .setCustomId("queue")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji("📚")
+                );
+
             this.audioPlayer.on("stateChange", (oldState, newState) => {
                 if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                     // If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                     // The queue is then processed to start playing the next track, if one is available.
-                    const row = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("shuffle")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔀")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("previous")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏮️")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("resume-pause")
-                                .setStyle(ButtonStyle.Success)
-                                .setEmoji("⏸️")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("next")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏭️")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("repeat")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔁")
-                                .setDisabled()
-                        );
-
-                    const row2 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("block")
-                                .setStyle(ButtonStyle.Primary)
-                                .setLabel("\u200B")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("volume-down")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔉")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("stop")
-                                .setStyle(ButtonStyle.Danger)
-                                .setEmoji("⏹️")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("volume-up")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔊")
-                                .setDisabled(),
-                            new ButtonBuilder()
-                                .setCustomId("queue")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("📚")
-                                .setDisabled()
-                        );
-
-
                     if (playingMessage) {
-                        playingMessage.edit({ components: [row, row2] });
-                    }
+                        const newRow = new ActionRowBuilder(row);
+                        newRow.components.forEach(x => x.setDisabled());
 
+                        const newRow2 = new ActionRowBuilder(row2);
+                        newRow2.components.forEach(x => x.setDisabled());
+
+
+                        playingMessage.edit({ components: [newRow, newRow2] });
+                    }
                     playingMessage = null;
 
 
                     // Process the queue
-                    this.queue._process();
+                    this.queue._processor();
+
+                    // Reset
+                    this._additionalPlaybackDuration = null;
+                    this.metadata.voteSkipList.splice(0);
+
+                    // Play the queue
                     this.play();
                 }
                 else if (newState.status === AudioPlayerStatus.Playing && oldState.status === AudioPlayerStatus.Buffering) {
@@ -306,7 +302,7 @@ class MusicSubscription {
                             },
                             {
                                 name: "Duration",
-                                value: newState.resource.metadata.durationFormatted,
+                                value: "`" + newState.resource.metadata.durationFormatted + "`",
                                 inline: true
                             },
                             {
@@ -315,55 +311,6 @@ class MusicSubscription {
                                 inline: true
                             }
                         );
-
-                    const row = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("shuffle")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔀"),
-                            new ButtonBuilder()
-                                .setCustomId("previous")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏮️"),
-                            new ButtonBuilder()
-                                .setCustomId("resume-pause")
-                                .setStyle(ButtonStyle.Success)
-                                .setEmoji("⏸️"),
-                            new ButtonBuilder()
-                                .setCustomId("next")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("⏭️"),
-                            new ButtonBuilder()
-                                .setCustomId("repeat")
-                                .setStyle(ButtonStyle.Secondary)
-                                .setEmoji("🔁")
-                        );
-
-                    const row2 = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId("block")
-                                .setStyle(ButtonStyle.Primary)
-                                .setLabel("\u200B"),
-                            new ButtonBuilder()
-                                .setCustomId("volume-down")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔉"),
-                            new ButtonBuilder()
-                                .setCustomId("stop")
-                                .setStyle(ButtonStyle.Danger)
-                                .setEmoji("⏹️"),
-                            new ButtonBuilder()
-                                .setCustomId("volume-up")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("🔊"),
-                            new ButtonBuilder()
-                                .setCustomId("queue")
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji("📚")
-                        );
-
 
                     this.textChannel.send({ embeds: [embed], components: [row, row2] })
                         .then((message) => playingMessage = message);
@@ -406,7 +353,7 @@ class MusicSubscription {
 
     /**
     * Plays a track on the audio player
-    * @param {import("./searchEngine").Track} track
+    * @param {?import("./searchEngine").Track} track
     * @param {PlayOptions} [options]
     */
     async play(track = this.queue[0], options = defaultPlayOptions) {
@@ -444,7 +391,7 @@ class MusicSubscription {
                 // Getting track info from play-dl 
                 const info = await play.video_info(streamURL);
 
-                if (options.seek) {
+                if (options.scrub) {
                     const FFMPEG_OPUS_ARGUMENTS = [
                         "-analyzeduration",
                         "0",
@@ -464,7 +411,7 @@ class MusicSubscription {
 
                     const final_args = [];
 
-                    final_args.push("-ss", `${(options.seek / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
+                    final_args.push("-ss", `${(options.scrub / 1000).toString()}`, "-accurate_seek"); // Seeks 5 second in audio. You can also use hh:mm:ss format.
                     final_args.push("-i", highestaudio);
                     final_args.push(...FFMPEG_OPUS_ARGUMENTS);
 
@@ -476,7 +423,7 @@ class MusicSubscription {
                     stream = ffmpeg_instance;
                     streamType = StreamType.OggOpus;
 
-                    this._additionalPlaybackDuration = options.seek
+                    this._additionalPlaybackDuration = options.scrub
                 }
                 else {
                     // Create readable stream from play-dl
@@ -490,13 +437,13 @@ class MusicSubscription {
                 // Create readable stream from discord-ytdl-core
                 const ytdl_instance = ytdl.arbitraryStream(await scdl.download(streamURL), {
                     opusEncoded: true,
-                    seek: options.seek / 1000,
+                    seek: options.scrub / 1000,
                 });
 
                 stream = ytdl_instance;
                 streamType = StreamType.Opus;
 
-                if (options.seek) this._additionalPlaybackDuration = options.seek;
+                if (options.scrub) this._additionalPlaybackDuration = options.scrub;
             }
         } catch (error) {
             console.error(error);
@@ -571,12 +518,12 @@ class MusicSubscription {
  * @type {PlayOptions}
  */
 const defaultPlayOptions = {
-    seek: null
+    scrub: null
 }
 
 /**
  * @typedef PlayOptions
- * @property {?number} seek
+ * @property {?number} scrub
  */
 
 module.exports = MusicSubscription;

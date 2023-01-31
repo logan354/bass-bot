@@ -33,8 +33,8 @@ module.exports = {
 
         let repeatEmoji = "❌";
         let repeatTrackEmoji = "❌";
-        if (subscription.repeat === RepeatMode.QUEUE) repeatEmoji = "✅";
-        else if (subscription.repeat === RepeatMode.TRACK) repeatTrackEmoji = "✅";
+        if (subscription.queue.repeat === RepeatMode.QUEUE) repeatEmoji = "✅";
+        else if (subscription.queue.repeat === RepeatMode.TRACK) repeatTrackEmoji = "✅";
 
         if (subscription.queue.length === 1) {
             const embed = new EmbedBuilder()

@@ -51,7 +51,7 @@ module.exports = {
                 },
                 {
                     name: "Duration",
-                    value: subscription.queue[0].durationFormatted,
+                    value: "`" + subscription.queue[0].durationFormatted + "`",
                     inline: true
                 },
                 {

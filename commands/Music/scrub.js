@@ -56,7 +56,7 @@ module.exports = {
         if (time > subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration) scrubEmoji = client.emotes.fastforward;
         else scrubEmoji = client.emotes.rewind;
 
-        await subscription.play(subscription.queue[0], { seek: time });
+        await subscription.play(subscription.queue[0], { scrub: time });
         message.channel.send(scrubEmoji + " **Scrubbed to** `" + formatDuration(time) + "`");
     }
 }

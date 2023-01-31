@@ -80,7 +80,7 @@ module.exports = {
                     },
                     {
                         name: "Duration",
-                        value: res.tracks[0].durationFormatted,
+                        value: "`" + res.tracks[0].durationFormatted + "`",
                         inline: true
                     },
                     {
