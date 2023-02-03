@@ -1,34 +1,33 @@
-const { Client, Message, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { Client, CommandInteraction, CommandInteractionOptionResolver, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 const { RepeatMode } = require("../../utils/constants");
 const { formatChunk, formatDuration } = require("../../utils/formats");
 
 module.exports = {
     name: "queue",
-    aliases: ["q"],
     category: "Music",
     description: "Displays the queue.",
     utilisation: "queue",
 
     /**
      * @param {Client} client 
-     * @param {Message} message 
-     * @param {string[]} args 
+     * @param {CommandInteraction} interaction
+     * @param {CommandInteractionOptionResolver} args 
      */
-    async execute(client, message, args) {
+    async execute(client, interaction, args) {
         /**
          * @type {MusicSubscription}
          */
-        const subscription = client.subscriptions.get(message.guild.id);
+        const subscription = client.subscriptions.get(interaction.guild.id);
 
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
+        const botPermissionsFor = interaction.channel.permissionsFor(interaction.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + interaction.channel.id + ">");
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
 
 
-        if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
+        if (!subscription || !subscription.connection) return interaction.reply(client.emotes.error + " **I am not connected to a voice channel.**");
 
-        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+        if (!subscription.queue.length) return interaction.reply(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
 
         let repeatEmoji = "❌";
@@ -40,8 +39,8 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor("DarkGreen")
                 .setAuthor({
-                    name: "Queue for " + message.guild.name,
-                    iconURL: message.guild.iconURL()
+                    name: "Queue for " + interaction.guild.name,
+                    iconURL: interaction.guild.iconURL()
                 })
                 .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`")
                 .setFields(
@@ -56,7 +55,7 @@ module.exports = {
                     iconURL: client.user.avatarURL()
                 });
 
-            message.channel.send({ embeds: [embed] });
+            interaction.reply({ embeds: [embed] });
         } else {
             // Format the queue
             const queueFmt = subscription.queue.map((track, i) => "`" + i + ".` " + `[${track.title}](${track.url})\n` + track.channel + " **|** `" + track.durationFormatted + "`").slice(1, subscription.queue.length);
@@ -75,8 +74,8 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor("DarkGreen")
                 .setAuthor({
-                    name: "Queue for " + message.guild.name,
-                    iconURL: message.guild.iconURL()
+                    name: "Queue for " + interaction.guild.name,
+                    iconURL: interaction.guild.iconURL()
                 })
                 .setDescription("__**Now Playing**__\n" + `[${subscription.queue[0].title}](${subscription.queue[0].url})\n` + subscription.queue[0].channel + " **|** `" + subscription.queue[0].durationFormatted + "`" + "\n\n__**Up Next**__\n" + pages[currentPage - 1])
                 .setFields(
@@ -134,13 +133,13 @@ module.exports = {
                         ]
                     );
 
-                const queueMessage = await message.channel.send({ embeds: [embed], components: [row] });
+                const queueMessage = await interaction.reply({ embeds: [embed], components: [row] });
 
-                const collector = message.channel.createMessageComponentCollector(
+                const collector = interaction.channel.createMessageComponentCollector(
                     {
-                        filter: x => x.user.id === message.author.id,
+                        filter: x => x.user.id === interaction.user.id,
                         time: 60000,
-                        errors: ["time"]
+                        errors: ["time", "user"]
                     }
                 );
 
@@ -191,12 +190,12 @@ module.exports = {
                     newRow.components.forEach(x => x.setDisabled());
 
                     if (reason === "time") {
-                        queueMessage.edit({ components: [newRow] });
+                        queueMessage.editReply({ components: [newRow] });
                     }
                 });
             }
             else {
-                message.channel.send({ embeds: [embed] });
+                interaction.reply({ embeds: [embed] });
             }
         }
     }

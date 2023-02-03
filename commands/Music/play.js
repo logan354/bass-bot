@@ -102,7 +102,7 @@ module.exports = {
                 .setColor("DarkGreen")
                 .setAuthor({
                     name: "Queued",
-                    iconURL: message.guild.iconURL()
+                    iconURL: message.author.avatarURL()
                 })
                 .setDescription(`**[${res.playlist.title}](${res.playlist.url})**`)
                 .setThumbnail(res.playlist.thumbnail)

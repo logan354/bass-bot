@@ -10,7 +10,7 @@ module.exports = {
     utilisation: "play <link/query>",
     options: [
         {
-            name: "link/query",
+            name: "link-query",
             description: "Enter a link or query",
             type: ApplicationCommandOptionType.String,
             required: true
@@ -57,7 +57,7 @@ module.exports = {
         }
 
         // Search the link/query and add to the queue
-        const query = args.getString("link/query").join(" ");
+        const query = args.getString("link-query");
         const queryType = resolveQueryType(query);
 
         let searchEmoji;
@@ -65,7 +65,7 @@ module.exports = {
         if (queryType.includes("SPOTIFY")) searchEmoji = client.emotes.spotify;
         if (queryType.includes("SOUNDCLOUD")) searchEmoji = client.emotes.soundcloud;
 
-        if (interaction.deferred) interaction.editReply(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
+        if (interaction.deferred) interaction.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
         else interaction.reply(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
 
         const res = await subscription.search(query, interaction.user, { queryType: queryType });
@@ -76,7 +76,7 @@ module.exports = {
                 .setColor("DarkGreen")
                 .setAuthor({
                     name: "Queued",
-                    iconURL: interaction.author.avatarURL()
+                    iconURL: interaction.user.avatarURL()
                 })
                 .setDescription(`**[${res.tracks[0].title}](${res.tracks[0].url})**`)
                 .setFields(
@@ -109,7 +109,7 @@ module.exports = {
                 .setColor("DarkGreen")
                 .setAuthor({
                     name: "Queued",
-                    iconURL: interaction.guild.iconURL()
+                    iconURL: interaction.user.avatarURL()
                 })
                 .setDescription(`**[${res.playlist.title}](${res.playlist.url})**`)
                 .setThumbnail(res.playlist.thumbnail)
