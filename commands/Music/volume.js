@@ -6,7 +6,7 @@ module.exports = {
     aliases: ["vol"],
     category: "Music",
     description: "Display or changes the volume of the player.",
-    utilisation: "volume [number]",
+    utilisation: "volume [volume]",
 
     /**
      * @param {Client} client 

@@ -36,14 +36,14 @@ module.exports = {
         if (subscription.queue.repeat === RepeatMode.OFF) {
             subscription.queue.repeat = RepeatMode.QUEUE
             message.channel.send(client.emotes.repeat + " **Enabled**");
-        } 
+        }
         else if (subscription.queue.repeat === RepeatMode.QUEUE) {
             subscription.queue.repeat = RepeatMode.TRACK
-            return message.channel.send(client.emotes.repeatSong + " **Enabled**");
+            message.channel.send(client.emotes.repeatSong + " **Enabled**");
         }
         else {
             subscription.queue.repeat = RepeatMode.OFF
-            return message.channel.send(client.emotes.repeat + " **Disabled**");
+            message.channel.send(client.emotes.repeat + " **Disabled**");
         }
     }
 }

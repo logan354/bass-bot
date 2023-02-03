@@ -13,7 +13,7 @@ module.exports = {
         slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
 
         // Support server
-        support_server: "https://discord.gg/ja4KJAj3sU",
+        supportServer: "https://discord.gg/ja4KJAj3sU",
     },
 
     emojis: {

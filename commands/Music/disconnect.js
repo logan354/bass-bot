@@ -28,7 +28,7 @@ module.exports = {
         const voiceChannelSize = message.member.voice.channel.members.filter(m => !m.user.bot).size;
         if (voiceChannelSize > 1 && !message.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) return message.channel.send(client.emotes.permissionError + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
 
-        
+
         subscription.destroy();
         message.channel.send(client.emotes.disconnect + " **Disconnected**");
     }

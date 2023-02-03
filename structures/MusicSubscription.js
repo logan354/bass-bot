@@ -286,6 +286,12 @@ class MusicSubscription {
                     // If the Playing state has been entered, then a new track has started playback.
                     if (this._additionalPlaybackDuration) return;
 
+                    const newRow = new ActionRowBuilder(row);
+                    newRow.components.forEach(x => x.setDisabled(false));
+
+                    const newRow2 = new ActionRowBuilder(row2);
+                    newRow2.components.forEach(x => x.setDisabled(false));
+
                     const embed = new EmbedBuilder()
                         .setColor("DarkGreen")
                         .setAuthor({
@@ -312,7 +318,7 @@ class MusicSubscription {
                             }
                         );
 
-                    this.textChannel.send({ embeds: [embed], components: [row, row2] })
+                    this.textChannel.send({ embeds: [embed], components: [newRow, newRow2] })
                         .then((message) => playingMessage = message);
                 }
             });
@@ -376,13 +382,13 @@ class MusicSubscription {
                     }
                     else if (res.loadType === LoadType.NO_MATCHES) {
                         this.queue.direction = QueueDirection.NEXT;
-                        this.queue._process();
+                        this.queue._processor();
 
                         this.play();
                     }
                     else if (res.loadType === LoadType.LOAD_FAILED) {
                         this.queue.direction = QueueDirection.NEXT;
-                        this.queue._process();
+                        this.queue._processor();
 
                         this.play();
                     }
@@ -486,7 +492,7 @@ class MusicSubscription {
         if (jump) {
             for (let i = 0; i < jump - 1; i++) {
                 this.queue.direction = QueueDirection.NEXT;
-                this.queue._process();
+                this.queue._processor();
             }
         }
 

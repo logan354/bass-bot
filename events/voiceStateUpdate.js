@@ -15,8 +15,8 @@ module.exports = async (client, oldState, newState) => {
 
         if (subscription) {
             if (oldState.channel && newState.channel && newState.channel.id !== oldState.channel.id) {
-                 // Bot has been forcefully moved to another channel
-                 subscription.voiceChannel = newState.channel;
+                // Bot has been forcefully moved to another channel
+                subscription.voiceChannel = newState.channel;
             }
             else if (oldState.channel && !newState.channel) {
                 // Bot has been forcefully disconnected

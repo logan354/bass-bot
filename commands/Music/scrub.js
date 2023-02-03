@@ -36,6 +36,8 @@ module.exports = {
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
 
 
+        const currentPlaybackDuration = subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration;
+
         let time = args[0];
 
         if (Number(time) || Number(time) === 0) {
@@ -49,11 +51,11 @@ module.exports = {
         }
 
         if (subscription.queue[0].isLive) return message.channel.send(client.emotes.error + " **Cannot scrub a live song**");
-        
+
         if (time < 0 || time > subscription.queue[0].duration) return message.channel.send(client.emotes.error + " **Time must be in the range of the song**");
 
         let scrubEmoji;
-        if (time > subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration) scrubEmoji = client.emotes.fastforward;
+        if (time > currentPlaybackDuration) scrubEmoji = client.emotes.fastforward;
         else scrubEmoji = client.emotes.rewind;
 
         await subscription.play(subscription.queue[0], { scrub: time });

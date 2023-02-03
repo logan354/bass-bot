@@ -144,7 +144,7 @@ module.exports = {
                 newRow.components[0].setDisabled();
 
                 if (reason === "time") {
-                    searchMessage.edit({ components: [newRow]});
+                    searchMessage.edit({ components: [newRow] });
                 }
             });
         } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found**");
