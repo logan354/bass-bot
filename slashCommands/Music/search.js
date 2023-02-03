@@ -1,63 +1,72 @@
-const { Client, Message, PermissionsBitField, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
+const { ApplicationCommandOptionType, Client, CommandInteraction, CommandInteractionOptionResolver, PermissionsBitField, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 const { LoadType, QueryType } = require("../../utils/constants");
 
 module.exports = {
     name: "search",
-    aliases: ["se", "find"],
     category: "Music",
     description: "Displays a list of songs that match the query.",
     utilisation: "search <query>",
+    options: [
+        {
+            name: "query",
+            description: "Enter a query",
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }
+    ],
 
     /**
      * @param {Client} client 
-     * @param {Message} message 
-     * @param {string[]} args 
+     * @param {CommandInteraction} interaction 
+     * @param {CommandInteractionOptionResolver} args 
      */
-    async execute(client, message, args) {
+    async execute(client, interaction, args) {
         /**
          * @type {MusicSubscription}
          */
-        let subscription = client.subscriptions.get(message.guild.id);
+        let subscription = client.subscriptions.get(interaction.guild.id);
 
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
-
-
-        if (!args[0]) return message.channel.send(client.emotes.error + " **A query is required**");
+        const botPermissionsFor = interaction.channel.permissionsFor(interaction.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + interaction.channel.id + ">");
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
 
 
-        if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
+        if (!args[0]) return interaction.reply(client.emotes.error + " **A query is required**");
 
-        if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
+
+        if (!interaction.member.voice.channel) return interaction.reply(client.emotes.error + " **You have to be in a voice channel to use this command**");
+
+        if (subscription && subscription.connection && interaction.member.voice.channel.id !== subscription.voiceChannel.id) return interaction.reply(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
 
         if (!subscription) {
-            subscription = new MusicSubscription(client, message.guild.id, message.channel);
+            subscription = new MusicSubscription(client, interaction.guild.id, interaction.channel);
         }
 
         if (!subscription.connection) {
-            const botPermissionsForVoice = message.member.voice.channel.permissionsFor(message.guild.members.me);
-            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Connect)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Connect in** <#" + message.member.voice.channel.id + ">");
-            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Speak)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Speak in** <#" + message.member.voice.channel.id + ">");
+            const botPermissionsForVoice = interaction.member.voice.channel.permissionsFor(interaction.guild.members.me);
+            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Connect)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Connect in** <#" + interaction.member.voice.channel.id + ">");
+            if (!botPermissionsForVoice.has(PermissionsBitField.Flags.Speak)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Speak in** <#" + interaction.member.voice.channel.id + ">");
 
+            interaction.deferReply();
             try {
-                await subscription.connect(message.member.voice.channel);
+                await subscription.connect(interaction.member.voice.channel);
             } catch {
-                return message.channel.send(client.emotes.error + " **Error connecting to ** <#" + message.member.voice.channel.id + ">");
+                return interaction.editReply(client.emotes.error + " **Error connecting to ** <#" + interaction.member.voice.channel.id + ">");
             }
-            message.channel.send(client.emotes.success + " **Connected to <#" + message.member.voice.channel.id + "> and bound to** <#" + message.channel.id + ">");
+            interaction.editReply(client.emotes.success + " **Connected to <#" + interaction.member.voice.channel.id + "> and bound to** <#" + interaction.channel.id + ">");
         }
 
         // Search the link/query and add to the queue
-        const query = args.join(" ");
+        const query = args.getString("query");
         const queryType = QueryType.YOUTUBE_SEARCH;
 
         let searchEmoji = client.emotes.youtube;
-        message.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
+        if (interaction.deferred) interaction.channel.send(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
+        else interaction.reply(searchEmoji + " **Searching...** " + client.emotes.searching + " `" + query + "`");
 
-        const res = await subscription.search(query, message.author, { queryType: queryType, searchLimit: 5 });
+        const res = await subscription.search(query, interaction.user, { queryType: queryType, searchLimit: 5 });
         if (res.loadType === LoadType.SEARCH_RESULT) {
             const embed = new EmbedBuilder()
                 .setColor("Red")
@@ -89,10 +98,10 @@ module.exports = {
                     ]
                 )
 
-            const searchMessage = await message.channel.send({ embeds: [embed], components: [row] });
+            const searchMessage = await interaction.channel.send({ embeds: [embed], components: [row] });
 
-            const collector = message.channel.createMessageComponentCollector({
-                filter: x => x.user.id === message.author.id,
+            const collector = interaction.channel.createMessageComponentCollector({
+                filter: x => x.user.id === interaction.user.id,
                 time: 60000,
                 errors: ["time"]
             });
@@ -110,7 +119,7 @@ module.exports = {
                         .setColor("DarkGreen")
                         .setAuthor({
                             name: "Queued",
-                            iconURL: message.author.avatarURL()
+                            iconURL: interaction.user.avatarURL()
                         })
                         .setDescription(`**[${res.tracks[i.values[0] - 1].title}](${res.tracks[i.values[0] - 1].url})**`)
                         .setFields(
@@ -131,7 +140,7 @@ module.exports = {
                             }
                         );
 
-                    message.channel.send({ embeds: [embed] });
+                    interaction.channel.send({ embeds: [embed] });
 
                     if (!subscription.isPlaying()) {
                         await subscription.play();
@@ -140,14 +149,14 @@ module.exports = {
             });
 
             collector.on("end", (collected, reason) => {
+                const newRow = new ActionRowBuilder(row);
+                newRow.components[0].setDisabled();
+
                 if (reason === "time") {
-                    const newRow = new ActionRowBuilder(row);
-                    newRow.components[0].setDisabled();
-                    
                     searchMessage.edit({ components: [newRow] });
                 }
             });
-        } else if (res.loadType === LoadType.NO_MATCHES) return message.channel.send(client.emotes.error + " **No results found**");
-        else if (res.loadType === LoadType.LOAD_FAILED) return message.channel.send(client.emotes.error + " **Error searching**");
+        } else if (res.loadType === LoadType.NO_MATCHES) return interaction.channel.send(client.emotes.error + " **No results found**");
+        else if (res.loadType === LoadType.LOAD_FAILED) return interaction.channel.send(client.emotes.error + " **Error searching**");
     }
 }

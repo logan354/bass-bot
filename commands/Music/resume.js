@@ -3,7 +3,7 @@ const MusicSubscription = require("../../structures/MusicSubscription");
 
 module.exports = {
     name: "resume",
-    aliases: ["re", ],
+    aliases: ["re"],
     category: "Music",
     description: "Resumes the current playing song.",
     utilisation: "resume",
@@ -30,7 +30,7 @@ module.exports = {
         if (subscription && subscription.connection && message.member.voice.channel.id !== subscription.voiceChannel.id) return message.channel.send(client.emotes.error + " **You need to be in the same voice channel as Bass to use this command**");
 
         if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
-        
+
         if (!subscription.isPaused()) return message.channel.send(client.emotes.error + " **The player is not paused**");
 
 

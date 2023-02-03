@@ -1,36 +1,35 @@
-const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.js");
+const { Client, CommandInteraction, CommandInteractionOptionResolver, PermissionsBitField, EmbedBuilder } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 const { formatDuration } = require("../../utils/formats");
 const { createProgressBar } = require("../../utils/progressBar");
 
 module.exports = {
     name: "nowplaying",
-    aliases: ["np"],
     category: "Music",
     description: "Displays the current playing song.",
     utilisation: "nowplaying",
 
     /**
      * @param {Client} client 
-     * @param {Message} message 
-     * @param {string[]} args 
+     * @param {CommandInteraction} interaction
+     * @param {CommandInteractionOptionResolver} args 
      */
-    execute(client, message, args) {
+    execute(client, interaction, args) {
         /**
          * @type {MusicSubscription}
          */
-        const subscription = client.subscriptions.get(message.guild.id);
+        const subscription = client.subscriptions.get(interaction.guild.id);
 
-        const botPermissionsFor = message.channel.permissionsFor(message.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + message.channel.id + ">");
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
+        const botPermissionsFor = interaction.channel.permissionsFor(interaction.guild.members.me);
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Use External Emojis in** <#" + interaction.channel.id + ">");
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
 
 
-        if (!subscription || !subscription.connection) return message.channel.send(client.emotes.error + " **I am not connected to a voice channel.**");
+        if (!subscription || !subscription.connection) return interaction.reply(client.emotes.error + " **I am not connected to a voice channel.**");
 
-        if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
+        if (!subscription.queue.length) return interaction.reply(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
-        if (!subscription.isPlaying()) return message.channel.send(client.emotes.error + " **The player is not playing**");
+        if (!subscription.isPlaying()) return interaction.reply(client.emotes.error + " **The player is not playing**");
 
 
         const currentPlaybackDuration = subscription.audioPlayer.state.playbackDuration + subscription._additionalPlaybackDuration;
@@ -39,7 +38,7 @@ module.exports = {
             .setColor("DarkGreen")
             .setAuthor({
                 name: "Now Playing",
-                iconURL: message.guild.iconURL()
+                iconURL: interaction.guild.iconURL()
             })
             .setDescription(`**[${subscription.queue[0].title}](${subscription.queue[0].url})**`)
             .setThumbnail(subscription.queue[0].thumbnail)
@@ -65,6 +64,6 @@ module.exports = {
                 }
             );
 
-        message.channel.send({ embeds: [embed] });
+        interaction.reply({ embeds: [embed] });
     }
 }

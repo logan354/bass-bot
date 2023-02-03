@@ -33,17 +33,17 @@ module.exports = {
         if (!subscription.queue.length) return message.channel.send(client.emotes.error + " **Nothing is in the queue**, let's get this party started! :tada:");
 
 
-        if (subscription.repeat === RepeatMode.OFF) {
-            subscription.repeat = RepeatMode.QUEUE
+        if (subscription.queue.repeat === RepeatMode.OFF) {
+            subscription.queue.repeat = RepeatMode.QUEUE
             message.channel.send(client.emotes.repeat + " **Enabled**");
-        } 
-        else if (subscription.repeat === RepeatMode.QUEUE) {
-            subscription.repeat = RepeatMode.TRACK
-            return message.channel.send(client.emotes.repeatSong + " **Enabled**");
+        }
+        else if (subscription.queue.repeat === RepeatMode.QUEUE) {
+            subscription.queue.repeat = RepeatMode.TRACK
+            message.channel.send(client.emotes.repeatSong + " **Enabled**");
         }
         else {
-            subscription.repeat = RepeatMode.OFF
-            return message.channel.send(client.emotes.repeat + " **Disabled**");
+            subscription.queue.repeat = RepeatMode.OFF
+            message.channel.send(client.emotes.repeat + " **Disabled**");
         }
     }
 }

@@ -25,7 +25,7 @@ module.exports = {
 
         if (!message.member.voice.channel) return message.channel.send(client.emotes.error + " **You have to be in a voice channel to use this command**");
 
-        
+
         if (!subscription) {
             subscription = new MusicSubscription(client, message.guild.id, message.channel);
         }

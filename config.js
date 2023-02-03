@@ -13,7 +13,7 @@ module.exports = {
         slogan: "A music bot for Discord. With support for YouTube, Spotify and Soundcloud!",
 
         // Support server
-        support_server: "https://discord.gg/ja4KJAj3sU",
+        supportServer: "https://discord.gg/ja4KJAj3sU",
     },
 
     emojis: {
@@ -30,13 +30,14 @@ module.exports = {
         // Music emojis
         clear: ":stop_button:",
         disconnect: ":mailbox_with_no_mail:",
+        fastforward: ":fast_forward:",
         next: ":track_next:",
         pause: ":pause_button:",
         previous: ":track_previous:",
         repeat: ":repeat:",
         repeatSong: ":repeat_one:",
         resume: ":play_pause:",
-        scrub: ":fast_forward:",
+        rewind: ":rewind:",
         searching: ":mag_right:",
         shuffle: ":twisted_rightwards_arrows:",
         stop: ":stop_button:",
