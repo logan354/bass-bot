@@ -133,7 +133,7 @@ module.exports = {
                         ]
                     );
 
-                const queueMessage = await interaction.reply({ embeds: [embed], components: [row] });
+                interaction.reply({ embeds: [embed], components: [row] });
 
                 const collector = interaction.channel.createMessageComponentCollector(
                     {
@@ -186,11 +186,11 @@ module.exports = {
                 });
 
                 collector.on("end", (collected, reason) => {
-                    const newRow = new ActionRowBuilder(row);
-                    newRow.components.forEach(x => x.setDisabled());
-
                     if (reason === "time") {
-                        queueMessage.editReply({ components: [newRow] });
+                        const newRow = new ActionRowBuilder(row);
+                        newRow.components.forEach(x => x.setDisabled());
+
+                        interaction.editReply({ components: [newRow] });
                     }
                 });
             }

@@ -140,10 +140,10 @@ module.exports = {
             });
 
             collector.on("end", (collected, reason) => {
-                const newRow = new ActionRowBuilder(row);
-                newRow.components[0].setDisabled();
-
                 if (reason === "time") {
+                    const newRow = new ActionRowBuilder(row);
+                    newRow.components[0].setDisabled();
+                    
                     searchMessage.edit({ components: [newRow] });
                 }
             });

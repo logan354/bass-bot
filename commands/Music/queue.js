@@ -187,10 +187,10 @@ module.exports = {
                 });
 
                 collector.on("end", (collected, reason) => {
-                    const newRow = new ActionRowBuilder(row);
-                    newRow.components.forEach(x => x.setDisabled());
-
                     if (reason === "time") {
+                        const newRow = new ActionRowBuilder(row);
+                        newRow.components.forEach(x => x.setDisabled());
+
                         queueMessage.edit({ components: [newRow] });
                     }
                 });
