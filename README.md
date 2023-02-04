@@ -1,4 +1,4 @@
-<img width="25%" height="25%" align="left" style="float: left; margin: 0 10px 0 0;" src="https://cdn.discordapp.com/avatars/829939779440869406/f83396a42fb5e6acd50ebf49b312febe.webp">
+<img src="https://cdn.discordapp.com/avatars/829939779440869406/f83396a42fb5e6acd50ebf49b312febe.webp" align="left">
 
 # Bass
 A music bot for Discord. With support for YouTube, Spotify and Soundcloud!
