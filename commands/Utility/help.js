@@ -18,15 +18,14 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
         if (!args[0]) {
-            // Command categories
             const music = client.commands.filter(x => x.category == "Music").map((x) => "`" + x.name + "`");
             const utility = client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`");
 
             const embed = new EmbedBuilder()
                 .setColor("Default")
                 .setAuthor({
-                    name: "Bass's Help Centre",
-                    iconURL: client.config.app.logo
+                    name: "Help Centre",
+                    iconURL: client.user.avatarURL()
                 })
                 .setDescription("**Hello <@" + message.author.id + ">, welcome to the Help Centre.**\n\nBelow is a list of all my commands\nType <@" + client.user.id + "> `" + this.utilisation + "` to get information about a specific command.")
                 .setThumbnail(message.guild.iconURL())
@@ -55,7 +54,7 @@ module.exports = {
                 .setColor("Default")
                 .setAuthor({
                     name: `${command.name.charAt(0).toUpperCase() + command.name.slice(1)} Command`,
-                    iconURL: client.config.app.logo
+                    iconURL: client.user.avatarURL()
                 })
                 .setDescription("Required arguments `<>`, optional arguments `[]`")
                 .setThumbnail(message.guild.iconURL())

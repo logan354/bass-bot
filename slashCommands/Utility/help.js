@@ -26,15 +26,14 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
 
         if (!args.getString("command")) {
-            // Command categories
             const music = client.slashCommands.filter(x => x.category === "Music").map((x) => "`" + x.name + "`");
             const utility = client.slashCommands.filter(x => x.category === "Utility").map((x) => "`" + x.name + "`");
 
             const embed = new EmbedBuilder()
                 .setColor("Default")
                 .setAuthor({
-                    name: "Bass's Help Centre",
-                    iconURL: client.config.app.logo
+                    name: "Help Centre",
+                    iconURL: client.user.avatarURL()
                 })
                 .setDescription("**Hello <@" + interaction.user.id + ">, welcome to the Help Centre.**\n\nBelow is a list of all my commands\nType </" + this.name + ":" + await getApplicationCommandID(client, this.name) + "> `" + this.utilisation.replace(`${this.name} `, "") + "` to get information about a specific command.")
                 .setThumbnail(interaction.guild.iconURL())
@@ -63,7 +62,7 @@ module.exports = {
                 .setColor("Default")
                 .setAuthor({
                     name: `${command.name.charAt(0).toUpperCase() + command.name.slice(1)} Command`,
-                    iconURL: client.config.app.logo
+                    iconURL: client.user.avatarURL()
                 })
                 .setDescription("Required arguments `<>`, optional arguments `[]`")
                 .setThumbnail(interaction.guild.iconURL())
