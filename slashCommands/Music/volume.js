@@ -6,7 +6,7 @@ module.exports = {
     category: "Music",
     description: "Display or changes the volume of the player.",
     utilisation: "volume [volume]",
-    option: [
+    options: [
         {
             name: "volume",
             description: "Enter a number",
