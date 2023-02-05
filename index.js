@@ -54,17 +54,17 @@ fs.readdirSync("./slashCommands").forEach(dirs => {
 /**
  * Importing all components
  */
-console.log("Loading components...");
+// console.log("Loading components...");
 
-fs.readdirSync("./components").forEach(dirs => {
-    const components = fs.readdirSync(`./components/${dirs}`).filter(files => files.endsWith(".js"));
+// fs.readdirSync("./components").forEach(dirs => {
+//     const components = fs.readdirSync(`./components/${dirs}`).filter(files => files.endsWith(".js"));
 
-    for (const file of components) {
-        const component = require(`./components/${dirs}/${file}`);
-        console.log(`-> Loaded component(${dirs}) ${file.split(".")[0]}`);
-        client.components.set(file.split(".")[0], component);
-    }
-});
+//     for (const file of components) {
+//         const component = require(`./components/${dirs}/${file}`);
+//         console.log(`-> Loaded component(${dirs}) ${file.split(".")[0]}`);
+//         client.components.set(file.split(".")[0], component);
+//     }
+// });
 
 /**
  * Listening for all events

@@ -18,8 +18,8 @@ module.exports = {
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return message.channel.send(client.emotes.permissionError + " **I do not have permission to Embed Links in** <#" + message.channel.id + ">");
 
         if (!args[0]) {
-            const music = client.commands.filter(x => x.category == "Music").map((x) => "`" + x.name + "`");
-            const utility = client.commands.filter(x => x.category == "Utility").map((x) => "`" + x.name + "`");
+            const music = client.commands.filter(x => x.category === "Music").map((x) => "`" + x.name + "`");
+            const utility = client.commands.filter(x => x.category === "Utility").map((x) => "`" + x.name + "`");
 
             const embed = new EmbedBuilder()
                 .setColor("Default")
