@@ -1,6 +1,6 @@
 const { Client, Message, PermissionsBitField } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
-const { formatDuration, parseDuration } = require("../../utils/formats");
+const { formatDuration, parseDuration } = require("../../utils/formatters");
 
 module.exports = {
     name: "scrub",

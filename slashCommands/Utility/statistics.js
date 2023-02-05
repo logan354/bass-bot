@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, PermissionsBitField, EmbedBuilder } = require("discord.js");
-const { formatFormalTime } = require("../../utils/formats");
+const { formatFormalTime } = require("../../utils/formatters");
 const { version, dependencies } = require("../../package.json");
 
 module.exports = {

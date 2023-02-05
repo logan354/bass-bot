@@ -1,6 +1,6 @@
 const { Client, Message, PermissionsBitField, EmbedBuilder } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
-const { formatDuration } = require("../../utils/formats");
+const { formatDuration } = require("../../utils/formatters");
 const { createProgressBar } = require("../../utils/progressBar");
 
 module.exports = {

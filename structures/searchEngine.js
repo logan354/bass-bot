@@ -1,7 +1,7 @@
 const { User } = require("discord.js");
 const { QueryType, LoadType, Source } = require("../utils/constants");
 const { resolveQueryType } = require("../utils/queryResolver");
-const { formatDuration } = require("../utils/formats");
+const { formatDuration } = require("../utils/formatters");
 const YouTube = require("youtube-sr").default;
 const fetch = require("isomorphic-unfetch");
 const spotify = require("spotify-url-info")(fetch);

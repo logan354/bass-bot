@@ -88,7 +88,7 @@ function parseDuration(time) {
  * Formats array into chunks
  * @param {Array} arr 
  * @param {number} size 
- * @returns {Array}
+ * @returns {string[]}
  */
 function formatChunk(arr, size) {
     const temp = [];
@@ -97,5 +97,3 @@ function formatChunk(arr, size) {
     }
     return temp;
 }
-
-module.exports = { formatDuration, formatFormalTime, parseDuration, formatChunk }

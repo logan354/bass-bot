@@ -1,7 +1,7 @@
 const { Client, Message, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const MusicSubscription = require("../../structures/MusicSubscription");
 const { RepeatMode } = require("../../utils/constants");
-const { formatChunk, formatDuration } = require("../../utils/formats");
+const { formatChunk, formatDuration } = require("../../utils/formatters");
 
 module.exports = {
     name: "queue",
