@@ -97,3 +97,5 @@ function formatChunk(arr, size) {
     }
     return temp;
 }
+
+module.exports = { formatDuration, formatFormalTime, parseDuration, formatChunk, formatShortenedTitle }
