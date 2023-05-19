@@ -98,4 +98,18 @@ function formatChunk(arr, size) {
     return temp;
 }
 
+/**
+ * Formats a title to a shortened format
+ * @param {string} title 
+ * @returns {string}
+ */
+function formatShortenedTitle(title) {
+    const dots = " . . .";
+
+    if (title.length > 50) {
+        return title.substring(0, 49 - dots.length) + dots;
+    }
+    else return title;
+}
+
 module.exports = { formatDuration, formatFormalTime, parseDuration, formatChunk, formatShortenedTitle }
