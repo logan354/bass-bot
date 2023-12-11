@@ -8,7 +8,7 @@ module.exports = async (client, interaction) => {
     const subscription = client.subscriptions.get(interaction.guild.id);
 
     const args = [subscription.volume - 10];
-    const slashCommand = "volume-down";
+    const slashCommand = "volume";
 
     const cmd = client.slashCommands.get(slashCommand);
 

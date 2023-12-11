@@ -5,10 +5,8 @@ const { Client, ButtonInteraction } = require("discord.js");
  * @param {ButtonInteraction} interaction 
  */
 module.exports = async (client, interaction) => {
-    const subscription = client.subscriptions.get(interaction.guild.id);
-
-    const args = [subscription.volume + 10];
-    const slashCommand = "volume";
+    const args = [];
+    const slashCommand = "stop";
 
     const cmd = client.slashCommands.get(slashCommand);
 
@@ -17,4 +15,6 @@ module.exports = async (client, interaction) => {
     } catch (error) {
         console.error(error);
     }
+
+    //interaction.update({ components: [] });
 }
