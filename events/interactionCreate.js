@@ -26,8 +26,6 @@ module.exports = async (client, interaction) => {
 
         const button = interaction.customId;
 
-        return; // Enable when button components are complete
-
         const btn = client.components.get(button);
 
         if (btn) {
