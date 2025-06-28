@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Colors, ComponentType, EmbedBuilder, PermissionsBitField, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
 
 import Command from "../../../structures/Command";
-import emojis from "../../../../emojis.json";
+import { emojis } from "../../../../config.json";
 import { resolveURLType, search, searchURL } from "../../../structures/search/search";
 import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, DEFAULT_SEARCH_RESULT_TIMEOUT, QueueableAudioMediaType, SearchResultType, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";

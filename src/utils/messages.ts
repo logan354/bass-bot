@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Colors, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
 
-import emojis from "../../emojis.json";
+import { emojis } from "../../config.json";
 import Track from "../structures/models/Track";
 import { createProgressBar, formatDurationTimestamp, getAudioMediaSourceIconURL, getAudioMediaSourceEmbedColor } from "./util";
 import Album from "../structures/models/Album";

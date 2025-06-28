@@ -5,9 +5,6 @@
 </div>
 
 # Bass-bot
-A music bot for Discord.
-
-## About
 Turn up the music with Bass! Supports YouTube, Youtube Music, Spotify, and Soundcloud.
 
 ### Features

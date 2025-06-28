@@ -1,7 +1,7 @@
 import { EmbedBuilder, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import emojis from "../../../../emojis.json";
+import { emojis } from "../../../../config.json";
 import { formatTitleCase } from "../../../utils/util";
 
 export default {

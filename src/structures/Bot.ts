@@ -32,7 +32,7 @@ class Bot extends Client<true> {
         console.log("Loading event listeners...")
         await this.loadEventListeners();
 
-        await this.login(process.env.DISCORD_BOT_TOKEN)
+        await this.login(process.env.BOT_TOKEN)
     }
 
     private async loadCommands(): Promise<void> {
@@ -51,14 +51,14 @@ class Bot extends Client<true> {
         }
 
         // Register commands remotely
-        const rest = new REST().setToken(process.env.DISCORD_BOT_TOKEN!);
+        const rest = new REST().setToken(process.env.BOT_TOKEN!);
 
         try {
             console.log(`Started refreshing ${this.commands.size} application (/) commands.`);
 
             // The put method is used to fully refresh all commands in the guild with the current set
             const data: any = await rest.put(
-                Routes.applicationGuildCommands(config.discord_application_id, "718350376344223754"),
+                Routes.applicationGuildCommands(config.application_id, "718350376344223754"),
                 { body: this.commands.map((command) => command.data.toJSON()) },
             );
 

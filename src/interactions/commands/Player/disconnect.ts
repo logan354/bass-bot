@@ -1,6 +1,6 @@
 import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command from "../../../structures/Command";
-import emojis from "../../../../emojis.json";
+import { emojis } from "../../../../config.json";
 
 export default {
     name: "disconnect",

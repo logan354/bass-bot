@@ -1,12 +1,9 @@
-# Node
-node_modules/
-
 # TypeScript
 dist/
 
-# Environment variables
-.env
+# Node
+node_modules/
 
-# Files
+# Folders/Files
+.env
 config.json
-emojis.json
