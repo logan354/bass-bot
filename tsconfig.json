@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+		"declaration": false,
+		"declarationMap": false,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"target": "ESNext",
+		"outDir": "dist",
+		"skipLibCheck": true,
+        "resolveJsonModule": true,
+		"strict": true
+	}
+}

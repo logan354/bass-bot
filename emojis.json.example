@@ -1,0 +1,23 @@
+{
+    "success": "",
+    "neutral": "",
+    "error": "",
+    "permission_error": "",
+    "ping": "",
+    "searching": "",
+    "live": "",
+    "arrow_left": "",
+    "arrow_right": "",
+    "player_shuffle": "",
+    "player_previous": "",
+    "player_pause": "",
+    "player_resume": "",
+    "player_next": "",
+    "player_repeat": "",
+    "player_repeat_one": "",
+    "player_now_playing": "",
+    "player_queue": "",
+    "player_volume_down": "",
+    "player_volume_up": "",
+    "queue_empty": ""
+}

@@ -1,6 +1,12 @@
 # Node
 node_modules/
-package-lock.json
+
+# TypeScript
+dist/
 
 # Environment variables
 .env
+
+# Files
+config.json
+emojis.json

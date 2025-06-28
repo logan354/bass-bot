@@ -1,17 +1,80 @@
-<img src="https://cdn.discordapp.com/avatars/829939779440869406/f83396a42fb5e6acd50ebf49b312febe.webp" align="left">
+<div align="center">
+  <a href="https://github.com/logan354/bass-bot">
+    <img src="assets/Bass Bot Speaker - Profile.jpg" alt="Logo" width="128" height="128">
+  </a>
+</div>
 
-# Bass
-A music bot for Discord. With support for YouTube, Spotify and Soundcloud!
+# Bass-bot
+A music bot for Discord.
 
+## About
+Turn up the music with Bass! Supports YouTube, Youtube Music, Spotify, and Soundcloud.
 
-## Features
+### Features
+- Supports YouTube, Youtube Music, Spotify, and Soundcloud.
+- Supports discord.js v14
 
-- ✅ Built on Discord.js v14
-- ✅ Supports YouTube, Spotify and Soundcloud!
+## Setup
+### Prerequisites
+- Node.js 22.12.0
 
-## Commands
+### Installation
+1. Create Discord App
+2. Configuration Files<br>
+    Complete the following files: (remove ".example")
+    - .env
+    - config.json
+    - emojis.json
 
-Bass has 2 command categories
+3. Install NPM Packages
+    ```sh
+    npm install npm@latest -g
+    ```
 
-- 🎵 **Music**: `clear`, `disconnect`, `forcenext`, `forceprevious`, `join`, `next`, `nowplaying`, `pause`, `play`, `previous`, `queue`, `repeat`, `resume`, `scrub`, `search`, `shuffle`, `stop`, `volume`
-- ⚙️ **Utility**: `help`, `invite`, `ping`, `statistics`
+## Usage
+1. Build
+    ```sh
+    npm run build
+    ```
+
+2. Run
+    ```sh
+    npm run start
+    ```
+
+### Command Guide
+A command guide for Bass bot.</br>
+Format: **name** &lt;required&gt; [optional]
+
+#### Player
+- **join**
+- **disconnect**
+- **resume**
+- **pause**
+- **stop**
+- **previous** [force]
+- **next** [force]
+- **shuffle**
+- **repeat** &lt;mode&gt;
+- **volume** &lt;level&gt;
+- **seek** &lt;position&gt;
+
+#### Queue
+- **nowplaying**
+- **queue** 
+- **move** &lt;start-position&gt; &lt;end-position&gt;
+- **jump** &lt;position&gt;
+- **remove** &lt;position&gt;
+- **clear**
+
+#### Search
+- **search** &lt;query&gt; [source] [playnow]
+- **search album** &lt;query&gt; [source] [playnow]
+- **search playlist** &lt;query&gt; [source] [playnow]
+- **play** [query] [source] [playnow]
+
+#### Utility
+- **help** [command]
+- **ping**
+
+## Contributing
