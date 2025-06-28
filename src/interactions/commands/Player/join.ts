@@ -36,7 +36,7 @@ export default {
 
         if (!player) player = bot.playerManager.createPlayer(interaction.guild.id, textChannel);
 
-        await interaction.reply(emojis.neutral + " **Connecting...**");
+        await interaction.reply(emojis.pending + " **Connecting...**");
 
         try {
             await player.connect(voiceChannel);

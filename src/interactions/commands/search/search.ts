@@ -228,7 +228,7 @@ export default {
                     else if (x.customId.startsWith("search-result-clear-button")) {
                         messageComponentCollector.stop();
 
-                        await x.update({ content: emojis.neutral + " Cleared", embeds: [], components: [] });
+                        await x.update({ content: emojis.pending + " Cleared", embeds: [], components: [] });
                     }
                     else if (x.customId.startsWith("search-result-next-button")) {
                         currentItems++;
