@@ -30,11 +30,9 @@ class Player {
 
     voiceConnection: VoiceConnection | null = null;
 
-    private audioPlayer: AudioPlayer | null = null;
+    audioPlayer: AudioPlayer | null = null;
 
     queue: Queue = new Queue();
-
-    private stream: FFmpeg | null = null;
 
     metadata: PlayerMetadata = {
         playerMessage: null
