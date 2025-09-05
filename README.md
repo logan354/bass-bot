@@ -46,35 +46,35 @@ Format: **name** &lt;required&gt; [optional]
 
 #### Player
 - **disconnect**
-- **fastforward** &lt;timestamp&gt;
+- **fastforward** `<timestamp>`
 - **join**
-- **next** [force]
+- **next** `[force]`
 - **pause**
-- **previous** [force]
+- **previous** `[force]`
 - **resume**
-- **rewind** &lt;timestamp&gt;
-- **seek** &lt;timestamp&gt;
+- **rewind** `<timestamp>`
+- **seek** `<timestamp>`
 - **stop**
-- **volume** &lt;level&gt;
+- **volume** `<level>`
 
 #### Queue
 - **clear**
-- **jump** &lt;position&gt;
+- **jump** `<position>`
 - **nowplaying**
-- **move** &lt;start-position&gt; &lt;end-position&gt;
-- **remove** &lt;position&gt;
-- **repeat** &lt;mode&gt;
+- **move** `<start-position>` `<end-position>`
+- **remove** `<position>`
+- **repeat** `<mode>`
 - **shuffle**
 - **queue**
 
 #### Search
-- **play** [query] [source] [playnow]
-- **search** &lt;query&gt; [source] [playnow]
-- **search album** &lt;query&gt; [source] [playnow]
-- **search playlist** &lt;query&gt; [source] [playnow]
+- **play** `[query]` `[source]` `[playnow]`
+- **search** `<query>` `[source]` `[playnow]`
+- **search album** `<query>` `[source]` `[playnow]`
+- **search playlist** `<query>` `[source]` `[playnow]`
 
 #### Utility
-- **help** [command]
+- **help** `[command]`
 - **ping**
 
 ## Contributing
