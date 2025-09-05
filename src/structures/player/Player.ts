@@ -1,5 +1,5 @@
 import { EmbedBuilder, Message, SendableChannels, Snowflake, TextBasedChannel, User, VoiceBasedChannel } from "discord.js";
-import { AudioPlayer, AudioPlayerState, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerPausedState, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
 import PlayerManager from "./PlayerManager";
 import Queue from "../queue/Queue";
 
@@ -9,14 +9,15 @@ import { FFmpeg } from "prism-media";
 import { AudioMediaSource, QueueableAudioMediaType } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
-import { formatDurationTimestamp, getApplicationCommandId } from "../../utils/util";
+import { formatDurationTimestamp } from "../../utils/util";
 import youtubeDl from "youtube-dl-exec";
-import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyEmbed, createTrackConvertingEmbed } from "../../utils/messages";
+import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/messages";
 
 const wait = promisify(setTimeout);
 
 interface PlayerMetadata {
-    playerMessage: Message | null
+    playerMessage: Message | null,
+    addedPlaybackDuration: number
 }
 
 class Player {
@@ -35,7 +36,8 @@ class Player {
     queue: Queue = new Queue();
 
     metadata: PlayerMetadata = {
-        playerMessage: null
+        playerMessage: null,
+        addedPlaybackDuration: 0
     }
 
     volume: number = 100;
@@ -111,10 +113,8 @@ class Player {
                     this.voiceChannel = null;
                     this.voiceConnection = null;
 
-                    if (this.audioPlayer) {
-                        this.audioPlayer.stop(true);
-                        this.audioPlayer = null;
-                    }
+                    this.audioPlayer!.stop(true);
+                    this.audioPlayer = null;
                 }
                 else if (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling) {
                     /**
@@ -198,10 +198,7 @@ class Player {
         }
 
         if (this.queue.isEmpty()) {
-            const commandId = await getApplicationCommandId(this.playerManager.bot, "search");
-            const commandLink = `</search:${commandId}>`;
-
-            this.textChannel.send({ embeds: [createQueueEmptyEmbed(commandLink)] });
+            this.textChannel.send(await createQueueEmptyMessage(this.playerManager.bot));
         }
         else {
             if (item.type === QueueableAudioMediaType.TRACK) {
@@ -221,7 +218,7 @@ class Player {
      * @async
      * @returns
      */
-    private async playTrack(track: Track, options?: { seek?: number | null }): Promise<void> {
+    async playTrack(track: Track, options?: { seek?: number | null }): Promise<void> {
         let seek = null;
 
         if (options) {
@@ -282,7 +279,7 @@ class Player {
         // Seeking options
         if (seek) {
             ffmpegArguments.splice(ffmpegArguments.findIndex(x => x === "-i"), 0,
-                "-ss", (seek).toString(),
+                "-ss", seek.toString(),
                 "-accurate_seek"
             );
         }
@@ -354,11 +351,31 @@ class Player {
         this.stop();
     }
 
+    setVolume(level: number) {
+        if (!this.audioPlayer) {
+            return;
+        }
+
+        this.volume = level;
+
+        if (this.isPlaying()) {
+            const state = this.audioPlayer.state as AudioPlayerPlayingState;
+            state.resource.volume?.setVolumeLogarithmic(this.volume / 100);
+        }
+    }
+
+    playbackDuration(): number | void {
+        if (!this.isPlaying) return;
+
+        const state = this.audioPlayer?.state as AudioPlayerPlayingState;
+        return state.playbackDuration + this.metadata.addedPlaybackDuration;
+    }
+
     /**
      * Whether the player is connected
      * @returns 
      */
-    public isConnected(): boolean {
+    isConnected(): boolean {
         if (!this.voiceConnection) return false;
         return this.voiceConnection.state.status === VoiceConnectionStatus.Ready;
     }

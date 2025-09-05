@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Colors, ComponentType, EmbedBuilder, PermissionsBitField, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Colors, ComponentType, EmbedBuilder, MessageFlags, PermissionsBitField, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
 
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
@@ -52,13 +52,12 @@ export default {
         if (!textChannel || !interaction.guild.members.me) throw new ReferenceError();
 
         const botPermissionsFor = textChannel.permissionsFor(interaction.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) return interaction.reply(emojis.permission_error + " **I do not have permission to Use External Emojis in** <#" + textChannel.id + ">");
         if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(emojis.permission_error + " **I do not have permission to Use Embed Links in** <#" + textChannel.id + ">");
 
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!player || !player.isConnected()) {
-            await interaction.reply(emojis.error + " **I am not connected to a voice channel.**");
+            await interaction.reply({ content: emojis.error + " **I am not connected to a voice channel.**", flags: MessageFlags.Ephemeral });
             return;
         }
 

@@ -3,6 +3,7 @@ import { EmbedBuilder, PermissionsBitField, SlashCommandBuilder } from "discord.
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
 import { formatTitleCase } from "../../../utils/util";
+import { version } from "../../../../package.json"
 
 export default {
     name: "help",
@@ -64,6 +65,9 @@ export default {
                         value: `${commandLink} ${optionsStr}`
                     }
                 )
+                .setFooter({
+                    text: "v" + version
+                })
                 .setTimestamp();
 
             await interaction.editReply({ embeds: [embed] });
@@ -88,6 +92,9 @@ export default {
                 .setTitle("Command Guide")
                 .setThumbnail(interaction.guild.iconURL())
                 .setDescription(`**Hello <@${interaction.user.id}>,**\nBelow is a list of all the commands.\nUse ${commandLink} ${optionsStr} for details about each command.`)
+                .setFooter({
+                    text: "v" + version
+                })
                 .setTimestamp();
 
             const commandsByCategory: Map<string, Array<Command>> = new Map();

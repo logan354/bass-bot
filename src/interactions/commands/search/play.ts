@@ -38,11 +38,11 @@ export default {
     async execute(bot, interaction) {
         if (interaction.options.getString("query")) {
             const searchCommand = bot.commands.get("search");
-
             searchCommand!.execute(bot, interaction);
         }
         else {
-            // TODO: Resume command execution
+            const resumeCommand = bot.commands.get("resume");
+            resumeCommand!.execute(bot, interaction);
         }
     }
-} as Command
+} as Command;

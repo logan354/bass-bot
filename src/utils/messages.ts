@@ -9,6 +9,7 @@ import { AudioMedia, QueueableAudioMedia } from "../structures/AudioMedia";
 import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, QueueableAudioMediaType } from "./constants";
 import Player from "../structures/player/Player";
 import Queue from "../structures/queue/Queue";
+import Bot from "../structures/Bot";
 
 export function createAlbumString(album: Album, hasDurationStr: boolean, hasRequesterStr: boolean): string {
     let totalDuration = 0;
@@ -17,11 +18,11 @@ export function createAlbumString(album: Album, hasDurationStr: boolean, hasRequ
     let titleStr = `**[${album.title}](${album.url})**`;
     let typeStr = "`Album`";
     let artistsStr = album.artists.map((x) => x.name).join(", ");
-    let totalTracksStr = album.tracks.length.toString();
+    let totalTracksStr = "`" + album.tracks.length.toString() + "`";
     let durationStr = hasDurationStr ? formatDurationTimestamp(totalDuration) : null;
     let requesterStr = hasRequesterStr ? album.requester ? `[<@${album.requester?.id}>]` : null : null;
 
-    return titleStr + "\n" + typeStr + " **|** " + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
+    return typeStr + " " + titleStr + "\n" + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
 }
 
 export function createPlaylistString(playlist: Playlist, hasDurationStr: boolean, hasRequesterStr: boolean): string {
@@ -31,11 +32,11 @@ export function createPlaylistString(playlist: Playlist, hasDurationStr: boolean
     let titleStr = `**[${playlist.title}](${playlist.url})**`;
     let typeStr = "`Playlist`";
     let artistsStr = playlist.owner.name;
-    let totalTracksStr = playlist.tracks.length.toString();
+    let totalTracksStr = "`" + playlist.tracks.length.toString() + "`";
     let durationStr = hasDurationStr ? formatDurationTimestamp(totalDuration) : null;
     let requesterStr = hasRequesterStr ? playlist.requester ? `[<@${playlist.requester?.id}>]` : null : null;
 
-    return titleStr + "\n" + typeStr + " **|** " + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
+    return typeStr + " " + titleStr + "\n" + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
 }
 
 export function createTrackString(track: Track, hasDurationStr: boolean, hasRequesterStr: boolean): string {
@@ -219,27 +220,27 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
             new ButtonBuilder()
                 .setCustomId("player_shuffle")
                 .setStyle(ButtonStyle.Secondary)
-                .setEmoji(emojis.player_shuffle)
+                .setEmoji(emojis.shuffle)
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player_previous")
                 .setStyle(ButtonStyle.Secondary)
-                .setEmoji(emojis.player_previous)
+                .setEmoji(emojis.previous)
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player_pause_resume")
                 .setStyle(ButtonStyle.Success)
-                .setEmoji(player.isPaused() ? emojis.player_resume : emojis.player_pause)
+                .setEmoji(player.isPaused() ? emojis.resume : emojis.pause)
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player_next")
                 .setStyle(ButtonStyle.Secondary)
-                .setEmoji(emojis.player_next)
+                .setEmoji(emojis.next)
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player_repeat")
                 .setStyle(ButtonStyle.Secondary)
-                .setEmoji(emojis.player_repeat)
+                .setEmoji(emojis.repeat)
                 .setDisabled(disable)
         );
 
@@ -294,15 +295,11 @@ export function createTrackConvertingEmbed(track: Track): EmbedBuilder {
         .setTimestamp();
 }
 
-export function createQueueEmptyEmbed(commandLink: string): EmbedBuilder {
-    return new EmbedBuilder()
-    .setColor(Colors.Default)
-    .setAuthor({
-        name: "Queue",
-        iconURL: undefined
-    })
-    .setDescription(`**The Queue is empty.** Use ${commandLink} to get this party started! ${emojis.queue_empty}`)
-    .setTimestamp();
+export async function createQueueEmptyMessage(bot: Bot): Promise<string> {
+    const searchCommandId = await bot.getApplicationCommand("search");
+    const searchCommandLink = `</search:${searchCommandId?.id}>`;
+
+    return `**The Queue is empty.** Use ${searchCommandLink} to get this party started! ${emojis.queue_empty}`;
 }
 
 export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
@@ -312,14 +309,19 @@ export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
         if (items[i].type === QueueableAudioMediaType.TRACK) {
             const track = items[i] as Track;
 
-            strings.push("`" + (i + 1) + ".` " + createTrackString(track, true, true));
+            if (i === 0) {
+                strings.push(createTrackString(track, true, true));
+            }
+            else {
+                strings.push("`" + (i) + ".` " + createTrackString(track, true, true) + "\n\n");
+            }
         }
     }
 
     const nowPlayingString = strings[0];
     strings.shift();
 
-    let upNextString = strings.join();
+    let upNextString = strings.join("");
 
     if (upNextString === "") {
         upNextString = "Nothing";
@@ -331,7 +333,7 @@ export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
             name: "Queue",
             iconURL: undefined
         })
-        .setDescription("__**Now Playing**__\n" + nowPlayingString + "\n__**Up Next**__\n" + upNextString)
+        .setDescription("__**Now Playing**__\n" + nowPlayingString + "\n\n__**Up Next**__\n" + upNextString)
         .setFields(
             {
                 name: "Items",

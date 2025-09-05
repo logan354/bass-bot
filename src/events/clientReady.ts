@@ -1,10 +1,7 @@
-import { ActivityType, Events, TextChannel, VoiceChannel } from "discord.js";
+import { ActivityType, Events } from "discord.js";
 
 import Bot from "../structures/Bot";
 import Event from "../structures/Event";
-import { createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
-import { FFmpeg } from "prism-media";
-import youtubeDl from "youtube-dl-exec";
 
 export default {
     name: Events.ClientReady,

@@ -10,16 +10,10 @@ export default {
         .setName("join")
         .setDescription("Connects the bot to a voice channel."),
     async execute(bot, interaction) {
+        if (!interaction.channel || !interaction.guild.members.me) throw new Error();
+
         const textChannel = interaction.channel;
         const voiceChannel = interaction.member.voice.channel;
-
-        if (!textChannel || !interaction.guild.members.me) throw new Error();
-
-        const botPermissionsFor = textChannel.permissionsFor(interaction.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.UseExternalEmojis)) {
-            await interaction.reply(emojis.permission_error + " **I do not have permission to Use External Emojis in** <#" + textChannel.id + ">");
-            return;
-        }
 
         if (!voiceChannel) {
             await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command**");
@@ -28,7 +22,7 @@ export default {
 
         const permissionsForVoice = voiceChannel.permissionsFor(interaction.guild.members.me);
         if (!permissionsForVoice.has(PermissionsBitField.Flags.Connect)) {
-            await interaction.reply(" **I do not have permission to Connect in** <#" + voiceChannel.id + ">");
+            await interaction.reply(" **I do not have permission to Connect in** <#" + interaction.id + ">");
             return;
         }
 

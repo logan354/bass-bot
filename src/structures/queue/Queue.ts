@@ -13,6 +13,8 @@ export default class Queue {
 
     nextVoteList: User[] = [];
 
+    previousVoteList: User[] = [];
+
     /**
      * Add an item to this queue
      * @param item 
@@ -64,7 +66,7 @@ export default class Queue {
                     this.items.shift();
                     this.items.push(currentItem);
                 }
-                else {
+                else if (this.repeatMode == RepeatMode.OFF) {
                     this.items.shift();
                 }
             }
@@ -74,12 +76,14 @@ export default class Queue {
                 this.items.shift();
                 this.items.push(currentItem);
             }
-            else {
+            else if (this.repeatMode == RepeatMode.OFF) {
                 this.items.shift();
             }
         }
 
-        this.previousItems.unshift(currentItem);
+        if (this.repeatMode !== RepeatMode.ONE) {
+            this.previousItems.unshift(currentItem);
+        }
     }
 
     /**
@@ -114,12 +118,11 @@ export default class Queue {
     /**
      * Clears the queue
      */
-    clear(previous: boolean) {
+    clear() {
         this.items.splice(1);
-
-        if (previous) {
-            this.previousItems.splice(0);
-        }
+        this.previousItems.splice(0);
+        this.previousVoteList.splice(0);
+        this.nextVoteList.splice(0);
     }
 
     /**

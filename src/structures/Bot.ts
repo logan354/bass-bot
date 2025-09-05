@@ -1,4 +1,4 @@
-import { Client, ClientEvents, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
+import { ApplicationCommand, Client, ClientEvents, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
 import "dotenv/config";
 import fs from "node:fs";
 import { join } from "node:path";
@@ -84,6 +84,11 @@ class Bot extends Client<true> {
 
             console.log(`-> Loaded event listener ${event.name}`);
         }
+    }
+
+    public async getApplicationCommand(name: string): Promise<ApplicationCommand | undefined> {
+        const applicationCommands = await this.application.commands.fetch();
+        return applicationCommands.find((x) => x.name === name);
     }
 }
 

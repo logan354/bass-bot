@@ -1,6 +1,14 @@
 import { ColorResolvable, Colors } from "discord.js";
 import { AudioMediaSource, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "./constants";
-import Bot from "../structures/Bot";
+
+const numberFormat = /^\d+$/;
+const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
+const timeUnits = {
+    ms: 1,
+    s: 1000,
+    m: 60000,
+    h: 3600000,
+}
 
 const formatInt = (int: number) => {
     if (int < 10) return `0${int}`;
@@ -26,6 +34,34 @@ export function formatDurationTimestamp(milliseconds: number): string {
     }
     return `0:${formatInt(seconds)}`;
 }
+
+/**
+ * Converts human friendly time to milliseconds. Supports the format
+ * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
+ * And 0ms, 0s, 0m, 0h, and together 1m1s.
+ *
+ * @param {number|string} time
+ * @returns {number}
+ */
+// export function parseDuration(timestamp: number) {
+//     if (typeof timestamp === "number") { return timestamp * 1000; }
+//     if (numberFormat.test(timestamp)) { return +timestamp * 1000; }
+//     const firstFormat = timeFormat.exec(timestamp);
+//     if (firstFormat) {
+//         return (+(firstFormat[1] || 0) * timeUnits.h) +
+//             (+(firstFormat[2] || 0) * timeUnits.m) +
+//             (+firstFormat[3] * timeUnits.s) +
+//             +(firstFormat[4] || 0);
+//     } else {
+//         let total = 0;
+//         const r = /(-?\d+)(ms|s|m|h)/g;
+//         let rs;
+//         while ((rs = r.exec(timestamp)) !== null) {
+//             total += +rs[1] * timeUnits[rs[2]];
+//         }
+//         return total;
+//     };
+// }
 
 /**
  * Creates progress bar
@@ -80,11 +116,6 @@ export function getAudioMediaSourceIconURL(source: AudioMediaSource) : string | 
         default:
             return undefined;
     }
-}
-
-export async function getApplicationCommandId(bot: Bot, commandName: string): Promise<string | undefined> {
-    const commands = await bot.application.commands.fetch();
-    return commands.find((x) => x.name === commandName)?.id;
 }
 
 export function formatTitleCase(str: string): string {
