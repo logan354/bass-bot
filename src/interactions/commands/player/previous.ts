@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
@@ -9,19 +9,17 @@ export default {
     category: "Player",
     data: new SlashCommandBuilder()
         .setName("previous")
-        .setDescription("Skips to the previous track. Voting enforced when member count is greater than 2.")
+        .setDescription("Skips to the previous item (May require voting).")
         .addBooleanOption(option =>
             option.setName("force")
-                .setDescription("Force skips to the previous track without voting. Requires Manage Channels permission.")
+                .setDescription("Forcefully skips to the previous item without voting (Requires the 'Manage Channels' permission).")
                 .setRequired(false)
         ),
     async execute(bot, interaction) {
-        const forceOption = interaction.options.getBoolean("force") ?? false;
-
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!interaction.member.voice.channel) {
-            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command**");
+            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command.**");
             return;
         }
 
@@ -31,7 +29,7 @@ export default {
         }
 
         if (interaction.member.voice.channel.id !== player.voiceChannel.id) {
-            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command**");
+            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command.**");
             return;
         }
 
@@ -40,13 +38,16 @@ export default {
             return;
         }
 
-        const voiceChannelMemberCount = interaction.member.voice.channel.members.filter(x => !x.user.bot).size;
+        const forceOption = interaction.options.getBoolean("force") ?? false;
+
+        const voiceChannel = await player.voiceChannel.fetch();
+        const voiceChannelMemberCount = voiceChannel.members.filter(x => !x.user.bot).size;
 
         if (voiceChannelMemberCount > 2 && !forceOption) {
             const requiredVotes = Math.trunc(voiceChannelMemberCount * 0.75);
 
             if (player.queue.previousVoteList.find(x => x.id === interaction.user.id)) {
-                await interaction.reply(emojis.error + " **You already voted to skip to the previous song** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people)");
+                await interaction.reply({ content: emojis.error + " **You already voted to skip to the previous item** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people).", flags: MessageFlags.Ephemeral });
                 return;
             }
             else player.queue.previousVoteList.push(interaction.user);
@@ -59,12 +60,12 @@ export default {
                 const actionRowBuilder = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         new ButtonBuilder()
-                            .setCustomId("previous-vote")
+                            .setCustomId("vote-previous")
                             .setStyle(ButtonStyle.Primary)
                             .setEmoji(emojis.vote)
                     );
 
-                await interaction.reply({ content: "**Skip to the previous song?** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people)", components: [actionRowBuilder] });
+                await interaction.reply({ content: "**Skip to the previous item?** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people).", components: [actionRowBuilder] });
             }
         }
         else {

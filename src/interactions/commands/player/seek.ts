@@ -11,17 +11,17 @@ export default {
     category: "Player",
     data: new SlashCommandBuilder()
         .setName("seek")
-        .setDescription("Seeks to a timestamp on the track currently playing.")
+        .setDescription("Jumps to a specific timestamp in the currently playing item.")
         .addStringOption(option =>
             option.setName("timestamp")
-                .setDescription("45s, 1h24m, 5:30")
+                .setDescription("Examples: 10, 10s, 0:10")
                 .setRequired(true),
         ),
     async execute(bot, interaction) {
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!interaction.member.voice.channel) {
-            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command**");
+            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command.**");
             return;
         }
 
@@ -31,12 +31,12 @@ export default {
         }
 
         if (interaction.member.voice.channel.id !== player.voiceChannel.id) {
-            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command**");
+            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command.**");
             return;
         }
 
         if (!player.isPlaying()) {
-            await interaction.reply(emojis.error + " **The player is not playing**");
+            await interaction.reply(emojis.error + " **The player is not playing.**");
             return;
         }
 

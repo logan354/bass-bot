@@ -8,12 +8,12 @@ export default {
     category: "Player",
     data: new SlashCommandBuilder()
     .setName("pause")
-    .setDescription("Pauses the current track."),
+    .setDescription("Pauses the current item."),
     async execute(bot, interaction) {
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!interaction.member.voice.channel) {
-            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command**");
+            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command.**");
             return;
         }
 
@@ -23,17 +23,17 @@ export default {
         }
 
         if (interaction.member.voice.channel.id !== player.voiceChannel.id) {
-            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command**");
+            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command.**");
             return;
         }
 
         if (!player.isPlaying()) {
-            await interaction.reply(emojis.error + " **The player is not playing**");
+            await interaction.reply(emojis.error + " **The player is not playing.**");
             return;
         }
 
         if (player.isPaused()) {
-            await interaction.reply(emojis.error + " **The player is already paused**");
+            await interaction.reply(emojis.error + " **The player is already paused.**");
             return;
         }
 

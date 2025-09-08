@@ -7,10 +7,10 @@ export default {
     category: "Player",
     data: new SlashCommandBuilder()
         .setName("rewind")
-        .setDescription("Rewinds to a timestamp on the track currently playing.")
+        .setDescription("Jumps to a specific timestamp in the currently playing item.")
         .addStringOption(option =>
             option.setName("timestamp")
-                .setDescription("45s, 1h24m, 5:30")
+                .setDescription("Examples: 10, 10s, 0:10")
                 .setRequired(true),
         ),
     async execute(bot, interaction) {
