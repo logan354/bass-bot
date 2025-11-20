@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/logan354/bass-bot">
-    <img src="assets/Bass Bot Speaker - Profile.jpg" alt="Logo" width="128" height="128">
+    <img src="assets/bass_bot_speaker" alt="Logo" width="128" height="128">
   </a>
 </div>
 
@@ -42,11 +42,11 @@ A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube 
 
 ### Command Guide
 A command guide for Bass bot.</br>
-Format: **name** &lt;required&gt; [optional]
+Format: **name** `<required>` `[optional]`
 
 #### Player
 - **disconnect**
-- **fastforward** `<timestamp>`
+- **fast-forward** `<timestamp>`
 - **join**
 - **next** `[force]`
 - **pause**
@@ -60,12 +60,12 @@ Format: **name** &lt;required&gt; [optional]
 #### Queue
 - **clear**
 - **jump** `<position>`
-- **nowplaying**
 - **move** `<start-position>` `<end-position>`
+- **nowplaying**
+- **queue**
 - **remove** `<position>`
 - **repeat** `<mode>`
 - **shuffle**
-- **queue**
 
 #### Search
 - **play** `[query]` `[source]` `[playnow]`
