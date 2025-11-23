@@ -1,22 +1,23 @@
-import { EmbedBuilder, Message, SendableChannels, Snowflake, TextBasedChannel, User, VoiceBasedChannel } from "discord.js";
-import { AudioPlayer, AudioPlayerPausedState, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
+import { Message, SendableChannels, Snowflake, TextBasedChannel, VoiceBasedChannel } from "discord.js";
+import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
+import youtubeDl from "youtube-dl-exec";
+import { FFmpeg } from "prism-media";
+
 import PlayerManager from "./PlayerManager";
 import Queue from "../queue/Queue";
-
 import { promisify } from "node:util";
 import { QueueableAudioMedia } from "../AudioMedia";
-import { FFmpeg } from "prism-media";
 import { AudioMediaSource, QueueableAudioMediaType } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
-import { formatDurationTimestamp } from "../../utils/util";
-import youtubeDl from "youtube-dl-exec";
+import { createProgressBar, formatDurationTimestamp } from "../../utils/util";
 import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/messages";
 
 const wait = promisify(setTimeout);
 
 interface PlayerMetadata {
     playerMessage: Message | null,
+    playerMessageUpdateInterval: NodeJS.Timeout | null,
     addedPlaybackDuration: number
 }
 
@@ -33,14 +34,17 @@ class Player {
 
     audioPlayer: AudioPlayer | null = null;
 
+    stream: FFmpeg | null = null;
+
     queue: Queue = new Queue();
+
+    volume: number = 100;
 
     metadata: PlayerMetadata = {
         playerMessage: null,
+        playerMessageUpdateInterval: null,
         addedPlaybackDuration: 0
     }
-
-    volume: number = 100;
 
     constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: TextBasedChannel) {
         this.playerManager = playerManager;
@@ -149,11 +153,17 @@ class Player {
                      * If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                      * The queue is then processed to start playing the next track, if one is available.
                      */
+                    const embed = createPlayerEmbed(this);
                     const actionRows = createPlayerActionRows(this);
-                    this.metadata.playerMessage!.edit({ components: actionRows });
+                    this.metadata.playerMessage!.edit({ embeds: [embed], components: actionRows });
+            
+                    this.metadata.playerMessage = null;
+                    this.metadata.playerMessageUpdateInterval!.close();
+                    this.metadata.playerMessageUpdateInterval = null;
 
                     // Meaning no action by user. e.g next or previous functions
                     if (this.queue.locked) this.queue.next();
+                    this.queue.locked = true;
 
                     this.play();
                 } else if (newState.status === AudioPlayerStatus.Playing) {
@@ -163,6 +173,26 @@ class Player {
 
                     const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
                     this.metadata.playerMessage = message;
+
+                    const updateInterval = setInterval(async () => {
+                        const track = this.queue.items[0] as Track;
+                        const audioPlayerState = this.audioPlayer!.state as AudioPlayerPlayingState;
+                        const playbackDuration = audioPlayerState.playbackDuration + this.metadata.addedPlaybackDuration;
+
+                        embed.setFields(
+                            {
+                                name: createProgressBar(playbackDuration, track.duration, false),
+                                value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
+                            }
+                        )
+                        const actionRows = createPlayerActionRows(this);
+
+                        if (this.metadata.playerMessage) {
+                            this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+                        }
+                    }, 1000);
+
+                    this.metadata.playerMessageUpdateInterval = updateInterval;
                 }
             });
 
@@ -264,29 +294,8 @@ class Player {
         }
 
         // FFMPEG
-        let ffmpegArguments = [
-            "-reconnect", "1",
-            "-reconnect_streamed", "1",
-            "-reconnect_delay_max", "5",
-            "-i", input,
-            "-analyzeduration", "0",
-            "-loglevel", "0",
-            "-f", "opus",
-            "-ar", "48000",
-            "-ac", "2",
-        ];
-
-        // Seeking options
-        if (seek) {
-            ffmpegArguments.splice(ffmpegArguments.findIndex(x => x === "-i"), 0,
-                "-ss", seek.toString(),
-                "-accurate_seek"
-            );
-        }
-
-        const stream = new FFmpeg({
-            args: ffmpegArguments
-        });
+        const stream = this.createFFmpegStream(input)
+        this.stream = stream;
 
         const resource = createAudioResource(stream, {
             inlineVolume: true,
@@ -327,7 +336,7 @@ class Player {
     stop(): boolean {
         if (!this.audioPlayer) return false;
 
-        return this.audioPlayer.stop();
+        return this.audioPlayer.stop(true);
     }
 
     /**
@@ -396,6 +405,38 @@ class Player {
     isPaused(): boolean {
         if (!this.audioPlayer) return false;
         return this.audioPlayer.state.status === AudioPlayerStatus.Paused;
+    }
+
+    createFFmpegStream(stream: any, options?: { seek?: number }) {
+        let seek = null;
+
+        if (options) {
+            if (options.seek) seek = options.seek;
+        }
+
+        let FFMPEGArguments = [
+            "-reconnect", "1",
+            "-reconnect_streamed", "1",
+            "-reconnect_delay_max", "5",
+            "-i", stream,
+            "-analyzeduration", "0",
+            "-loglevel", "0",
+            "-f", "opus",
+            "-ar", "48000",
+            "-ac", "2",
+        ];
+
+        if (seek) {
+            FFMPEGArguments.splice(FFMPEGArguments.findIndex(x => x === "-i"), 0,
+                "-ss", seek.toString(),
+                "-accurate_seek"
+            );
+        }
+
+        const ffmpegStream = new FFmpeg({ args: FFMPEGArguments });
+
+        return ffmpegStream;
+
     }
 }
 
