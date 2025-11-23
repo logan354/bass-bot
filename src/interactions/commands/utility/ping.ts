@@ -10,6 +10,6 @@ export default {
         .setName("ping")
         .setDescription("The bot's response time to Discord."),
     async execute(bot, interaction) {
-        await interaction.reply(emojis.ping + " **Ping**: `" + bot.ws.ping + "ms`")
+        await interaction.reply(emojis.ping + " **Ping**: `" + bot.ws.ping + "ms`");
     },
 } as Command;

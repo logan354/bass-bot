@@ -10,7 +10,7 @@ export default {
     category: "Utility",
     data: new SlashCommandBuilder()
         .setName("help")
-        .setDescription("Command guide for one or all commands.")
+        .setDescription("The command guide.")
         .addStringOption(option =>
             option.setName("command")
                 .setDescription("The name of the command.")
@@ -31,7 +31,7 @@ export default {
             const command = bot.commands.get(commandOpt);
 
             if (!command) {
-                await interaction.editReply(emojis.error + " **I could not find that command**");
+                await interaction.editReply(emojis.error + " **I could not find that command.**");
                 return;
             }
 

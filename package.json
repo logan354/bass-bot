@@ -20,7 +20,7 @@
     "sodium-native": "^5.0.8",
     "spotify-uri": "^4.1.0",
     "spotify-url-info": "^3.2.18",
-    "youtube-dl-exec": "^3.0.24",
+    "youtube-dl-exec": "^3.0.27",
     "youtube-sr": "^4.3.12"
   },
   "devDependencies": {

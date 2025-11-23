@@ -1,4 +1,4 @@
-import { ChannelType, Events, Interaction } from "discord.js";
+import { ChannelType, Events, Interaction, MessageFlags } from "discord.js";
 import Bot from "../structures/Bot";
 import Event from "../structures/Event";
 
@@ -14,16 +14,16 @@ export default {
             if (command) {
                 try {
                     if (!interaction.inCachedGuild()) {
-                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", ephemeral: true });
-                        else await interaction.reply({ content: "An error while executing this command", ephemeral: true });
+                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                        else await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
                     }
                     else await command.execute(bot, interaction);
                 }
                 catch (e) {
                     console.error(e);
 
-                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", ephemeral: true });
-                    else await interaction.reply({ content: "An error while executing this command", ephemeral: true });
+                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                    else await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
                 }
             }
         }
@@ -33,16 +33,16 @@ export default {
             if (button) {
                 try {
                     if (!interaction.inCachedGuild()) {
-                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", ephemeral: true });
-                        else await interaction.reply({ content: "An error while executing this button", ephemeral: true });
+                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
+                        else await interaction.reply({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
                     }
                     else await button.execute(bot, interaction);
                 }
                 catch (e) {
                     console.error(e);
 
-                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", ephemeral: true });
-                    else await interaction.reply({ content: "An error while executing this button", ephemeral: true });
+                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
+                    else await interaction.reply({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
                 }
             }
         }

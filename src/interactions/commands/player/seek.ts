@@ -4,7 +4,7 @@ import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
 import { QueueableAudioMediaType } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
-import { formatDurationTimestamp } from "../../../utils/util";
+import { convertTimestampToMilliseconds, formatDurationTimestamp } from "../../../utils/util";
 
 export default {
     name: "seek",
@@ -41,24 +41,31 @@ export default {
         }
 
         if (player.queue.items[0].type !== QueueableAudioMediaType.TRACK) {
-            await interaction.reply(emojis.error + " **Can only seek a track");
+            await interaction.reply(emojis.error + " **Can only seek a track.");
             return;
         }
 
         const track = player.queue.items[0] as Track;
 
         if (track.isLiveStream) {
-            await interaction.reply(emojis.error + " **Cannot seek a live song**");
+            await interaction.reply(emojis.error + " **Cannot seek a live song.**");
             return;
         }
 
         const timestampOption = interaction.options.getString("timestamp")!;
         let milliseconds = 0;
 
-        if (typeof timestampOption === "number") milliseconds = timestampOption * 1000;
+        if (parseInt(timestampOption)) milliseconds = parseInt(timestampOption) * 1000;
         else {
-            //milliseconds = parseDuration(time);
-            //if (time === 0) return interaction.reply(client.emotes.error + " **Error invalid format.** Example formats: `5:30`, `45s`, `1h24m`");
+            let convertedTimestamp = convertTimestampToMilliseconds(timestampOption);
+
+            if (!convertedTimestamp) {
+                await interaction.reply(emojis.error + " **Error invalid timestamp.** Examples: `10`, `10s`, `0:10`.");
+                return;
+            }
+            else {
+                milliseconds = convertedTimestamp;
+            }
         }
 
         const playbackDuration = player.playbackDuration()!
@@ -66,7 +73,7 @@ export default {
         // fast-forward and rewind commands come under seek command
         if (interaction.commandName === "fast-forward") {
             if (playbackDuration + milliseconds > track.duration) {
-                await interaction.reply(emojis.error + " **Time must be in the range of the song**");
+                await interaction.reply(emojis.error + " **Time must be in the range of the song.**");
                 return;
             }
 
@@ -75,7 +82,7 @@ export default {
         }
         else if (interaction.commandName === "rewind") {
             if (milliseconds - playbackDuration < 0) {
-                await interaction.reply(emojis.error + " **Time must be in the range of the song**");
+                await interaction.reply(emojis.error + " **Time must be in the range of the song.**");
                 return;
             }
 
@@ -84,7 +91,7 @@ export default {
         }
         else {
             if (milliseconds < 0 || milliseconds > track.duration) {
-                await interaction.reply(emojis.error + " **Time must be in the range of the song**");
+                await interaction.reply(emojis.error + " **Time must be in the range of the song.**");
                 return;
             }
 

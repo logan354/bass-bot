@@ -10,6 +10,7 @@ import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, QueueableAudioM
 import Player from "../structures/player/Player";
 import Queue from "../structures/queue/Queue";
 import Bot from "../structures/Bot";
+import { AudioPlayerPlayingState } from "@discordjs/voice";
 
 export function createAlbumString(album: Album, hasDurationStr: boolean, hasRequesterStr: boolean): string {
     let totalDuration = 0;
@@ -177,20 +178,22 @@ export function createTrackQueuedEmbed(track: Track): EmbedBuilder {
 export function createPlayerEmbed(player: Player): EmbedBuilder {
     let embedBuilder = null;
 
-    if (!player.isPlaying()) {
+    if (player.queue.isEmpty()) {
         embedBuilder = new EmbedBuilder()
             .setColor(Colors.Default)
             .setAuthor({
                 name: "Not Playing",
                 iconURL: player.playerManager.bot.user.avatarURL() ?? undefined
             })
-            .setDescription(createProgressBar(0, 0, true))
             .setTimestamp();
     }
     else {
         const item = player.queue.get(0);
         const color = getAudioMediaSourceEmbedColor(item.source);
         const iconURL = getAudioMediaSourceIconURL(item.source);
+        const audioPlayerState = player.audioPlayer!.state as AudioPlayerPlayingState;
+        const playbackDuration = audioPlayerState.playbackDuration + player.metadata.addedPlaybackDuration;
+        const status = player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played";
 
         if (item.type === QueueableAudioMediaType.TRACK) {
             const track = item as Track;
@@ -198,12 +201,21 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
             embedBuilder = new EmbedBuilder()
                 .setColor(color)
                 .setAuthor({
-                    name: player.isPaused() ? "Paused" : "Playing",
+                    name: status,
                     iconURL: iconURL
                 })
                 .setThumbnail(track.imageURL)
                 .setDescription(createTrackString(track, false, true))
                 .setTimestamp();
+
+            if (player.isPlaying()) {
+                embedBuilder.addFields(
+                    {
+                        name: createProgressBar(playbackDuration, track.duration, false),
+                        value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
+                    }
+                )
+            }
         }
     }
 

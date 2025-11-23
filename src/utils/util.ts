@@ -43,7 +43,7 @@ export function formatDurationTimestamp(milliseconds: number): string {
  * @param {number|string} time
  * @returns {number}
  */
-// export function parseDuration(timestamp: number) {
+// export function parseDuration(timestamp: string) {
 //     if (typeof timestamp === "number") { return timestamp * 1000; }
 //     if (numberFormat.test(timestamp)) { return +timestamp * 1000; }
 //     const firstFormat = timeFormat.exec(timestamp);
@@ -63,6 +63,13 @@ export function formatDurationTimestamp(milliseconds: number): string {
 //     };
 // }
 
+export function convertTimestampToMilliseconds(timestamp: string): number | undefined {
+    if (parseInt(timestamp)) return parseInt(timestamp);
+
+    
+    return 0;
+}
+
 /**
  * Creates progress bar
  * @param currentDuration
@@ -70,9 +77,9 @@ export function formatDurationTimestamp(milliseconds: number): string {
  * @returns
  */
 export function createProgressBar(currentDuration: number, totalDuration: number, disable: boolean): string {
-    const length = 15;
+    const length = 20;
 
-    const index = Math.round((currentDuration / totalDuration) * length);
+    const index = Math.round((currentDuration / totalDuration) * length - 1);
     const indicator = "🔘";
     const line = "▬";
 
@@ -82,9 +89,9 @@ export function createProgressBar(currentDuration: number, totalDuration: number
         if (disable) return bar.join("");
 
         bar.splice(index, 0, indicator);
-        return formatDurationTimestamp(currentDuration) + ` ┃ ${bar.join("")} ┃ ` + formatDurationTimestamp(totalDuration);
+        return ` ┃ ${bar.join("")} ┃ `;
     } else {
-        return formatDurationTimestamp(currentDuration) + ` ┃ ${indicator}${line.repeat(length - 1)} ┃ ` + formatDurationTimestamp(totalDuration);
+        return ` ┃ ${indicator}${line.repeat(length - 1)} ┃ `;
     }
 }
 

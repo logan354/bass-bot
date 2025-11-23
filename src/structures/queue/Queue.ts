@@ -84,6 +84,8 @@ export default class Queue {
         if (this.repeatMode !== RepeatMode.ONE) {
             this.previousItems.unshift(currentItem);
         }
+
+        this.locked = false;
     }
 
     /**

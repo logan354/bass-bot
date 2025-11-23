@@ -61,7 +61,7 @@ export default {
                 const actionRowBuilder = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         new ButtonBuilder()
-                            .setCustomId("vote-next")
+                            .setCustomId("next-vote")
                             .setStyle(ButtonStyle.Primary)
                             .setEmoji(emojis.vote)
                     );

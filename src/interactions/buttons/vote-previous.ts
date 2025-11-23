@@ -1,7 +1,7 @@
 import Button from "../../structures/Button";
 
 export default {
-    name: "vote-previous",
+    name: "previous-vote",
     async execute(bot, interaction) {
     },
 } as Button

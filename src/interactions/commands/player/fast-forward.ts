@@ -14,7 +14,6 @@ export default {
                 .setRequired(true),
         ),
     async execute(bot, interaction) {
-        const seekCommand = bot.commands.get("seek");
-        seekCommand!.execute(bot, interaction);
+        bot.commands.get("seek")!.execute(bot, interaction);
     }
 } as Command;
