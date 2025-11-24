@@ -51,8 +51,8 @@ export default {
                     name: "Now Playing",
                     iconURL: iconURL
                 })
-                .setThumbnail(track.imageURL)
-                .setDescription(createTrackString(track, true, true))
+                .setImage(track.imageURL)
+                .setDescription(createTrackString(track, false, true))
                 .setTimestamp();
 
             interaction.reply({ embeds: [embed] });
