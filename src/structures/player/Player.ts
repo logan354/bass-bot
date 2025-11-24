@@ -7,7 +7,7 @@ import PlayerManager from "./PlayerManager";
 import Queue from "../queue/Queue";
 import { promisify } from "node:util";
 import { QueueableAudioMedia } from "../AudioMedia";
-import { AudioMediaSource, QueueableAudioMediaType } from "../../utils/constants";
+import { AudioMediaSource, QueueableAudioMediaType, RepeatMode } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
 import { createProgressBar, formatDurationTimestamp } from "../../utils/util";
@@ -33,8 +33,6 @@ class Player {
     voiceConnection: VoiceConnection | null = null;
 
     audioPlayer: AudioPlayer | null = null;
-
-    stream: FFmpeg | null = null;
 
     queue: Queue = new Queue();
 
@@ -156,8 +154,8 @@ class Player {
                     const embed = createPlayerEmbed(this);
                     const actionRows = createPlayerActionRows(this);
                     this.metadata.playerMessage!.edit({ embeds: [embed], components: actionRows });
-            
-                    this.metadata.playerMessage = null;
+
+                    if (this.queue.repeatMode !== RepeatMode.ONE) this.metadata.playerMessage = null;
                     this.metadata.playerMessageUpdateInterval!.close();
                     this.metadata.playerMessageUpdateInterval = null;
 
@@ -171,8 +169,11 @@ class Player {
                     const embed = createPlayerEmbed(this);
                     const actionRows = createPlayerActionRows(this);
 
-                    const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-                    this.metadata.playerMessage = message;
+                    if (this.metadata.playerMessage) this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+                    else {
+                        const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
+                        this.metadata.playerMessage = message;
+                    }
 
                     const updateInterval = setInterval(async () => {
                         const track = this.queue.items[0] as Track;
@@ -294,8 +295,7 @@ class Player {
         }
 
         // FFMPEG
-        const stream = this.createFFmpegStream(input)
-        this.stream = stream;
+        const stream = this.createFFmpegStream(input);
 
         const resource = createAudioResource(stream, {
             inlineVolume: true,
