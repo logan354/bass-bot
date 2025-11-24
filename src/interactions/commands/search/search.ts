@@ -9,8 +9,6 @@ import { formatDurationTimestamp } from "../../../utils/util";
 import Album from "../../../structures/models/Album";
 import Playlist from "../../../structures/models/Playlist";
 import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu } from "../../../utils/messages";
-import { it } from "node:test";
-import { AudioMedia } from "../../../structures/AudioMedia";
 
 const sourceChoices = [
     {
@@ -23,12 +21,13 @@ const sourceChoices = [
     }
 ];
 
+
 export default {
     name: "search",
-    category: "Player",
+    category: "Search",
     data: new SlashCommandBuilder()
         .setName("search")
-        .setDescription("Searches for an item, adds it to the queue.")
+        .setDescription("Searches for an item, and adds it to the queue.")
         .addStringOption(option =>
             option.setName("query")
                 .setDescription("Enter a query or link.")
@@ -75,13 +74,13 @@ export default {
         let source = interaction.options.getString("source") as AudioMediaSource;
 
         if (!query) {
-            await interaction.reply({ content: "An error occured while executing this command", ephemeral: true });
+            await interaction.reply({ content: "An error occured while executing this command", flags: MessageFlags.Ephemeral });
             return;
         }
 
 
 
-        await interaction.reply({ content: emojis.searching + " **Searching...** `" + query + "`", ephemeral: true });
+        await interaction.reply({ content: emojis.searching + " **Searching...** `" + query + "`", flags: MessageFlags.Ephemeral });
 
         let searchResult = null;
 
@@ -171,7 +170,7 @@ export default {
                 );
 
             actionRow2.components[0].setDisabled(true);
-            if (embedBuilders.length <= 1) actionRow2.components[2].setDisabled(true); 
+            if (embedBuilders.length <= 1) actionRow2.components[2].setDisabled(true);
 
             const message = await interaction.editReply({ content: null, embeds: [embedBuilders[currentItems]], components: [actionRowBuilders[currentItems], actionRow2] });
 
@@ -222,7 +221,7 @@ export default {
                         if (currentItems <= 0) actionRow2.components[0].setDisabled(true);
                         actionRow2.components[2].setDisabled(false);
 
-                        await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2]});
+                        await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2] });
                     }
                     else if (x.customId.startsWith("search-result-clear-button")) {
                         messageComponentCollector.stop();
@@ -235,7 +234,7 @@ export default {
                         actionRow2.components[0].setDisabled(false);
                         if (currentItems >= embedBuilders.length - 1) actionRow2.components[2].setDisabled(true);
 
-                        await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2]});
+                        await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2] });
                     }
                     else return;
                 }

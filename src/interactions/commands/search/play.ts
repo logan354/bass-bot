@@ -15,7 +15,7 @@ const sourceChoices = [
 
 export default {
     name: "play",
-    category: "Player",
+    category: "Search",
     data: new SlashCommandBuilder()
         .setName("play")
         .setDescription("Searches for an item, adds it to the queue, or resumes the player.")
@@ -36,13 +36,7 @@ export default {
                 .setRequired(false)
         ),
     async execute(bot, interaction) {
-        if (interaction.options.getString("query")) {
-            const searchCommand = bot.commands.get("search");
-            searchCommand!.execute(bot, interaction);
-        }
-        else {
-            const resumeCommand = bot.commands.get("resume");
-            resumeCommand!.execute(bot, interaction);
-        }
+        if (interaction.options.getString("query")) bot.commands.get("search")!.execute(bot, interaction);
+        else bot.commands.get("resume")!.execute(bot, interaction);
     }
 } as Command;

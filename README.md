@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/logan354/bass-bot">
-    <img src="assets/bass_bot_speaker" alt="Logo" width="128" height="128">
+    <img src="assets/bass_bot_speaker.jpg" alt="Logo" width="128" height="128">
   </a>
 </div>
 

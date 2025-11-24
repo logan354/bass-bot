@@ -8,12 +8,12 @@ export default {
     category: "queue",
     data: new SlashCommandBuilder()
         .setName("clear")
-        .setDescription("Clears the queue."),
+        .setDescription("Clears the queue (May require the 'Manage Channels' permission)."),
     async execute(bot, interaction) {
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!interaction.member.voice.channel) {
-            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command**");
+            await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command.**");
             return;
         }
 
@@ -23,19 +23,20 @@ export default {
         }
 
         if (interaction.member.voice.channel.id !== player.voiceChannel.id) {
-            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command**");
-            return;
-        }
-        
-        const voiceChannelMemberCount = interaction.member.voice.channel!.members.filter(x => !x.user.bot).size;
-
-        if (voiceChannelMemberCount > 1 && !interaction.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
-            await interaction.reply(emojis.permission_error + " **This command requires you to have the Manage Channels permission to use it (being alone with the bot also works)**");
+            await interaction.reply(emojis.error + " **You need to be in the same voice channel as Bass to use this command.**");
             return;
         }
 
         if (!player.isPlaying()) {
-            await interaction.reply(emojis.error + " **The player is not playing**");
+            await interaction.reply(emojis.error + " **The player is not playing.**");
+            return;
+        }
+
+        const voiceChannel = await player.voiceChannel.fetch();
+        const voiceChannelMemberCount = voiceChannel.members.filter(x => !x.user.bot).size;
+
+        if (voiceChannelMemberCount > 1 && !interaction.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
+            await interaction.reply(emojis.permission_error + " **This command requires you to have the 'Manage Channels' permission (being alone with the bot also works).**");
             return;
         }
 
