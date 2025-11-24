@@ -50,6 +50,7 @@ Format: **name** `<required>` `[optional]`
 - **join**
 - **next** `[force]`
 - **pause**
+- **player**
 - **previous** `[force]`
 - **resume**
 - **rewind** `<timestamp>`
@@ -70,8 +71,9 @@ Format: **name** `<required>` `[optional]`
 #### Search
 - **play** `[query]` `[source]` `[playnow]`
 - **search** `<query>` `[source]` `[playnow]`
-- **search album** `<query>` `[source]` `[playnow]`
-- **search playlist** `<query>` `[source]` `[playnow]`
+- **search-album** `<query>` `[source]` `[playnow]`
+- **search-playlist** `<query>` `[source]` `[playnow]`
+- **search-track** `<query>` `[source]` `[playnow]`
 
 #### Utility
 - **help** `[command]`
