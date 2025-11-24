@@ -1,15 +1,21 @@
-import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
-
+import { SlashCommandBuilder } from "discord.js";
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
+import { QueueableAudioMediaType } from "../../../utils/constants";
+import Track from "../../../structures/models/Track";
 
 export default {
-    name: "jump",
-    category: "queue",
+    name: "move",
+    category: "Queue",
     data: new SlashCommandBuilder()
-        .setName("jump")
-        .setDescription("Clears the queue.")
-        .addNumberOption(option =>
+        .setName("move")
+        .setDescription("Moves a item to a different location in the queue.")
+        .addIntegerOption(option =>
+            option.setName("index")
+                .setDescription("Item position.")
+                .setRequired(true)
+        )
+        .addIntegerOption(option =>
             option.setName("position")
                 .setDescription("Queue position.")
                 .setRequired(true)
@@ -37,17 +43,19 @@ export default {
             return;
         }
 
-        const voiceChannel = await player.voiceChannel.fetch();
-        const voiceChannelMemberCount = voiceChannel.members.filter(x => !x.user.bot).size;
+        const indexOption = interaction.options.getInteger("index")!;
+        const positionOption = interaction.options.getInteger("position")!;
 
-        if (voiceChannelMemberCount > 1 && !interaction.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
-            await interaction.reply(emojis.permission_error + " **This command requires you to have the 'Manage Channels' permission (being alone with the bot also works).**");
-            return;
+        const item = player.queue.get(indexOption);
+        let itemTitle = "";
+
+        if (item.type === QueueableAudioMediaType.TRACK) {
+            const track = item as Track;
+
+            itemTitle = track.title;
         }
 
-        const positionOption = interaction.options.getNumber("position")!;
-
-        player.skipToNext(positionOption);
-        await interaction.reply(`${emojis.next} Jumped to ${positionOption}`)
+        player.queue.move(indexOption, positionOption);
+        await interaction.reply(`${emojis.move} Moved ${itemTitle} from ${indexOption} to ${positionOption}`);
     }
 } as Command;
