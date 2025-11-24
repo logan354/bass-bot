@@ -51,11 +51,6 @@ export default {
             return;
         }
 
-        if (!player.isPlaying()) {
-            await interaction.reply(emojis.error + " **The player is not playing**");
-            return;
-        }
-
         if (modeOption === RepeatMode.ONE) {
             player.queue.repeatMode = RepeatMode.ONE;
             await interaction.reply(emojis.repeat_one + " **One**");
