@@ -44,7 +44,7 @@ class Player {
         addedPlaybackDuration: 0
     }
 
-    constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: TextBasedChannel) {
+    constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: SendableChannels) {
         this.playerManager = playerManager;
         this.guildId = guildId;
 
@@ -153,6 +153,7 @@ class Player {
                      */
                     const embed = createPlayerEmbed(this);
                     const actionRows = createPlayerActionRows(this);
+                    
                     this.metadata.playerMessage!.edit({ embeds: [embed], components: actionRows });
 
                     if (this.queue.repeatMode !== RepeatMode.ONE) this.metadata.playerMessage = null;
@@ -161,39 +162,12 @@ class Player {
 
                     // Meaning no action by user. e.g next or previous functions
                     if (this.queue.locked) this.queue.next();
-                    this.queue.locked = true;
+                    else this.queue.locked = true;
 
                     this.play();
                 } else if (newState.status === AudioPlayerStatus.Playing) {
                     // If the Playing state has been entered, then a new track has started playback.
-                    const embed = createPlayerEmbed(this);
-                    const actionRows = createPlayerActionRows(this);
-
-                    if (this.metadata.playerMessage) this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
-                    else {
-                        const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-                        this.metadata.playerMessage = message;
-                    }
-
-                    const updateInterval = setInterval(async () => {
-                        const track = this.queue.items[0] as Track;
-                        const audioPlayerState = this.audioPlayer!.state as AudioPlayerPlayingState;
-                        const playbackDuration = audioPlayerState.playbackDuration + this.metadata.addedPlaybackDuration;
-
-                        embed.setFields(
-                            {
-                                name: createProgressBar(playbackDuration, track.duration, false),
-                                value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
-                            }
-                        )
-                        const actionRows = createPlayerActionRows(this);
-
-                        if (this.metadata.playerMessage) {
-                            this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
-                        }
-                    }, 1000);
-
-                    this.metadata.playerMessageUpdateInterval = updateInterval;
+                    this.createMessage();
                 }
             });
 
@@ -373,6 +347,10 @@ class Player {
         }
     }
 
+    setTextChannel(textChannel: SendableChannels): void {
+        this.textChannel = textChannel;
+    }
+
     playbackDuration(): number | void {
         if (!this.isPlaying) return;
 
@@ -437,6 +415,62 @@ class Player {
 
         return ffmpegStream;
 
+    }
+
+    async createMessage(): Promise<void> {
+        const embed = createPlayerEmbed(this);
+        const actionRows = createPlayerActionRows(this);
+
+        if (this.metadata.playerMessage) {
+            if (this.textChannel.id !== this.metadata.playerMessage.channel.id) {
+                this.destroyMessage();
+
+                const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
+                this.metadata.playerMessage = message;
+            }
+            else this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+        }
+        else {
+            const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
+            this.metadata.playerMessage = message;
+        }
+
+        if (this.metadata.playerMessageUpdateInterval) {
+            this.metadata.playerMessageUpdateInterval.close();
+            this.metadata.playerMessageUpdateInterval = null;
+        }
+
+        const updateInterval = setInterval(async () => {
+            const track = this.queue.items[0] as Track;
+            const audioPlayerState = this.audioPlayer!.state as AudioPlayerPlayingState;
+            const playbackDuration = audioPlayerState.playbackDuration + this.metadata.addedPlaybackDuration;
+
+            embed.setFields(
+                {
+                    name: createProgressBar(playbackDuration, track.duration, false),
+                    value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
+                }
+            )
+            const actionRows = createPlayerActionRows(this);
+
+            if (this.metadata.playerMessage) {
+                this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+            }
+        }, 1000);
+
+        this.metadata.playerMessageUpdateInterval = updateInterval;
+    }
+
+    destroyMessage(): void {
+        if (this.metadata.playerMessage) {
+            this.metadata.playerMessage.delete();
+            this.metadata.playerMessage = null;
+        }
+
+        if (this.metadata.playerMessageUpdateInterval) {
+            this.metadata.playerMessageUpdateInterval.close();
+            this.metadata.playerMessageUpdateInterval = null;
+        }
     }
 }
 

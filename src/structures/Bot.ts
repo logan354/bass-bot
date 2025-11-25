@@ -6,6 +6,7 @@ import { join } from "node:path";
 import Command from "./Command";
 import PlayerManager from "./player/PlayerManager";
 import config from "../../config.json";
+import Interaction from "./Interaction";
 
 class Bot extends Client<true> {
     public commands: Collection<string, Command> = new Collection();
@@ -26,9 +27,16 @@ class Bot extends Client<true> {
     }
 
     public async create(): Promise<void> {
+        // Interactions
+        console.log("Loading interactions...");
+
         console.log("Loading commands...");
         await this.loadCommands();
 
+        console.log("Loading components...");
+        await this.loadComponents();
+
+        // Events
         console.log("Loading event listeners...")
         await this.loadEventListeners();
 
@@ -43,7 +51,7 @@ class Bot extends Client<true> {
             const files = fs.readdirSync(join(__dirname, `../interactions/commands/${directory}`));
 
             for (const file of files) {
-                const command = (await import(`../interactions/commands/${directory}/${file}`)).default.default;
+                const command = (await import(`../interactions/commands/${directory}/${file}`)).default.default as Command;
                 this.commands.set(command.name, command);
 
                 console.log(`-> Loaded command ${command.name}`);
@@ -66,6 +74,21 @@ class Bot extends Client<true> {
         } catch (error) {
             // And of course, make sure you catch and log any errors!
             console.error(error);
+        }
+    }
+
+    private async loadComponents(): Promise<void> {
+        const directorys = fs.readdirSync(join(__dirname, "../interactions/components"));
+
+        for (const directory of directorys) {
+            const files = fs.readdirSync(join(__dirname, `../interactions/components/${directory}`));
+
+            for (const file of files) {
+                const component = (await import(`../interactions/components/${directory}/${file}`)).default.default as Interaction;
+                this.components.set(component.name, component);
+
+                console.log(`-> Loaded component ${component.name}`);
+            }
         }
     }
 
