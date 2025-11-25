@@ -1,13 +1,13 @@
 import { MessageFlags } from "discord.js";
 
-import Button from "../../structures/Button";
-import { createQueueEmptyMessage } from "../../utils/messages";
-import { emojis } from "../../../config.json";
+import Button from "../../../structures/Button";
+import { createQueueEmptyMessage } from "../../../utils/messages";
+import { emojis } from "../../../../config.json";
 
 export default {
-    name: "next-vote",
+    name: "previous-vote",
     async execute(bot, interaction) {
-         const player = bot.playerManager.getPlayer(interaction.guild.id);
+        const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!interaction.member.voice.channel) {
             await interaction.reply(emojis.error + " **You have to be in a voice channel to use this command.**");
@@ -35,22 +35,21 @@ export default {
         if (voiceChannelMemberCount > 2) {
             const requiredVotes = Math.trunc(voiceChannelMemberCount * 0.75);
 
-            if (player.queue.nextVoteList.find(x => x.id === interaction.user.id)) {
-                await interaction.reply({ content: emojis.error + " **You already voted to skip to the next item** (" + player.queue.nextVoteList.length + "/" + requiredVotes + " people).", flags: MessageFlags.Ephemeral });
+            if (player.queue.previousVoteList.find(x => x.id === interaction.user.id)) {
+                await interaction.reply({ content: emojis.error + " **You already voted to skip to the previous item** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people).", flags: MessageFlags.Ephemeral });
                 return;
             }
-            else player.queue.nextVoteList.push(interaction.user);
+            else player.queue.previousVoteList.push(interaction.user);
 
-            if (player.queue.nextVoteList.length >= requiredVotes) {
-                player.skipToNext();
-                await interaction.reply(emojis.next + " **Next**");
-                return;
+            if (player.queue.previousVoteList.length >= requiredVotes) {
+                player.skipToPrevious();
+                await interaction.reply(emojis.previous + " **Previous**");
             }
-            else interaction.reply("**Skip to the next item?** (" + player.queue.nextVoteList.length + "/" + requiredVotes + " people).");
+            else await interaction.reply("**Skip to the previous item?** (" + player.queue.previousVoteList.length + "/" + requiredVotes + " people).");
         }
         else {
-            player.skipToNext();
-            await interaction.reply(emojis.next + " **Next**");
+            player.skipToPrevious();
+            await interaction.reply(emojis.previous + " **Previous**");
         }
     },
 } as Button

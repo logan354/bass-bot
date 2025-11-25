@@ -28,21 +28,21 @@ export default {
             }
         }
         else if (interaction.isButton()) {
-            const button = bot.components.get(interaction.customId);
+            const component = bot.components.get(interaction.customId);
 
-            if (button) {
+            if (component) {
                 try {
                     if (!interaction.inCachedGuild()) {
-                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
-                        else await interaction.reply({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
+                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                        else await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
                     }
-                    else await button.execute(bot, interaction);
+                    else await component.execute(bot, interaction);
                 }
                 catch (e) {
                     console.error(e);
 
-                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
-                    else await interaction.reply({ content: "An error while executing this button", flags: MessageFlags.Ephemeral });
+                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                    else await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
                 }
             }
         }

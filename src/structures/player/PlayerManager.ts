@@ -1,4 +1,4 @@
-import { TextBasedChannel } from "discord.js";
+import { SendableChannels } from "discord.js";
 
 import Bot from "../Bot"
 import Player from "./Player";
@@ -12,7 +12,7 @@ class PlayerManager {
         this.bot = bot;
     }
 
-    createPlayer(guildId: string, textChannel: TextBasedChannel): Player {
+    createPlayer(guildId: string, textChannel: SendableChannels): Player {
         const player = new Player(this, guildId, textChannel);
         this.players.set(guildId, player);
 

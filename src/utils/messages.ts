@@ -230,27 +230,27 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
     const actionRowBuilder1 = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(
             new ButtonBuilder()
-                .setCustomId("player_shuffle")
+                .setCustomId("player-shuffle")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.shuffle)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_previous")
+                .setCustomId("player-previous")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.previous)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_pause_resume")
+                .setCustomId("player-pause-resume")
                 .setStyle(ButtonStyle.Success)
                 .setEmoji(player.isPaused() ? emojis.resume : emojis.pause)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_next")
+                .setCustomId("player-next")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.next)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_repeat")
+                .setCustomId("player-repeat")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.repeat)
                 .setDisabled(disable)
@@ -261,22 +261,22 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
     const actionRowBuilder2 = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(
             new ButtonBuilder()
-                .setCustomId("player_now_playing")
+                .setCustomId("player-now-playing")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_now_playing)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_queue")
+                .setCustomId("player-queue")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_queue)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_volume_down")
+                .setCustomId("player-volume-down")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_down)
                 .setDisabled(disable),
             new ButtonBuilder()
-                .setCustomId("player_volume_up")
+                .setCustomId("player-volume-up")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_up)
                 .setDisabled(disable),
