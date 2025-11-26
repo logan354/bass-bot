@@ -1,9 +1,8 @@
-import { ColorResolvable, Colors } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ColorResolvable, Colors } from "discord.js";
 import { AudioMediaSource, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "./constants";
 import Bot from "../structures/Bot";
 import { emojis } from "../../config.json";
-import { createQueueEmptyMessage } from "./messages";
+import { createQueueEmptyMessage } from "./common";
 
 const numberFormat = /^\d+$/;
 const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
@@ -70,7 +69,7 @@ export function formatDurationTimestamp(milliseconds: number): string {
 export function convertTimestampToMilliseconds(timestamp: string): number | undefined {
     if (parseInt(timestamp)) return parseInt(timestamp);
 
-    
+
     return 0;
 }
 
@@ -99,7 +98,7 @@ export function createProgressBar(currentDuration: number, totalDuration: number
     }
 }
 
-export function getAudioMediaSourceEmbedColor(source: AudioMediaSource) : ColorResolvable {
+export function getAudioMediaSourceEmbedColor(source: AudioMediaSource): ColorResolvable {
     switch (source) {
         case AudioMediaSource.YOUTUBE:
             return Colors.Red;
@@ -114,7 +113,7 @@ export function getAudioMediaSourceEmbedColor(source: AudioMediaSource) : ColorR
     }
 }
 
-export function getAudioMediaSourceIconURL(source: AudioMediaSource) : string | undefined {
+export function getAudioMediaSourceIconURL(source: AudioMediaSource): string | undefined {
     switch (source) {
         case AudioMediaSource.YOUTUBE:
             return YOUTUBE_ICON_URL;

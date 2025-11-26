@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { nextCommand } from "../../../utils/commands";
+import { nextCommand } from "../../../utils/common";
 
 export default {
     name: "next-vote",

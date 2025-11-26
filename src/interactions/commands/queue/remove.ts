@@ -2,8 +2,7 @@ import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
-import { createQueueEmptyMessage } from "../../../utils/messages";
-import { QueueableAudioMedia } from "../../../structures/AudioMedia";
+import { createQueueEmptyMessage } from "../../../utils/common";
 import { QueueableAudioMediaType } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
 

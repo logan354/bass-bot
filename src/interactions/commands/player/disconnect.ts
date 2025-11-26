@@ -1,4 +1,4 @@
-import { PermissionsBitField, SlashCommandBuilder, StageChannel, VoiceChannel } from "discord.js";
+import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";

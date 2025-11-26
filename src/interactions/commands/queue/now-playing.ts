@@ -2,7 +2,7 @@ import { EmbedBuilder, PermissionsBitField, SlashCommandBuilder } from "discord.
 
 import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
-import { createQueueEmptyMessage, createTrackString } from "../../../utils/messages";
+import { createQueueEmptyMessage, createTrackString } from "../../../utils/common";
 import { getAudioMediaSourceEmbedColor, getAudioMediaSourceIconURL } from "../../../utils/util";
 import Track from "../../../structures/models/Track";
 import { QueueableAudioMediaType } from "../../../utils/constants";
