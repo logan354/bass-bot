@@ -8,7 +8,7 @@ import Track from "../../../structures/models/Track";
 import { formatDurationTimestamp } from "../../../utils/util";
 import Album from "../../../structures/models/Album";
 import Playlist from "../../../structures/models/Playlist";
-import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu } from "../../../utils/common";
+import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu } from "../../../utils/components";
 
 const sourceChoices = [
     {

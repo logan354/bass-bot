@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { pauseCommand, resumeCommand } from "../../../utils/common";
+import { pauseCommand, resumeCommand } from "../../../utils/commands";
 
 export default {
     name: "player-pause-resume",

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { shuffleCommand } from "../../../utils/common";
+import { shuffleCommand } from "../../../utils/commands";
 
 export default {
     name: "shuffle",

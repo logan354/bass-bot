@@ -11,7 +11,7 @@ import { AudioMediaSource, QueueableAudioMediaType, RepeatMode } from "../../uti
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
 import { createProgressBar, formatDurationTimestamp } from "../../utils/util";
-import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/common";
+import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/components";
 
 const wait = promisify(setTimeout);
 

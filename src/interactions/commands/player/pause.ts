@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { pauseCommand } from "../../../utils/common";
+import { pauseCommand } from "../../../utils/commands";
 
 export default {
     name: "pause",

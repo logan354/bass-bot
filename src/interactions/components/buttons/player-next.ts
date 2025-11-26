@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { nextCommand } from "../../../utils/common";
+import { nextCommand } from "../../../utils/commands";
 
 export default {
     name: "player-next",

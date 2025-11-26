@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { repeatCommand } from "../../../utils/common";
+import { repeatCommand } from "../../../utils/commands";
 import { RepeatMode } from "../../../utils/constants";
 
 export default {

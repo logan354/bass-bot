@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { queueCommand } from "../../../utils/common";
+import { queueCommand } from "../../../utils/commands";
 
 export default {
     name: "queue",

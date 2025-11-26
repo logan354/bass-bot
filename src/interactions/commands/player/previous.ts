@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { previousCommand } from "../../../utils/common";
+import { previousCommand } from "../../../utils/commands";
 
 export default {
     name: "previous",

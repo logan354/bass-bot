@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { shuffleCommand } from "../../../utils/common";
+import { shuffleCommand } from "../../../utils/commands";
 
 export default {
     name: "player-shuffle",

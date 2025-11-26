@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { nowPlayingCommand } from "../../../utils/common";
+import { nowPlayingCommand } from "../../../utils/commands";
 
 export default {
     name: "player-now-playing",

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { nextCommand } from "../../../utils/common";
+import { nextCommand } from "../../../utils/commands";
 
 export default {
     name: "next",
@@ -16,7 +16,7 @@ export default {
         ),
     async execute(bot, interaction) {
         const forceOption = interaction.options.getBoolean("force") ?? false;
-        
+
         nextCommand(bot, interaction, { force: forceOption });
     }
 } as Command;

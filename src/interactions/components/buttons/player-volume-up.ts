@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { volumeCommand } from "../../../utils/common";
+import { volumeCommand } from "../../../utils/commands";
 
 export default {
     name: "player-volume-up",

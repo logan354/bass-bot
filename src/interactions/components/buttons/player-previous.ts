@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { previousCommand } from "../../../utils/common";
+import { previousCommand } from "../../../utils/commands";
 
 export default {
     name: "player-previous",

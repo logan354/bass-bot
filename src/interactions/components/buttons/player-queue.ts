@@ -1,5 +1,5 @@
 import Button from "../../../structures/Button";
-import { queueCommand } from "../../../utils/common";
+import { queueCommand } from "../../../utils/commands";
 
 export default {
     name: "player-queue",

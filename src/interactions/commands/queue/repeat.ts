@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
 import { RepeatMode } from "../../../utils/constants";
-import { repeatCommand } from "../../../utils/common";
+import { repeatCommand } from "../../../utils/commands";
 
 const  modeChoices = [
     {
