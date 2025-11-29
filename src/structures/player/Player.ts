@@ -16,9 +16,10 @@ import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, cre
 const wait = promisify(setTimeout);
 
 interface PlayerMetadata {
+    addedPlaybackDuration: number
     playerMessage: Message | null,
     playerMessageUpdateInterval: NodeJS.Timeout | null,
-    addedPlaybackDuration: number
+    streamUrl: string | null
 }
 
 class Player {
@@ -39,9 +40,10 @@ class Player {
     volume: number = 100;
 
     metadata: PlayerMetadata = {
+        addedPlaybackDuration: 0,
         playerMessage: null,
         playerMessageUpdateInterval: null,
-        addedPlaybackDuration: 0
+        streamUrl: null
     }
 
     constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: SendableChannels) {
@@ -153,7 +155,7 @@ class Player {
                      */
                     const embed = createPlayerEmbed(this);
                     const actionRows = createPlayerActionRows(this);
-                    
+
                     this.metadata.playerMessage!.edit({ embeds: [embed], components: actionRows });
 
                     if (this.queue.repeatMode !== RepeatMode.ONE) this.metadata.playerMessage = null;
@@ -247,26 +249,34 @@ class Player {
         let input = null;
 
         // Downloader
-        if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
-            const data = await youtubeDl.exec(
-                track.url,
-                {
-                    dumpSingleJson: true,
-                    noCheckCertificates: true,
-                    noWarnings: true,
-                    preferFreeFormats: true,
-                    skipDownload: true,
-                    extractAudio: true,
-                }
-            );
-
-            const dataJSON = JSON.parse(data.stdout);
-
-            input = dataJSON.url;
+        if (this.queue.repeatMode === RepeatMode.ONE || seek) {
+            input = this.metadata.streamUrl;
         }
-        else if (track.source === AudioMediaSource.SOUNDCLOUD) {
-            return;
+        else {
+            if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
+                const data = await youtubeDl.exec(
+                    track.url,
+                    {
+                        dumpSingleJson: true,
+                        noCheckCertificates: true,
+                        noWarnings: true,
+                        preferFreeFormats: true,
+                        skipDownload: true,
+                        extractAudio: true,
+                    }
+                );
+
+                const dataJSON = JSON.parse(data.stdout);
+
+                input = dataJSON.url;
+            }
+            else if (track.source === AudioMediaSource.SOUNDCLOUD) {
+                return;
+            }
         }
+
+        this.metadata.streamUrl = input;
+
 
         // FFMPEG
         const stream = this.createFFmpegStream(input);
