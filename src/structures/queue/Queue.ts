@@ -9,7 +9,7 @@ export default class Queue {
 
     repeatMode: RepeatMode = RepeatMode.OFF;
 
-    locked: boolean = true;
+    lock: boolean = true;
 
     nextVoteList: User[] = [];
 
@@ -85,7 +85,7 @@ export default class Queue {
             this.previousItems.unshift(currentItem);
         }
 
-        this.locked = false;
+        this.lock = false;
     }
 
     /**

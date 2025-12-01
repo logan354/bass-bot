@@ -119,28 +119,7 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
         if (options.requester) requester = options.requester;
     }
 
-    if (url.match(YOUTUBE_REGEX.VIDEO)) {
-        const data = await YouTube.getVideo(url);
-
-        if (!data) {
-            return {
-                type: SearchResultType.NOT_FOUND,
-                source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
-        }
-
-        const track = createTrack(requester, data);
-
-        return {
-            type: SearchResultType.FOUND,
-            source: AudioMediaSource.YOUTUBE,
-            items: [track],
-            requester: requester
-        } as SearchResult;
-    }
-    else if (url.match(YOUTUBE_REGEX.PLAYLIST)) {
+    if (url.match(YOUTUBE_REGEX.PLAYLIST)) {
         const data = await YouTube.getPlaylist(url);
 
         if (!data) {
@@ -158,6 +137,27 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
             type: SearchResultType.FOUND,
             source: AudioMediaSource.YOUTUBE,
             items: [playlist],
+            requester: requester
+        } as SearchResult;
+    }
+    else if (url.match(YOUTUBE_REGEX.VIDEO)) {
+        const data = await YouTube.getVideo(url);
+
+        if (!data) {
+            return {
+                type: SearchResultType.NOT_FOUND,
+                source: AudioMediaSource.YOUTUBE,
+                items: [],
+                requester: requester
+            } as SearchResult;
+        }
+
+        const track = createTrack(requester, data);
+
+        return {
+            type: SearchResultType.FOUND,
+            source: AudioMediaSource.YOUTUBE,
+            items: [track],
             requester: requester
         } as SearchResult;
     }

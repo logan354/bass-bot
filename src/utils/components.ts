@@ -12,42 +12,42 @@ import Queue from "../structures/queue/Queue";
 import Bot from "../structures/Bot";
 import { AudioPlayerPlayingState } from "@discordjs/voice";
 
-export function createAlbumString(album: Album, hasDurationStr: boolean, hasRequesterStr: boolean): string {
+export function createAlbumString(album: Album, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;
     album.tracks.forEach((x) => totalDuration += x.duration);
 
-    let titleStr = `**[${album.title}](${album.url})**`;
-    let typeStr = "`Album`";
-    let artistsStr = album.artists.map((x) => x.name).join(", ");
-    let totalTracksStr = "`" + album.tracks.length.toString() + "`";
-    let durationStr = hasDurationStr ? formatDurationTimestamp(totalDuration) : null;
-    let requesterStr = hasRequesterStr ? album.requester ? `[<@${album.requester?.id}>]` : null : null;
+    let title = `**[${album.title}](${album.url})**`;
+    let type = "`Album`";
+    let artists = album.artists.map((x) => x.name).join(", ");
+    let totalTracks = "`" + album.tracks.length.toString() + "`";
+    let duration = hasDuration ? formatDurationTimestamp(totalDuration) : null;
+    let requester = hasRequester ? album.requester ? `[<@${album.requester?.id}>]` : null : null;
 
-    return typeStr + " " + titleStr + "\n" + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
+    return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
 }
 
-export function createPlaylistString(playlist: Playlist, hasDurationStr: boolean, hasRequesterStr: boolean): string {
+export function createPlaylistString(playlist: Playlist, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;
     playlist.tracks.forEach((x) => totalDuration += x.duration);
 
-    let titleStr = `**[${playlist.title}](${playlist.url})**`;
-    let typeStr = "`Playlist`";
-    let artistsStr = playlist.owner.name;
-    let totalTracksStr = "`" + playlist.tracks.length.toString() + "`";
-    let durationStr = hasDurationStr ? formatDurationTimestamp(totalDuration) : null;
-    let requesterStr = hasRequesterStr ? playlist.requester ? `[<@${playlist.requester?.id}>]` : null : null;
+    let title = `**[${playlist.title}](${playlist.url})**`;
+    let type = "`Playlist`";
+    let artists = playlist.owner.name;
+    let totalTracks = "`" + playlist.tracks.length.toString() + "`";
+    let duration = hasDuration ? formatDurationTimestamp(totalDuration) : null;
+    let requester = hasRequester ? playlist.requester ? `[<@${playlist.requester?.id}>]` : null : null;
 
-    return typeStr + " " + titleStr + "\n" + artistsStr + " **|** " + totalTracksStr + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
+    return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
 }
 
-export function createTrackString(track: Track, hasDurationStr: boolean, hasRequesterStr: boolean): string {
-    let titleStr = (track.isLiveStream ? "" : "") + " " + `**[${track.title}](${track.url})**`
-    let artistsStr = track.artists.map((x) => x.name).join(", ");
-    let albumStr = track.album ? `[${track.album?.title}](${track.album?.url})` : null;
-    let durationStr = hasDurationStr ? !track.isLiveStream ? formatDurationTimestamp(track.duration) : null : null;
-    let requesterStr = hasRequesterStr ? track.requester ? `[<@${track.requester?.id}>]` : null : null;
+export function createTrackString(track: Track, hasDuration: boolean, hasRequester: boolean): string {
+    let title = (track.isLiveStream ? "" : "") + " " + `**[${track.title}](${track.url})**`
+    let artists = track.artists.map((x) => x.name).join(", ");
+    let album = track.album ? `[${track.album?.title}](${track.album?.url})` : null;
+    let duration = hasDuration ? !track.isLiveStream ? formatDurationTimestamp(track.duration) : null : null;
+    let requester = hasRequester ? track.requester ? `[<@${track.requester?.id}>]` : null : null;
 
-    return titleStr + "\n" + artistsStr + (albumStr ? "**|** " + albumStr : "") + (durationStr ? " **|** `" + durationStr + "`" : "") + (requesterStr ? " " + requesterStr : "");
+    return title + "\n" + artists + (album ? "**|** " + album : "") + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
 }
 
 export function createSearchResultEmbed(items: AudioMedia[], source: AudioMediaSource): EmbedBuilder {
@@ -192,7 +192,7 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
         const color = getAudioMediaSourceEmbedColor(item.source);
         const iconURL = getAudioMediaSourceIconURL(item.source);
         const audioPlayerState = player.audioPlayer!.state as AudioPlayerPlayingState;
-        const playbackDuration = audioPlayerState.playbackDuration + player.metadata.addedPlaybackDuration;
+        const playbackDuration = audioPlayerState.playbackDuration + player.state.addedPlaybackDuration;
         const status = player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played";
 
         if (item.type === QueueableAudioMediaType.TRACK) {
@@ -241,7 +241,7 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player-pause-resume")
-                .setStyle(ButtonStyle.Success)
+                .setStyle(player.isPaused() ? ButtonStyle.Danger : ButtonStyle.Secondary)
                 .setEmoji(player.isPaused() ? emojis.resume : emojis.pause)
                 .setDisabled(disable),
             new ButtonBuilder()
@@ -251,8 +251,8 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
                 .setDisabled(disable),
             new ButtonBuilder()
                 .setCustomId("player-repeat")
-                .setStyle(ButtonStyle.Secondary)
-                .setEmoji(emojis.repeat)
+                .setStyle(player.queue.repeatMode === RepeatMode.ONE || player.queue.repeatMode === RepeatMode.ALL ? ButtonStyle.Success : ButtonStyle.Secondary)
+                .setEmoji(player.queue.repeatMode === RepeatMode.ONE ? emojis.repeat_one : emojis.repeat)
                 .setDisabled(disable)
         );
 
@@ -274,17 +274,17 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
                 .setCustomId("player-volume-down")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_down)
-                .setDisabled(disable),
+                .setDisabled(player.volume === 0 ? true : disable),
             new ButtonBuilder()
                 .setCustomId("player-volume-up")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_up)
-                .setDisabled(disable),
+                .setDisabled(player.volume === 200 ? true : disable),
             new ButtonBuilder()
                 .setCustomId("block")
                 .setStyle(ButtonStyle.Secondary)
                 .setLabel("\u200B")
-                .setDisabled(disable)
+                .setDisabled(true)
         );
 
     actionRowBuilders.push(actionRowBuilder2);
