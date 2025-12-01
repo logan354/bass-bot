@@ -1,5 +1,5 @@
 import { Message, SendableChannels, Snowflake, TextBasedChannel, VoiceBasedChannel } from "discord.js";
-import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, AudioResource, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
+import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
 import youtubeDl from "youtube-dl-exec";
 import { FFmpeg } from "prism-media";
 
@@ -15,10 +15,11 @@ import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, cre
 
 const wait = promisify(setTimeout);
 
-interface PlayerMetadata {
+interface PlayerState {
     addedPlaybackDuration: number
-    playerMessage: Message | null,
-    playerMessageUpdateInterval: NodeJS.Timeout | null,
+    playerMessage: Message | null
+    playerMessageLock: boolean
+    playerMessageUpdateInterval: NodeJS.Timeout | null
     streamUrl: string | null
 }
 
@@ -39,9 +40,10 @@ class Player {
 
     volume: number = 100;
 
-    metadata: PlayerMetadata = {
+    state: PlayerState = {
         addedPlaybackDuration: 0,
         playerMessage: null,
+        playerMessageLock: false,
         playerMessageUpdateInterval: null,
         streamUrl: null
     }
@@ -153,23 +155,22 @@ class Player {
                      * If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                      * The queue is then processed to start playing the next track, if one is available.
                      */
-                    const embed = createPlayerEmbed(this);
-                    const actionRows = createPlayerActionRows(this);
-
-                    this.metadata.playerMessage!.edit({ embeds: [embed], components: actionRows });
-
-                    if (this.queue.repeatMode !== RepeatMode.ONE) this.metadata.playerMessage = null;
-                    this.metadata.playerMessageUpdateInterval!.close();
-                    this.metadata.playerMessageUpdateInterval = null;
+                    const save = this.queue.repeatMode === RepeatMode.ONE ? true : this.state.playerMessageLock;
+                    this.closePlayerMessage(save);
+                    this.state.playerMessageLock = false;
 
                     // Meaning no action by user. e.g next or previous functions
-                    if (this.queue.locked) this.queue.next();
-                    else this.queue.locked = true;
+                    if (this.queue.lock) this.queue.next();
+                    else this.queue.lock = true;
 
                     this.play();
                 } else if (newState.status === AudioPlayerStatus.Playing) {
                     // If the Playing state has been entered, then a new track has started playback.
-                    this.createMessage();
+                    // Update now playing item. This achieves consistency
+                    this.queue.remove(0);
+                    this.queue.add(newState.resource.metadata as QueueableAudioMedia, 0);
+
+                    this.createPlayerMessage();
                 }
             });
 
@@ -249,8 +250,8 @@ class Player {
         let input = null;
 
         // Downloader
-        if (this.queue.repeatMode === RepeatMode.ONE || seek) {
-            input = this.metadata.streamUrl;
+        if (this.queue.repeatMode === RepeatMode.ONE || seek !== null) {
+            input = this.state.streamUrl;
         }
         else {
             if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
@@ -275,11 +276,16 @@ class Player {
             }
         }
 
-        this.metadata.streamUrl = input;
-
+        this.state.streamUrl = input;
 
         // FFMPEG
-        const stream = this.createFFmpegStream(input);
+        let stream
+
+        if (seek !== null) {
+            stream = this.createFFmpegStream(input, { seek: seek });
+            this.state.playerMessageLock = true;
+        }
+        else stream = this.createFFmpegStream(input);
 
         const resource = createAudioResource(stream, {
             inlineVolume: true,
@@ -287,10 +293,6 @@ class Player {
         });
 
         this.audioPlayer?.play(resource);
-
-        // Update now playing item. This achieves consistency
-        this.queue.remove(0);
-        this.queue.add(track, 0);
     }
 
     /**
@@ -365,7 +367,7 @@ class Player {
         if (!this.isPlaying) return;
 
         const state = this.audioPlayer?.state as AudioPlayerPlayingState;
-        return state.playbackDuration + this.metadata.addedPlaybackDuration;
+        return state.playbackDuration + this.state.addedPlaybackDuration;
     }
 
     /**
@@ -427,33 +429,33 @@ class Player {
 
     }
 
-    async createMessage(): Promise<void> {
+    async createPlayerMessage(): Promise<void> {
         const embed = createPlayerEmbed(this);
         const actionRows = createPlayerActionRows(this);
 
-        if (this.metadata.playerMessage) {
-            if (this.textChannel.id !== this.metadata.playerMessage.channel.id) {
-                this.destroyMessage();
+        if (this.state.playerMessage) {
+            if (this.textChannel.id !== this.state.playerMessage.channel.id) {
+                this.destroyPlayerMessage();
 
                 const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-                this.metadata.playerMessage = message;
+                this.state.playerMessage = message;
             }
-            else this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+            else this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
         }
         else {
             const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-            this.metadata.playerMessage = message;
+            this.state.playerMessage = message;
         }
 
-        if (this.metadata.playerMessageUpdateInterval) {
-            this.metadata.playerMessageUpdateInterval.close();
-            this.metadata.playerMessageUpdateInterval = null;
+        if (this.state.playerMessageUpdateInterval) {
+            this.state.playerMessageUpdateInterval.close();
+            this.state.playerMessageUpdateInterval = null;
         }
 
         const updateInterval = setInterval(async () => {
             const track = this.queue.items[0] as Track;
             const audioPlayerState = this.audioPlayer!.state as AudioPlayerPlayingState;
-            const playbackDuration = audioPlayerState.playbackDuration + this.metadata.addedPlaybackDuration;
+            const playbackDuration = audioPlayerState.playbackDuration + this.state.addedPlaybackDuration;
 
             embed.setFields(
                 {
@@ -463,24 +465,38 @@ class Player {
             )
             const actionRows = createPlayerActionRows(this);
 
-            if (this.metadata.playerMessage) {
-                this.metadata.playerMessage.edit({ embeds: [embed], components: actionRows });
+            if (this.state.playerMessage) {
+                this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
             }
         }, 1000);
 
-        this.metadata.playerMessageUpdateInterval = updateInterval;
+        this.state.playerMessageUpdateInterval = updateInterval;
     }
 
-    destroyMessage(): void {
-        if (this.metadata.playerMessage) {
-            this.metadata.playerMessage.delete();
-            this.metadata.playerMessage = null;
-        }
+    async updatePlayerMessage(): Promise<void> {
+        if (!this.state.playerMessage) return;
 
-        if (this.metadata.playerMessageUpdateInterval) {
-            this.metadata.playerMessageUpdateInterval.close();
-            this.metadata.playerMessageUpdateInterval = null;
+        const embed = createPlayerEmbed(this);
+        const actionRows = createPlayerActionRows(this);
+
+        await this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
+    }
+
+    closePlayerMessage(save: boolean) {
+        this.updatePlayerMessage();
+
+        if (!save) this.state.playerMessage = null;
+
+        if (this.state.playerMessageUpdateInterval !== null) {
+            this.state.playerMessageUpdateInterval.close();
+            this.state.playerMessageUpdateInterval = null;
         }
+    }
+
+    destroyPlayerMessage(): void {
+        if (this.state.playerMessage !== null) this.state.playerMessage.delete();
+
+        this.closePlayerMessage(false);
     }
 }
 
