@@ -37,7 +37,7 @@ export default {
 
             await interaction.deferReply();
 
-            const applicationCommands = await interaction.guild.commands.fetch();
+            const applicationCommands = await bot.application.commands.fetch();
 
             let applicationCommand;
 
@@ -75,7 +75,7 @@ export default {
         else {
             await interaction.deferReply();
 
-            const applicationCommands = await interaction.guild.commands.fetch();
+            const applicationCommands = await bot.application.commands.fetch();
 
             let applicationCommand;
 
