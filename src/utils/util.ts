@@ -1,76 +1,72 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ColorResolvable, Colors } from "discord.js";
+import { ColorResolvable, Colors } from "discord.js";
 import { AudioMediaSource, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "./constants";
-import Bot from "../structures/Bot";
-import { emojis } from "../../config.json";
-import { createQueueEmptyMessage } from "./components";
-
-const numberFormat = /^\d+$/;
-const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
-const timeUnits = {
-    ms: 1,
-    s: 1000,
-    m: 60000,
-    h: 3600000,
-}
-
-const formatInt = (int: number) => {
-    if (int < 10) return `0${int}`;
-    return `${int}`;
-}
 
 /**
- * Formats milliseconds to a formatted timestamp.
- * e.g 0:30, 1:30, 2:15, 5:20.
+ * Formats timestamp from milliseconds.
+ * E.g. 0:30, 1:30, 2:15, 5:20.
  * @param milliseconds 
  * @returns
  */
-export function formatDurationTimestamp(milliseconds: number): string {
-    if (!milliseconds || !parseInt(milliseconds.toString())) return "0:00";
+export function formatTimestamp(milliseconds: number): string {
     const seconds = Math.floor(milliseconds % 60000 / 1000);
     const minutes = Math.floor(milliseconds % 3600000 / 60000);
     const hours = Math.floor(milliseconds / 3600000);
+
+    const formatNumber = (number: number) => number.toString().padStart(2, "0");
+
     if (hours > 0) {
-        return `${hours}:${formatInt(minutes)}:${formatInt(seconds)}`;
+        return `${hours}:${formatNumber(minutes)}:${formatNumber(seconds)}`;
     }
     if (minutes > 0) {
-        return `${minutes}:${formatInt(seconds)}`;
+        return `${minutes}:${formatNumber(seconds)}`;
     }
-    return `0:${formatInt(seconds)}`;
+    return `0:${formatNumber(seconds)}`;
 }
 
 /**
- * Converts human friendly time to milliseconds. Supports the format
+ * Converts timestamp to milliseconds. Supports the format:
  * 00:00:00.000 for hours, minutes, seconds, and milliseconds respectively.
  * And 0ms, 0s, 0m, 0h, and together 1m1s.
- *
- * @param {number|string} time
- * @returns {number}
+ * @param timestamp
+ * @returns
  */
-// export function parseDuration(timestamp: string) {
-//     if (typeof timestamp === "number") { return timestamp * 1000; }
-//     if (numberFormat.test(timestamp)) { return +timestamp * 1000; }
-//     const firstFormat = timeFormat.exec(timestamp);
-//     if (firstFormat) {
-//         return (+(firstFormat[1] || 0) * timeUnits.h) +
-//             (+(firstFormat[2] || 0) * timeUnits.m) +
-//             (+firstFormat[3] * timeUnits.s) +
-//             +(firstFormat[4] || 0);
-//     } else {
-//         let total = 0;
-//         const r = /(-?\d+)(ms|s|m|h)/g;
-//         let rs;
-//         while ((rs = r.exec(timestamp)) !== null) {
-//             total += +rs[1] * timeUnits[rs[2]];
-//         }
-//         return total;
-//     };
-// }
+export function convertTimestamp(timestamp: string): number {
+    const numberFormat = /^\d+$/;
+    const timeFormat = /^(?:(?:(\d+):)?(\d{1,2}):)?(\d{1,2})(?:\.(\d{3}))?$/;
+    const timeUnits: Record<'ms' | 's' | 'm' | 'h', number> = {
+        ms: 1,
+        s: 1000,
+        m: 60000,
+        h: 3600000,
+    };
 
-export function convertTimestampToMilliseconds(timestamp: string): number | undefined {
-    if (parseInt(timestamp)) return parseInt(timestamp);
+    if (typeof timestamp === "number") {
+        return timestamp * 1000;
+    }
 
+    if (numberFormat.test(timestamp)) {
+        return +timestamp * 1000;
+    }
 
-    return 0;
+    const firstFormat = timeFormat.exec(timestamp);
+    if (firstFormat) {
+        const hours = +(firstFormat[1] || 0);
+        const minutes = +(firstFormat[2] || 0);
+        const seconds = +firstFormat[3];
+        const milliseconds = +(firstFormat[4] || 0);
+
+        return hours * timeUnits.h + minutes * timeUnits.m + seconds * timeUnits.s + milliseconds;
+    } else {
+        let total = 0;
+        const r = /(-?\d+)(ms|s|m|h)/g;
+        let rs: RegExpExecArray | null;
+        while ((rs = r.exec(timestamp)) !== null) {
+            const value = +rs[1];
+            const unit = rs[2] as keyof typeof timeUnits;
+            total += value * timeUnits[unit];
+        }
+        return total;
+    }
 }
 
 /**

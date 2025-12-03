@@ -5,7 +5,7 @@ import { emojis } from "../../../../config.json";
 import { resolveURLType, search, searchURL } from "../../../structures/search/search";
 import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, DEFAULT_SEARCH_RESULT_TIMEOUT, QueueableAudioMediaType, SearchResultType, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
-import { formatDurationTimestamp } from "../../../utils/util";
+import { formatTimestamp } from "../../../utils/util";
 import Album from "../../../structures/models/Album";
 import Playlist from "../../../structures/models/Playlist";
 import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu } from "../../../utils/components";

@@ -4,7 +4,7 @@ import Command from "../../../structures/Command";
 import { emojis } from "../../../../config.json";
 import { QueueableAudioMediaType } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
-import { convertTimestampToMilliseconds, formatDurationTimestamp } from "../../../utils/util";
+import { convertTimestamp, formatTimestamp } from "../../../utils/util";
 
 export default {
     name: "seek",
@@ -55,22 +55,19 @@ export default {
         const timestampOption = interaction.options.getString("timestamp")!;
         let milliseconds = 0;
 
-        if (parseInt(timestampOption)) milliseconds = parseInt(timestampOption) * 1000;
-        else {
-            let convertedTimestamp = convertTimestampToMilliseconds(timestampOption);
+        const convertedTimestamp = convertTimestamp(timestampOption);
 
-            if (!convertedTimestamp) {
-                await interaction.reply(emojis.error + " **Error invalid timestamp.** Examples: `10`, `10s`, `0:10`.");
-                return;
-            }
-            else {
-                milliseconds = convertedTimestamp;
-            }
+        if (!convertedTimestamp) {
+            await interaction.reply(emojis.error + " **Error invalid time.** Examples: `10`, `10s`, `0:10`.");
+            return;
+        }
+        else {
+            milliseconds = convertedTimestamp;
         }
 
         const playbackDuration = player.playbackDuration()!
 
-        // fast-forward and rewind commands come under seek command
+        // Fast-forward and rewind commands come under seek command
         if (interaction.commandName === "fast-forward") {
             if (playbackDuration + milliseconds > track.duration) {
                 await interaction.reply(emojis.error + " **Time must be in the range of the song.**");
@@ -78,16 +75,16 @@ export default {
             }
 
             await player.playTrack(track, { seek: playbackDuration + milliseconds });
-            await interaction.reply(emojis.fast_forward + " **Fast-Forwarded to** `" + formatDurationTimestamp(playbackDuration + milliseconds) + "`");
+            await interaction.reply(emojis.fast_forward + " **Fast-Forwarded to** `" + formatTimestamp(playbackDuration + milliseconds) + "`");
         }
         else if (interaction.commandName === "rewind") {
-            if (milliseconds - playbackDuration < 0) {
+            if (playbackDuration - milliseconds < 0) {
                 await interaction.reply(emojis.error + " **Time must be in the range of the song.**");
                 return;
             }
 
-            await player.playTrack(track, { seek: milliseconds - playbackDuration });
-            await interaction.reply(emojis.rewind + " **Rewinded to** `" + formatDurationTimestamp(milliseconds - playbackDuration) + "`");
+            await player.playTrack(track, { seek: playbackDuration - milliseconds });
+            await interaction.reply(emojis.rewind + " **Rewinded to** `" + formatTimestamp(playbackDuration - milliseconds) + "`");
         }
         else {
             if (milliseconds < 0 || milliseconds > track.duration) {
@@ -104,7 +101,7 @@ export default {
             }
 
             await player.playTrack(track, { seek: milliseconds });
-            await interaction.reply(seekEmoji + " **Seeked to** `" + formatDurationTimestamp(milliseconds) + "`");
+            await interaction.reply(seekEmoji + " **Seeked to** `" + formatTimestamp(milliseconds) + "`");
         }
     }
 } as Command;

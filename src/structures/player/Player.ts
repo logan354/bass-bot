@@ -10,7 +10,7 @@ import { QueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, QueueableAudioMediaType, RepeatMode } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
-import { createProgressBar, formatDurationTimestamp } from "../../utils/util";
+import { createProgressBar, formatTimestamp } from "../../utils/util";
 import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/components";
 
 const wait = promisify(setTimeout);
@@ -418,15 +418,16 @@ class Player {
 
         if (seek) {
             FFMPEGArguments.splice(FFMPEGArguments.findIndex(x => x === "-i"), 0,
-                "-ss", seek.toString(),
+                "-ss", (seek / 1000).toString(),
                 "-accurate_seek"
             );
+
+            this.state.addedPlaybackDuration = seek;
         }
 
         const ffmpegStream = new FFmpeg({ args: FFMPEGArguments });
 
         return ffmpegStream;
-
     }
 
     async createPlayerMessage(): Promise<void> {

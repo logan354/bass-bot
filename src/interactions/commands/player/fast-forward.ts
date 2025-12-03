@@ -9,7 +9,7 @@ export default {
         .setName("fast-forward")
         .setDescription("Jumps to a specific timestamp in the currently playing item.")
         .addStringOption(option =>
-            option.setName("timestamp")
+            option.setName("time")
                 .setDescription("Examples: 10, 10s, 0:10")
                 .setRequired(true),
         ),

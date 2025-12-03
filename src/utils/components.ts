@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatIn
 
 import { emojis } from "../../config.json";
 import Track from "../structures/models/Track";
-import { createProgressBar, formatDurationTimestamp, getAudioMediaSourceIconURL, getAudioMediaSourceEmbedColor } from "./util";
+import { createProgressBar, formatTimestamp, getAudioMediaSourceIconURL, getAudioMediaSourceEmbedColor } from "./util";
 import Album from "../structures/models/Album";
 import Playlist from "../structures/models/Playlist";
 import { AudioMedia, QueueableAudioMedia } from "../structures/AudioMedia";
@@ -20,7 +20,7 @@ export function createAlbumString(album: Album, hasDuration: boolean, hasRequest
     let type = "`Album`";
     let artists = album.artists.map((x) => x.name).join(", ");
     let totalTracks = "`" + album.tracks.length.toString() + "`";
-    let duration = hasDuration ? formatDurationTimestamp(totalDuration) : null;
+    let duration = hasDuration ? formatTimestamp(totalDuration) : null;
     let requester = hasRequester ? album.requester ? `[<@${album.requester?.id}>]` : null : null;
 
     return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
@@ -34,7 +34,7 @@ export function createPlaylistString(playlist: Playlist, hasDuration: boolean, h
     let type = "`Playlist`";
     let artists = playlist.owner.name;
     let totalTracks = "`" + playlist.tracks.length.toString() + "`";
-    let duration = hasDuration ? formatDurationTimestamp(totalDuration) : null;
+    let duration = hasDuration ? formatTimestamp(totalDuration) : null;
     let requester = hasRequester ? playlist.requester ? `[<@${playlist.requester?.id}>]` : null : null;
 
     return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
@@ -44,7 +44,7 @@ export function createTrackString(track: Track, hasDuration: boolean, hasRequest
     let title = (track.isLiveStream ? "" : "") + " " + `**[${track.title}](${track.url})**`
     let artists = track.artists.map((x) => x.name).join(", ");
     let album = track.album ? `[${track.album?.title}](${track.album?.url})` : null;
-    let duration = hasDuration ? !track.isLiveStream ? formatDurationTimestamp(track.duration) : null : null;
+    let duration = hasDuration ? track.isLiveStream ? "`LIVE`" : formatTimestamp(track.duration) : null;
     let requester = hasRequester ? track.requester ? `[<@${track.requester?.id}>]` : null : null;
 
     return title + "\n" + artists + (album ? "**|** " + album : "") + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
@@ -212,7 +212,7 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
                 embedBuilder.addFields(
                     {
                         name: createProgressBar(playbackDuration, track.duration, false),
-                        value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
+                        value: "`" + formatTimestamp(playbackDuration) + "` **/** `" + formatTimestamp(track.duration) + "`",
                     }
                 )
             }
