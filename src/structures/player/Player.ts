@@ -238,7 +238,7 @@ class Player {
             // Converting message
             this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
 
-            const result = await searchYouTube(`${track.artists[0].name} - ${track.title} (${formatDurationTimestamp(track.duration)})`, {
+            const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
                 type: track.type,
                 count: 1,
                 requester: track.requester

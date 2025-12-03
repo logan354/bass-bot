@@ -187,7 +187,7 @@ function createTrack(requester: User | null, data: Video): Track {
         null,
         data.thumbnail!.url ?? null,
         data.duration,
-        data.live
+        data.live || data.duration === 0
     );
 }
 
