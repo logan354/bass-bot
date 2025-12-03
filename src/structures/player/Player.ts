@@ -454,21 +454,26 @@ class Player {
         }
 
         const updateInterval = setInterval(async () => {
-            const track = this.queue.items[0] as Track;
-            const audioPlayerState = this.audioPlayer!.state as AudioPlayerPlayingState;
-            const playbackDuration = audioPlayerState.playbackDuration + this.state.addedPlaybackDuration;
+            if (this.queue.items[0].type === QueueableAudioMediaType.TRACK) {
+                const track = this.queue.items[0] as Track;
+                const playbackDuration = this.playbackDuration()!;
 
-            embed.setFields(
-                {
-                    name: createProgressBar(playbackDuration, track.duration, false),
-                    value: "`" + formatDurationTimestamp(playbackDuration) + "` **/** `" + formatDurationTimestamp(track.duration) + "`",
+                if (!track.isLiveStream) {
+                    embed.setFields(
+                        {
+                            name: createProgressBar(playbackDuration, track.duration, false),
+                            value: formatTimestamp(playbackDuration) + "` **/** `" + formatTimestamp(track.duration) + "`",
+                        }
+                    )
                 }
-            )
-            const actionRows = createPlayerActionRows(this);
 
-            if (this.state.playerMessage) {
-                this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
+                const actionRows = createPlayerActionRows(this);
+
+                if (this.state.playerMessage) {
+                    this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
+                }
             }
+
         }, 1000);
 
         this.state.playerMessageUpdateInterval = updateInterval;

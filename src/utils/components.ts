@@ -41,7 +41,7 @@ export function createPlaylistString(playlist: Playlist, hasDuration: boolean, h
 }
 
 export function createTrackString(track: Track, hasDuration: boolean, hasRequester: boolean): string {
-    let title = (track.isLiveStream ? "" : "") + " " + `**[${track.title}](${track.url})**`
+    let title = (track.isLiveStream ? "`LIVE`" : "") + " " + `**[${track.title}](${track.url})**`
     let artists = track.artists.map((x) => x.name).join(", ");
     let album = track.album ? `[${track.album?.title}](${track.album?.url})` : null;
     let duration = hasDuration ? track.isLiveStream ? "`LIVE`" : formatTimestamp(track.duration) : null;
@@ -208,7 +208,7 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
                 .setDescription(createTrackString(track, false, true))
                 .setTimestamp();
 
-            if (player.isPlaying()) {
+            if (player.isPlaying() && !track.isLiveStream) {
                 embedBuilder.addFields(
                     {
                         name: createProgressBar(playbackDuration, track.duration, false),
