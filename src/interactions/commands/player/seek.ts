@@ -47,17 +47,12 @@ export default {
 
         const track = player.queue.items[0] as Track;
 
-        if (track.isLiveStream) {
-            await interaction.reply(emojis.error + " **Cannot seek a live song.**");
-            return;
-        }
-
         const timestampOption = interaction.options.getString("timestamp")!;
         let milliseconds = 0;
 
         const convertedTimestamp = convertTimestamp(timestampOption);
 
-        if (!convertedTimestamp) {
+        if (!convertedTimestamp && parseInt(timestampOption) !== 0) {
             await interaction.reply(emojis.error + " **Error invalid time.** Examples: `10`, `10s`, `0:10`.");
             return;
         }

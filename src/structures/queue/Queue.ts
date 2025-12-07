@@ -1,4 +1,5 @@
 import { User } from "discord.js";
+
 import { QueueableAudioMedia } from "../AudioMedia";
 import { RepeatMode } from "../../utils/constants";
 
@@ -21,12 +22,8 @@ export default class Queue {
      * @param position 
      */
     add(item: QueueableAudioMedia, position?: number) {
-        if (position) {
-            this.items.splice(position, 0, item);
-        }
-        else {
-            this.items.push(item);
-        }
+        if (position !== undefined) this.items.splice(position, 0, item);
+        else this.items.push(item);
     }
 
     /**
