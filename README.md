@@ -26,7 +26,7 @@ A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube 
 
 3. Install NPM Packages
     ```sh
-    npm install npm@latest -g
+    npm install
     ```
 
 ## Usage
@@ -61,7 +61,7 @@ Format: **name** `<required>` `[optional]`
 #### Queue
 - **clear**
 - **jump** `<position>`
-- **move** `<start-position>` `<end-position>`
+- **move** `<index>` `<position>`
 - **nowplaying**
 - **queue**
 - **remove** `<position>`
