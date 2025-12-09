@@ -4,7 +4,7 @@ import Track from "./Track";
 import { UnQueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, UnQueueableAudioMediaType } from "../../utils/constants";
 
-export interface AlbumArtist {
+export interface Artist {
     name: string;
     url?: string;
     imageURL?: string;
@@ -15,7 +15,7 @@ export default class Album extends UnQueueableAudioMedia {
 
     title: string;
 
-    artists: AlbumArtist[];
+    artists: Artist[];
 
     coverArtURL: string;
 
@@ -26,7 +26,7 @@ export default class Album extends UnQueueableAudioMedia {
         requester: User | null,
         url: string,
         title: string,
-        artists: AlbumArtist[],
+        artists: Artist[],
         coverArtURL: string,
         tracks: Array<Track>
     ) {

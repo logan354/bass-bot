@@ -7,16 +7,16 @@ export abstract class AudioMedia {
 
     source: AudioMediaSource;
 
-    isQueueable: boolean;
-
     requester: User | null = null;
 
+    isQueueable: boolean;
 
-    constructor(type: AudioMediaType, source: AudioMediaSource, isQueueable: boolean, requester: User | null) {
+
+    constructor(type: AudioMediaType, source: AudioMediaSource, requester: User | null, isQueueable: boolean, ) {
         this.type = type;
         this.source = source;
-        this.isQueueable = isQueueable;
         this.requester = requester;
+        this.isQueueable = isQueueable;
     }
 }
 
@@ -27,8 +27,8 @@ export abstract class QueueableAudioMedia extends AudioMedia {
         super(
             type,
             source,
-            true,
-            requester
+            requester,
+            true
         )
 
         this.type = type;
@@ -42,8 +42,8 @@ export abstract class UnQueueableAudioMedia extends AudioMedia {
         super(
             type,
             source,
-            false,
-            requester
+            requester,
+            false
         )
 
         this.type = type;
