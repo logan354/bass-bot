@@ -11,6 +11,7 @@ import Player from "../structures/player/Player";
 import Queue from "../structures/queue/Queue";
 import Bot from "../structures/Bot";
 import { AudioPlayerPlayingState } from "@discordjs/voice";
+import LiveStream from "../structures/models/LiveStream";
 
 export function createAlbumString(album: Album, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;

@@ -5,7 +5,8 @@ import { emojis } from "../../config.json";
 import { getAudioMediaSourceEmbedColor, getAudioMediaSourceIconURL } from "./util";
 import { QueueableAudioMediaType, RepeatMode } from "./constants";
 import Track from "../structures/models/Track";
-import { createQueueEmbed, createQueueEmptyMessage, createTrackString } from "./components";
+import { createLiveStreamString, createQueueEmbed, createQueueEmptyMessage, createTrackString } from "./components";
+import LiveStream from "../structures/models/LiveStream";
 
 export async function nextCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, options?: { force: boolean }): Promise<void> {
     let force = false;
@@ -160,24 +161,34 @@ export async function nowPlayingCommand(bot: Bot, interaction: ChatInputCommandI
         return;
     }
 
-    if (player.queue.items[0].type === QueueableAudioMediaType.TRACK) {
+    const currentlyPlayingItem = player.queue.items[0];
+
+    const color = getAudioMediaSourceEmbedColor(currentlyPlayingItem.source);
+    const iconURL = getAudioMediaSourceIconURL(currentlyPlayingItem.source);
+
+    const embed = new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({
+            name: "Now Playing",
+            iconURL: iconURL
+        })
+        .setTimestamp();
+
+    if (currentlyPlayingItem.type === QueueableAudioMediaType.LIVE_STREAM) {
+        const liveStream = currentlyPlayingItem as LiveStream;
+
+        embed.setImage(liveStream.imageURL)
+        embed.setDescription(createLiveStreamString(liveStream, false))
+    }
+    else if (currentlyPlayingItem.type === QueueableAudioMediaType.TRACK) {
         const track = player.queue.items[0] as Track;
 
-        const color = getAudioMediaSourceEmbedColor(track.source);
-        const iconURL = getAudioMediaSourceIconURL(track.source);
-
-        const embed = new EmbedBuilder()
-            .setColor(color)
-            .setAuthor({
-                name: "Now Playing",
-                iconURL: iconURL
-            })
-            .setImage(track.imageURL)
-            .setDescription(createTrackString(track, false, true))
-            .setTimestamp();
-
-        interaction.reply({ embeds: [embed] });
+        embed.setImage(track.imageURL)
+        embed.setDescription(createTrackString(track, false, true))
     }
+    else return;
+
+    await interaction.reply({ embeds: [embed] });
 }
 
 export async function pauseCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">) {

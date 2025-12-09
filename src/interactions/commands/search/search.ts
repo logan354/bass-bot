@@ -8,7 +8,8 @@ import Track from "../../../structures/models/Track";
 import { formatTimestamp } from "../../../utils/util";
 import Album from "../../../structures/models/Album";
 import Playlist from "../../../structures/models/Playlist";
-import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu } from "../../../utils/components";
+import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu, createLiveStreamQueuedEmbed } from "../../../utils/components";
+import LiveStream from "../../../structures/models/LiveStream";
 
 const sourceChoices = [
     {
@@ -106,6 +107,12 @@ export default {
 
                 embed = createAlbumQueuedEmbed(album);
             }
+            else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
+                const liveStream = searchResult.items[0] as LiveStream
+
+                player.queue.add(liveStream);
+                embed = createLiveStreamQueuedEmbed(liveStream);
+            }
             else if (searchResult.items[0].type === AudioMediaType.PLAYLIST) {
                 const playlist = searchResult.items[0] as Playlist;
 
@@ -193,6 +200,12 @@ export default {
                         album.tracks.forEach((x) => player.queue.add(x));
 
                         embed = createAlbumQueuedEmbed(album);
+                    }
+                    else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
+                        const liveStream = searchResult.items[0] as LiveStream
+
+                        player.queue.add(liveStream);
+                        embed = createLiveStreamQueuedEmbed(liveStream);
                     }
                     else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.PLAYLIST) {
                         const playlist = searchResult.items[Number(x.values[0])] as Playlist;

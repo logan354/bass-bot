@@ -1,16 +1,16 @@
 import { User } from "discord.js";
+import fetch from 'isomorphic-unfetch';
 
+// @ts-ignore
+import spotifyUrlInfo from 'spotify-url-info';
+
+import { parse } from "spotify-uri";
+
+import Track, { Album as TrackAlbum } from "../../models/Track";
+import Playlist from "../../models/Playlist";
 import SearchResult from "../SearchResult";
 import { AudioMediaSource, AudioMediaType, SearchResultType, SPOTIFY_REGEX } from "../../../utils/constants";
 import { AudioMedia } from "../../AudioMedia";
-
-import fetch from 'isomorphic-unfetch';
-// @ts-ignore
-import spotifyUrlInfo from 'spotify-url-info';
-import Track, { TrackAlbum } from "../../models/Track";
-import Playlist from "../../models/Playlist";
-
-import { parse } from "spotify-uri";
 import Album from "../../models/Album";
 
 const spotify = spotifyUrlInfo(fetch);
@@ -55,8 +55,7 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
             }),
             null,
             data.visualIdentity.image[0].url,
-            data.duration,
-            false
+            data.duration
         );
 
         items.push(track);
@@ -88,8 +87,7 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
                 }),
                 null,
                 null,
-                data.trackList[i].duration,
-                false
+                data.trackList[i].duration
             );
 
             tracks.push(track);
@@ -146,8 +144,7 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
                 }),
                 trackAlbum,
                 null,
-                data.trackList[i].duration,
-                false
+                data.trackList[i].duration
             );
 
             tracks.push(track);

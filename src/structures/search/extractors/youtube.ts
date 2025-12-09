@@ -6,6 +6,7 @@ import SearchResult from "../SearchResult";
 import Playlist from "../../models/Playlist";
 import Track from "../../models/Track";
 import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, SearchResultType, YOUTUBE_ICON_URL, YOUTUBE_REGEX, YOUTUBE_URL } from "../../../utils/constants";
+import LiveStream from "../../models/LiveStream";
 
 /**
  * Searches a query on YouTube.
@@ -44,8 +45,16 @@ export async function searchYouTube(
 
         for (let i = 0; i < data.length; i++) {
             if (data[i].type === "video") {
-                const track = createTrack(requester, data[i] as Video);
-                items.push(track);
+                const video = data[i] as Video;
+
+                if (video.live || video.duration === 0) {
+                    const liveStream = createLiveStream(requester, video);
+                    items.push(liveStream);
+                }
+                else {
+                    const track = createTrack(requester, video);
+                    items.push(track);
+                }
             }
             else if (data[i].type === "playlist") {
                 const playlist = createPlaylist(requester, data[i] as _Playlist);
@@ -54,7 +63,7 @@ export async function searchYouTube(
             else continue;
         }
     }
-    else if (type === AudioMediaType.TRACK) {
+    else if (type === AudioMediaType.LIVE_STREAM || type === AudioMediaType.TRACK) {
         const data = await YouTube.search(query, { type: "video", limit: count });
 
         if (!data.length) {
@@ -66,9 +75,17 @@ export async function searchYouTube(
             } as SearchResult;
         }
 
-        for (let i = 0; i < data.length; i++) {
-            const track = createTrack(requester, data[i])
-            items.push(track);
+        if (type === AudioMediaType.LIVE_STREAM) {
+            for (let i = 0; i < data.length; i++) {
+                const liveStream = createLiveStream(requester, data[i])
+                items.push(liveStream);
+            }
+        }
+        else {
+            for (let i = 0; i < data.length; i++) {
+                const track = createTrack(requester, data[i])
+                items.push(track);
+            }
         }
     }
     else if (type === AudioMediaType.PLAYLIST) {
@@ -152,12 +169,15 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
             } as SearchResult;
         }
 
-        const track = createTrack(requester, data);
+        let item;
+
+        if (data.live || data.duration === 0) item = createLiveStream(requester, data);
+        else item = createTrack(requester, data);
 
         return {
             type: SearchResultType.FOUND,
             source: AudioMediaSource.YOUTUBE,
-            items: [track],
+            items: [item],
             requester: requester
         } as SearchResult;
     }
@@ -171,12 +191,12 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
     }
 }
 
-function createTrack(requester: User | null, data: Video): Track {
-    return new Track(
+function createLiveStream(requester: User | null, data: Video): LiveStream {
+    return new LiveStream(
         AudioMediaSource.YOUTUBE,
         requester,
         data.url,
-        data.title!,
+        data.title ?? "undefined",
         [
             {
                 name: data.channel?.name!,
@@ -184,11 +204,8 @@ function createTrack(requester: User | null, data: Video): Track {
                 imageURL: data.channel?.icon.url
             }
         ],
-        null,
         data.thumbnail!.url ?? null,
-        data.duration,
-        data.live || data.duration === 0
-    );
+    )
 }
 
 function createPlaylist(requester: User | null, data: _Playlist): Playlist {
@@ -211,5 +228,24 @@ function createPlaylist(requester: User | null, data: _Playlist): Playlist {
         },
         data.thumbnail!.url ?? null,
         tracks
+    );
+}
+
+function createTrack(requester: User | null, data: Video): Track {
+    return new Track(
+        AudioMediaSource.YOUTUBE,
+        requester,
+        data.url,
+        data.title ?? "undefined",
+        [
+            {
+                name: data.channel?.name!,
+                url: data.channel!.url,
+                imageURL: data.channel?.icon.url
+            }
+        ],
+        null,
+        data.thumbnail!.url ?? null,
+        data.duration
     );
 }

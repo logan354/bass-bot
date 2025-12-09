@@ -12,6 +12,7 @@ import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
 import { createProgressBar, formatTimestamp } from "../../utils/util";
 import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/components";
+import LiveStream from "../models/LiveStream";
 
 const wait = promisify(setTimeout);
 
@@ -209,13 +210,20 @@ class Player {
             this.textChannel.send(await createQueueEmptyMessage(this.playerManager.bot));
         }
         else {
-            if (item.type === QueueableAudioMediaType.TRACK) {
+            if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
+                const liveStream = item as LiveStream;
+                await this.playLiveStream(liveStream);
+            }
+            else if (item.type === QueueableAudioMediaType.TRACK) {
                 const track = item as Track;
-
                 await this.playTrack(track);
             }
             else return;
         }
+    }
+
+    async playLiveStream(liveStream: LiveStream): Promise<void> {
+        // TODO
     }
 
     /**
