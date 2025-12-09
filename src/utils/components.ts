@@ -13,42 +13,51 @@ import Bot from "../structures/Bot";
 import { AudioPlayerPlayingState } from "@discordjs/voice";
 import LiveStream from "../structures/models/LiveStream";
 
-export function createAlbumString(album: Album, hasDuration: boolean, hasRequester: boolean): string {
+export function createAlbumString(album: Album, hasTrackTotal: boolean, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;
     album.tracks.forEach((x) => totalDuration += x.duration);
 
     let title = `**[${album.title}](${album.url})**`;
     let type = "`Album`";
     let artists = album.artists.map((x) => x.name).join(", ");
-    let totalTracks = "`" + album.tracks.length.toString() + "`";
-    let duration = hasDuration ? formatTimestamp(totalDuration) : null;
-    let requester = hasRequester ? album.requester ? `[<@${album.requester?.id}>]` : null : null;
+    let trackTotal = "`" + album.tracks.length.toString() + "` tracks";
+    let duration = formatTimestamp(totalDuration);
+    let requester = album.requester ? `[<@${album.requester.id}>]` : "";
 
-    return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
+    return title + "\n" + type + " " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
 }
 
-export function createPlaylistString(playlist: Playlist, hasDuration: boolean, hasRequester: boolean): string {
+export function createLiveStreamString(liveStream: LiveStream, hasRequester: boolean): string {
+    let title = `**[${liveStream.title}](${liveStream.url})**`
+    let type = "`LIVESTREAM`";
+    let artists = liveStream.artists.map((x) => x.name).join(", ");
+    let requester = liveStream.requester ? `[<@${liveStream.requester.id}>]` : "";
+
+    return title + "\n" + type + " " + artists + (hasRequester ? " " + requester : "");
+}
+
+export function createPlaylistString(playlist: Playlist, hasTrackTotal: boolean, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;
     playlist.tracks.forEach((x) => totalDuration += x.duration);
 
     let title = `**[${playlist.title}](${playlist.url})**`;
     let type = "`Playlist`";
     let artists = playlist.owner.name;
-    let totalTracks = "`" + playlist.tracks.length.toString() + "`";
-    let duration = hasDuration ? formatTimestamp(totalDuration) : null;
-    let requester = hasRequester ? playlist.requester ? `[<@${playlist.requester?.id}>]` : null : null;
+    let trackTotal = "`" + playlist.tracks.length.toString() + "` tracks";
+    let duration = formatTimestamp(totalDuration);
+    let requester = playlist.requester ? `[<@${playlist.requester?.id}>]` : "";
 
-    return title + "\n" + type + " " + artists + " **|** " + totalTracks + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
+    return title + "\n" + type + " " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
 }
 
 export function createTrackString(track: Track, hasDuration: boolean, hasRequester: boolean): string {
-    let title = (track.isLiveStream ? "`LIVE`" : "") + " " + `**[${track.title}](${track.url})**`
+    let title = `**[${track.title}](${track.url})**`
     let artists = track.artists.map((x) => x.name).join(", ");
-    let album = track.album ? `[${track.album?.title}](${track.album?.url})` : null;
-    let duration = hasDuration ? track.isLiveStream ? "`LIVE`" : formatTimestamp(track.duration) : null;
-    let requester = hasRequester ? track.requester ? `[<@${track.requester?.id}>]` : null : null;
+    let album = track.album ? `[${track.album?.title}](${track.album?.url})` : "";
+    let duration = formatTimestamp(track.duration);
+    let requester = track.requester ? `[<@${track.requester?.id}>]` : "";
 
-    return title + "\n" + artists + (album ? "**|** " + album : "") + (duration !== null ? " **|** `" + duration + "`" : "") + (requester !== null ? " " + requester : "");
+    return title + "\n" + artists + (album ? " **|** " + album : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
 }
 
 export function createSearchResultEmbed(items: AudioMedia[], source: AudioMediaSource): EmbedBuilder {
@@ -61,12 +70,12 @@ export function createSearchResultEmbed(items: AudioMedia[], source: AudioMediaS
         if (items[i].type === AudioMediaType.ALBUM) {
             const album = items[i] as Album;
 
-            strings.push("`" + (i + 1) + ".` " + createAlbumString(album, true, false));
+            strings.push("`" + (i + 1) + ".` " + createAlbumString(album, false, false, false));
         }
         else if (items[i].type === AudioMediaType.PLAYLIST) {
             const playlist = items[i] as Playlist;
 
-            strings.push("`" + (i + 1) + ".` " + createPlaylistString(playlist, true, false));
+            strings.push("`" + (i + 1) + ".` " + createPlaylistString(playlist, false, false, false));
         }
         else if (items[i].type === AudioMediaType.TRACK) {
             const track = items[i] as Track;
@@ -142,7 +151,22 @@ export function createAlbumQueuedEmbed(album: Album): EmbedBuilder {
             iconURL: iconURL
         })
         .setThumbnail(album.coverArtURL)
-        .setDescription(createAlbumString(album, true, true))
+        .setDescription(createAlbumString(album, true, true, true))
+        .setTimestamp();
+}
+
+export function createLiveStreamQueuedEmbed(liveStream: LiveStream): EmbedBuilder {
+    const color = getAudioMediaSourceEmbedColor(liveStream.source);
+    const iconURL = getAudioMediaSourceIconURL(liveStream.source);
+
+    return new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({
+            name: "Queued",
+            iconURL: iconURL
+        })
+        .setThumbnail(liveStream.imageURL)
+        .setDescription(createLiveStreamString(liveStream, true))
         .setTimestamp();
 }
 
@@ -157,7 +181,7 @@ export function createPlaylistQueuedEmbed(playlist: Playlist): EmbedBuilder {
             iconURL: iconURL
         })
         .setThumbnail(playlist.imageURL)
-        .setDescription(createPlaylistString(playlist, true, true))
+        .setDescription(createPlaylistString(playlist, true, true, true))
         .setTimestamp();
 }
 
@@ -177,10 +201,8 @@ export function createTrackQueuedEmbed(track: Track): EmbedBuilder {
 }
 
 export function createPlayerEmbed(player: Player): EmbedBuilder {
-    let embedBuilder = null;
-
     if (player.queue.isEmpty()) {
-        embedBuilder = new EmbedBuilder()
+        return new EmbedBuilder()
             .setColor(Colors.Default)
             .setAuthor({
                 name: "Not Playing",
@@ -189,27 +211,47 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
             .setTimestamp();
     }
     else {
-        const item = player.queue.get(0);
-        const color = getAudioMediaSourceEmbedColor(item.source);
-        const iconURL = getAudioMediaSourceIconURL(item.source);
-        const audioPlayerState = player.audioPlayer!.state as AudioPlayerPlayingState;
-        const playbackDuration = audioPlayerState.playbackDuration + player.state.addedPlaybackDuration;
-        const status = player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played";
+        const currentlyPlayingItem = player.queue.get(0);
 
-        if (item.type === QueueableAudioMediaType.TRACK) {
-            const track = item as Track;
+        const color = getAudioMediaSourceEmbedColor(currentlyPlayingItem.source);
+        const iconURL = getAudioMediaSourceIconURL(currentlyPlayingItem.source);
 
-            embedBuilder = new EmbedBuilder()
-                .setColor(color)
-                .setAuthor({
-                    name: status,
-                    iconURL: iconURL
-                })
-                .setThumbnail(track.imageURL)
-                .setDescription(createTrackString(track, false, true))
-                .setTimestamp();
+        const playerStatus = player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played";
 
-            if (player.isPlaying() && !track.isLiveStream) {
+        const embedBuilder = new EmbedBuilder()
+            .setColor(color)
+            .setAuthor({
+                name: playerStatus,
+                iconURL: iconURL
+            })
+            .setTimestamp();
+
+        if (currentlyPlayingItem.type === QueueableAudioMediaType.LIVE_STREAM) {
+            const liveStream = currentlyPlayingItem as LiveStream;
+
+            embedBuilder.setThumbnail(liveStream.imageURL);
+            embedBuilder.setDescription(createLiveStreamString(liveStream, true));
+
+            if (player.isPlaying()) {
+                const playbackDuration = player.playbackDuration()!;
+
+                embedBuilder.addFields(
+                    {
+                        name: createProgressBar(playbackDuration, playbackDuration, false),
+                        value: "`" + formatTimestamp(playbackDuration) + "` **/** `LIVE`",
+                    }
+                )
+            }
+        }
+        else if (currentlyPlayingItem.type === QueueableAudioMediaType.TRACK) {
+            const track = currentlyPlayingItem as Track;
+
+            embedBuilder.setThumbnail(track.imageURL);
+            embedBuilder.setDescription(createTrackString(track, true, true));
+
+            if (player.isPlaying()) {
+                const playbackDuration = player.playbackDuration()!;
+
                 embedBuilder.addFields(
                     {
                         name: createProgressBar(playbackDuration, track.duration, false),
@@ -218,9 +260,9 @@ export function createPlayerEmbed(player: Player): EmbedBuilder {
                 )
             }
         }
-    }
 
-    return embedBuilder!;
+        return embedBuilder;
+    }
 }
 
 export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonBuilder>[] {
@@ -327,6 +369,16 @@ export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
             }
             else {
                 strings.push("`" + (i) + ".` " + createTrackString(track, true, true) + "\n\n");
+            }
+        }
+        else if (items[i].type === QueueableAudioMediaType.LIVE_STREAM) {
+            const liveStream = items[i] as LiveStream;
+
+            if (i === 0) {
+                strings.push(createLiveStreamString(liveStream, true));
+            }
+            else {
+                strings.push("`" + (i) + ".` " + createLiveStreamString(liveStream, true) + "\n\n");
             }
         }
     }

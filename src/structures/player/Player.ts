@@ -253,6 +253,9 @@ class Player {
             });
 
             track = result.items[0] as Track;
+
+            this.queue.remove(0);
+            this.queue.add(track, 0);
         }
 
         let input = null;
@@ -462,26 +465,12 @@ class Player {
         }
 
         const updateInterval = setInterval(async () => {
-            if (this.queue.items[0].type === QueueableAudioMediaType.TRACK) {
-                const track = this.queue.items[0] as Track;
-                const playbackDuration = this.playbackDuration()!;
+            const embed = createPlayerEmbed(this);
+            const actionRows = createPlayerActionRows(this);
 
-                if (!track.isLiveStream) {
-                    embed.setFields(
-                        {
-                            name: createProgressBar(playbackDuration, track.duration, false),
-                            value: formatTimestamp(playbackDuration) + "` **/** `" + formatTimestamp(track.duration) + "`",
-                        }
-                    )
-                }
-
-                const actionRows = createPlayerActionRows(this);
-
-                if (this.state.playerMessage) {
-                    this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
-                }
+            if (this.state.playerMessage) {
+                this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
             }
-
         }, 1000);
 
         this.state.playerMessageUpdateInterval = updateInterval;
