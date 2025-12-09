@@ -1,9 +1,10 @@
 import YouTube from "youtube-sr";
 
 export const AudioMediaType = {
-    TRACK: "TRACK",
-    PLAYLIST: "PLAYLIST",
     ALBUM: "ALBUM",
+    LIVE_STREAM: "LIVE_STREAM",
+    PLAYLIST: "PLAYLIST",
+    TRACK: "TRACK",
 } as const;
 
 export type AudioMediaType = keyof typeof AudioMediaType;
@@ -18,6 +19,7 @@ export const SearchAudioMediaType = {
 export type SearchAudioMediaType = keyof typeof SearchAudioMediaType;
 
 export const QueueableAudioMediaType = {
+    LIVE_STREAM: "LIVE_STREAM",
     TRACK: "TRACK"
 } as const;
 
