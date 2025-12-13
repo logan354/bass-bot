@@ -1,4 +1,5 @@
 import { Events, Interaction, MessageFlags } from "discord.js";
+
 import Bot from "../structures/Bot";
 import Event from "../structures/Event";
 

@@ -8,7 +8,7 @@ import PlayerManager from "./player/PlayerManager";
 import config from "../../config.json";
 import Interaction from "./Interaction";
 
-class Bot extends Client<true> {
+export default class Bot extends Client<true> {
     public commands: Collection<string, Command> = new Collection();
 
     public components: Collection<string, any> = new Collection();
@@ -114,5 +114,3 @@ class Bot extends Client<true> {
         return applicationCommands.find((x) => x.name === name);
     }
 }
-
-export default Bot;
