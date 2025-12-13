@@ -1,4 +1,4 @@
-import { Message, SendableChannels, Snowflake, TextBasedChannel, VoiceBasedChannel } from "discord.js";
+import { Message, SendableChannels, Snowflake, VoiceBasedChannel } from "discord.js";
 import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
 import youtubeDl from "youtube-dl-exec";
 import { FFmpeg } from "prism-media";
@@ -223,7 +223,21 @@ class Player {
     }
 
     async playLiveStream(liveStream: LiveStream): Promise<void> {
-        // TODO
+        let streamURL;
+
+        if (liveStream.source === AudioMediaSource.YOUTUBE || liveStream.source === AudioMediaSource.YOUTUBE_MUSIC) {
+            streamURL = await this.getGenericStreamURL(liveStream);
+        }
+        else return;
+
+        const stream = this.createFFmpegStream(streamURL);
+
+        const resource = createAudioResource(stream, {
+            inlineVolume: true,
+            metadata: liveStream
+        });
+
+        this.audioPlayer?.play(resource);
     }
 
     /**

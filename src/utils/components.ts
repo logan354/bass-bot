@@ -29,7 +29,7 @@ export function createAlbumString(album: Album, hasTrackTotal: boolean, hasDurat
 
 export function createLiveStreamString(liveStream: LiveStream, hasRequester: boolean): string {
     let title = `**[${liveStream.title}](${liveStream.url})**`
-    let type = "`LIVESTREAM`";
+    let type = "`LIVE STREAM`";
     let artists = liveStream.artists.map((x) => x.name).join(", ");
     let requester = liveStream.requester ? `[<@${liveStream.requester.id}>]` : "";
 
