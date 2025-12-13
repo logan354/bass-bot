@@ -266,21 +266,7 @@ class Player {
         }
         else {
             if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
-                const data = await youtubeDl.exec(
-                    track.url,
-                    {
-                        dumpSingleJson: true,
-                        noCheckCertificates: true,
-                        noWarnings: true,
-                        preferFreeFormats: true,
-                        skipDownload: true,
-                        extractAudio: true,
-                    }
-                );
-
-                const dataJSON = JSON.parse(data.stdout);
-
-                input = dataJSON.url;
+                input = await this.getGenericStreamURL(track);
             }
             else if (track.source === AudioMediaSource.SOUNDCLOUD) {
                 return;
@@ -439,6 +425,35 @@ class Player {
         const ffmpegStream = new FFmpeg({ args: FFMPEGArguments });
 
         return ffmpegStream;
+    }
+
+    async getGenericStreamURL(item: QueueableAudioMedia): Promise<string> {
+        let url;
+
+        if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
+            const liveStream = item as LiveStream;
+            url = liveStream.url;
+        }
+        else {
+            const track = item as Track;
+            url = track.url;
+        }
+
+        const data = await youtubeDl.exec(
+            url,
+            {
+                dumpSingleJson: true,
+                noCheckCertificates: true,
+                noWarnings: true,
+                preferFreeFormats: true,
+                skipDownload: true,
+                extractAudio: true,
+            }
+        );
+
+        const dataJSON = JSON.parse(data.stdout);
+
+        return dataJSON.url;
     }
 
     async createPlayerMessage(): Promise<void> {
