@@ -357,6 +357,13 @@ class Player {
         this.stop();
     }
 
+    seek(milliseconds: number): void {
+        if (!this.isPlaying()) return;
+
+        if (this.queue.items[0].type === QueueableAudioMediaType.LIVE_STREAM) return;
+        else if (this.queue.items[0].type === QueueableAudioMediaType.TRACK) this.playTrack(this.queue.items[0] as Track);
+    }
+
     setVolume(level: number) {
         if (!this.audioPlayer) {
             return;
