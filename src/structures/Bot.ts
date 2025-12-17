@@ -66,7 +66,7 @@ export default class Bot extends Client<true> {
 
             // The put method is used to fully refresh all commands in the guild with the current set
             const data: any = await rest.put(
-                Routes.applicationGuildCommands(config.application_id, "718350376344223754"),
+                Routes.applicationCommands(config.application_id),
                 { body: this.commands.map((command) => command.data.toJSON()) },
             );
 

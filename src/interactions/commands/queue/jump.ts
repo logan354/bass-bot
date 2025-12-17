@@ -5,7 +5,7 @@ import { emojis } from "../../../../config.json";
 
 export default {
     name: "jump",
-    category: "queue",
+    category: "Queue",
     data: new SlashCommandBuilder()
         .setName("jump")
         .setDescription("Clears the queue.")

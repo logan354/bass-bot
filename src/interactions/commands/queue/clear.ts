@@ -5,7 +5,7 @@ import { emojis } from "../../../../config.json";
 
 export default {
     name: "clear",
-    category: "queue",
+    category: "Queue",
     data: new SlashCommandBuilder()
         .setName("clear")
         .setDescription("Clears the queue (May require the 'Manage Channels' permission)."),

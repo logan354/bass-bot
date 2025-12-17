@@ -8,7 +8,7 @@ import Track from "../../../structures/models/Track";
 
 export default {
     name: "remove",
-    category: "queue",
+    category: "Queue",
     data: new SlashCommandBuilder()
         .setName("remove")
         .setDescription("Removes a item from the queue (Requires the 'Manage Channels' permission).")
