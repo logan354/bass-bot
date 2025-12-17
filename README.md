@@ -41,8 +41,7 @@ A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube 
     ```
 
 ### Command Guide
-A command guide for Bass bot.</br>
-Format: **name** `<required>` `[optional]`
+*Format: **name** `<required>` `[optional]`*
 
 #### Player
 - **disconnect**
