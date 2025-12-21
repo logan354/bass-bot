@@ -95,7 +95,7 @@ export default {
                 seekEmoji = emojis.rewind;
             }
 
-            await player.playTrack(track, { seek: milliseconds });
+            await player.seek(milliseconds);
             await interaction.reply(seekEmoji + " **Seeked to** `" + formatTimestamp(milliseconds) + "`");
         }
     }

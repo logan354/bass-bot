@@ -30,7 +30,7 @@ export default {
             const applicationCommand = applicationCommands.find((x) => x.name === commandName)!;
 
             const commandMention = `</${applicationCommand.name}:${applicationCommand.id}>`;
-            const options = applicationCommand.options ? applicationCommand.options.map((x: any) => x.required ? "`<" + x.name + ">`" : "`[" + x.name + "]`") : "";
+            const options = applicationCommand.options ? applicationCommand.options.map((x: any) => x.required ? "`<" + x.name + ">`" : "`[" + x.name + "]`").join(" ") : "";
 
             if (category !== command.category) {
                 commandList += `\n\n**${command.category}**`;
@@ -43,7 +43,7 @@ export default {
         const embed = new EmbedBuilder()
             .setTitle("Command Guide")
             .setThumbnail(bot.user.avatarURL())
-            .setDescription(`**Hello <@${interaction.user.id}>,**\nBelow is a list of all the commands.\n*Format: **name** \`<required>\` \`[optional]\`*\n` + commandList)
+            .setDescription(`**Hello <@${interaction.user.id}>,**\nBelow is a list of all the commands.\n*Format: **name** \`<required>\` \`[optional]\`*\n${commandList}`)
             .setFooter({
                 text: "v" + version
             })
