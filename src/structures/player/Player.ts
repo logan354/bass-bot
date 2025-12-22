@@ -292,7 +292,27 @@ class Player {
         }
     }
 
-    setTextChannel(textChannel: SendableChannels): void {
+    /**
+     * Set the player volume
+     * @param level 
+     * @returns 
+     */
+    setVolume(level: number): void {
+        if (!this.audioPlayer || !this.isPlaying()) return;
+
+        const volume = Math.max(0, Math.min(200, level));
+
+        const state = this.audioPlayer.state as AudioPlayerPlayingState;
+        state.resource.volume!.setVolumeLogarithmic(volume / 100);
+
+        this.volume = volume;
+    }
+
+    /**
+     * Set the player text channel
+     * @param textChannel 
+     */
+    setTextChannel(textChannel: SendableChannels) {
         this.textChannel = textChannel;
     }
 
