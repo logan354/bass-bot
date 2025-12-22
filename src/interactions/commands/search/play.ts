@@ -19,11 +19,11 @@ export default {
     category: "Search",
     data: new SlashCommandBuilder()
         .setName("play")
-        .setDescription("Searches for an item, adds it to the queue, or resumes the player.")
+        .setDescription("Searches for an item, adds it to the queue.")
         .addStringOption(option =>
             option.setName("query")
                 .setDescription("Enter a query or link.")
-                .setRequired(false)
+                .setRequired(true)
         )
         .addStringOption(option =>
             option.setName("source")
@@ -37,7 +37,6 @@ export default {
                 .setRequired(false)
         ),
     async execute(bot, interaction) {
-        if (interaction.options.getString("query")) bot.commands.get("search")!.execute(bot, interaction);
-        else bot.commands.get("resume")!.execute(bot, interaction);
+        bot.commands.get("search")!.execute(bot, interaction);
     }
 } as Command;
