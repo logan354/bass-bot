@@ -37,7 +37,7 @@ export default {
         const previousTextChannel = player.textChannel;
 
         player.setTextChannel(interaction.channel);
-        player.createPlayerMessage();
+        player.createMessage();
 
         await interaction.reply(`${emojis.success} **Moved the player from <#${previousTextChannel.id}> to <#${player.textChannel.id}>**`)
     }

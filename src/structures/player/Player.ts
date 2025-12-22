@@ -1,33 +1,41 @@
 import { Message, SendableChannels, Snowflake, VoiceBasedChannel } from "discord.js";
 import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
-import youtubeDl from "youtube-dl-exec";
+import { promisify } from "node:util";
 import { FFmpeg } from "prism-media";
+import youtubeDl from "youtube-dl-exec";
 
 import PlayerManager from "./PlayerManager";
 import Queue from "../queue/Queue";
-import { promisify } from "node:util";
 import { QueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, QueueableAudioMediaType, RepeatMode } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
-import { createProgressBar, formatTimestamp } from "../../utils/util";
 import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/components";
 import LiveStream from "../models/LiveStream";
 
 const wait = promisify(setTimeout);
 
+const defaultPlayerState = (): PlayerState => ({
+    message: null,
+    seekDuration: 0,
+    streamURL: null
+});
+
 interface PlayerState {
-    addedPlaybackDuration: number
-    playerMessage: Message | null
-    playerMessageLock: boolean
-    playerMessageUpdateInterval: NodeJS.Timeout | null
-    streamUrl: string | null
+    message: {
+        message: Message
+        updater: NodeJS.Timeout
+    } | null;
+
+    seekDuration: number;
+
+    streamURL: string | null;
 }
 
 class Player {
-    playerManager: PlayerManager;
+    readonly playerManager: PlayerManager;
 
-    guildId: Snowflake;
+    readonly guildId: Snowflake;
 
     textChannel: SendableChannels;
 
@@ -35,26 +43,18 @@ class Player {
 
     voiceConnection: VoiceConnection | null = null;
 
-    audioPlayer: AudioPlayer | null = null;
+    private audioPlayer: AudioPlayer | null = null;
 
-    queue: Queue = new Queue();
+    readonly queue: Queue = new Queue();
 
     volume: number = 100;
 
-    state: PlayerState = {
-        addedPlaybackDuration: 0,
-        playerMessage: null,
-        playerMessageLock: false,
-        playerMessageUpdateInterval: null,
-        streamUrl: null
-    }
+    state: PlayerState = defaultPlayerState();
 
     constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: SendableChannels) {
         this.playerManager = playerManager;
         this.guildId = guildId;
-
-        if (!textChannel.isSendable()) throw Error("Non-Sendable Channel")
-        else this.textChannel = textChannel;
+        this.textChannel = textChannel
     }
 
     /**
@@ -74,9 +74,9 @@ class Player {
         try {
             await entersState(voiceConnection, VoiceConnectionStatus.Ready, 10_000);
         }
-        catch (error) {
+        catch (e) {
             voiceConnection.destroy();
-            throw error;
+            throw e;
         }
 
         if (!this.voiceConnection) {
@@ -149,29 +149,25 @@ class Player {
                 }
             });
 
-            // Events
             audioPlayer.on("stateChange", async (oldState: AudioPlayerState, newState: AudioPlayerState) => {
                 if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                     /**
                      * If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
                      * The queue is then processed to start playing the next track, if one is available.
                      */
-                    const save = this.queue.repeatMode === RepeatMode.ONE ? true : this.state.playerMessageLock;
-                    this.closePlayerMessage(save);
-                    this.state.playerMessageLock = false;
+                    // State
+                    if (this.queue.repeatMode !== RepeatMode.ONE) this.closeMessage(false);
+                    this.state.seekDuration = 0;
 
-                    // Meaning no action by user. e.g next or previous functions
+                    // Queue
                     if (this.queue.lock) this.queue.next();
-                    else this.queue.lock = true;
 
+                    // Player
                     this.play();
                 } else if (newState.status === AudioPlayerStatus.Playing) {
                     // If the Playing state has been entered, then a new track has started playback.
-                    // Update now playing item. This achieves consistency
-                    this.queue.remove(0);
-                    this.queue.add(newState.resource.metadata as QueueableAudioMedia, 0);
-
-                    this.createPlayerMessage();
+                    // State
+                    if (!this.state.message) this.createMessage();
                 }
             });
 
@@ -220,90 +216,6 @@ class Player {
             }
             else return;
         }
-    }
-
-    async playLiveStream(liveStream: LiveStream): Promise<void> {
-        let streamURL;
-
-        if (liveStream.source === AudioMediaSource.YOUTUBE || liveStream.source === AudioMediaSource.YOUTUBE_MUSIC) {
-            streamURL = await this.getGenericStreamURL(liveStream);
-        }
-        else return;
-
-        const stream = this.createFFmpegStream(streamURL);
-
-        const resource = createAudioResource(stream, {
-            inlineVolume: true,
-            metadata: liveStream
-        });
-
-        this.audioPlayer?.play(resource);
-    }
-
-    /**
-     * Plays a track.
-     * Defaults seek: 0.
-     * @param track
-     * @param options
-     * @async
-     * @returns
-     */
-    async playTrack(track: Track, options?: { seek?: number | null }): Promise<void> {
-        let seek = null;
-
-        if (options) {
-            if (options.seek) seek = options.seek;
-        }
-
-        // Converter
-        if (track.source === AudioMediaSource.SPOTIFY) {
-            // Converting message
-            this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
-
-            const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
-                type: track.type,
-                count: 1,
-                requester: track.requester
-            });
-
-            track = result.items[0] as Track;
-
-            this.queue.remove(0);
-            this.queue.add(track, 0);
-        }
-
-        let input = null;
-
-        // Downloader
-        if (this.queue.repeatMode === RepeatMode.ONE || seek !== null) {
-            input = this.state.streamUrl;
-        }
-        else {
-            if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
-                input = await this.getGenericStreamURL(track);
-            }
-            else if (track.source === AudioMediaSource.SOUNDCLOUD) {
-                return;
-            }
-        }
-
-        this.state.streamUrl = input;
-
-        // FFMPEG
-        let stream
-
-        if (seek !== null) {
-            stream = this.createFFmpegStream(input, { seek: seek });
-            this.state.playerMessageLock = true;
-        }
-        else stream = this.createFFmpegStream(input);
-
-        const resource = createAudioResource(stream, {
-            inlineVolume: true,
-            metadata: track
-        });
-
-        this.audioPlayer?.play(resource);
     }
 
     /**
@@ -357,23 +269,26 @@ class Player {
         this.stop();
     }
 
+    /**
+     * Seek currently playing item
+     * @param milliseconds 
+     * @returns 
+     */
     seek(milliseconds: number): void {
         if (!this.isPlaying()) return;
 
-        if (this.queue.items[0].type === QueueableAudioMediaType.LIVE_STREAM) return;
-        else if (this.queue.items[0].type === QueueableAudioMediaType.TRACK) this.playTrack(this.queue.items[0] as Track);
-    }
+        const item = this.queue.items[0];
 
-    setVolume(level: number) {
-        if (!this.audioPlayer) {
-            return;
-        }
+        if (item.type === QueueableAudioMediaType.LIVE_STREAM) return;
+        else if (item.type === QueueableAudioMediaType.TRACK) {
+            const stream = this.createFFmpegStream(this.state.streamURL, { seek: milliseconds });
 
-        this.volume = level;
+            const resource = createAudioResource(stream, {
+                inlineVolume: true,
+                metadata: item,
+            });
 
-        if (this.isPlaying()) {
-            const state = this.audioPlayer.state as AudioPlayerPlayingState;
-            state.resource.volume?.setVolumeLogarithmic(this.volume / 100);
+            this.audioPlayer!.play(resource);
         }
     }
 
@@ -382,10 +297,10 @@ class Player {
     }
 
     playbackDuration(): number | void {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying()) return;
 
         const state = this.audioPlayer?.state as AudioPlayerPlayingState;
-        return state.playbackDuration + this.state.addedPlaybackDuration;
+        return state.playbackDuration + this.state.seekDuration;
     }
 
     /**
@@ -415,14 +330,86 @@ class Player {
         return this.audioPlayer.state.status === AudioPlayerStatus.Paused;
     }
 
-    createFFmpegStream(stream: any, options?: { seek?: number }) {
+    private async playLiveStream(liveStream: LiveStream): Promise<void> {
+        let streamURL;
+
+        if (liveStream.source === AudioMediaSource.YOUTUBE || liveStream.source === AudioMediaSource.YOUTUBE_MUSIC) {
+            streamURL = await this.getGenericStreamURL(liveStream);
+        }
+        else return;
+
+        const stream = this.createFFmpegStream(streamURL);
+
+        const resource = createAudioResource(stream, {
+            inlineVolume: true,
+            metadata: liveStream
+        });
+
+        this.audioPlayer?.play(resource);
+    }
+
+    /**
+     * Plays a track.
+     * Defaults seek: 0.
+     * @param track
+     * @param options
+     * @async
+     * @returns
+     */
+    private async playTrack(track: Track): Promise<void> {
+        // Converter
+        if (track.source === AudioMediaSource.SPOTIFY) {
+            // Converting message
+            this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
+
+            const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
+                type: track.type,
+                count: 1,
+                requester: track.requester
+            });
+
+            track = result.items[0] as Track;
+
+            this.queue.remove(0);
+            this.queue.add(track, 0);
+        }
+
+        let input = null;
+
+        // Downloader
+        if (this.queue.repeatMode === RepeatMode.ONE) {
+            input = this.state.streamURL;
+        }
+        else {
+            if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
+                input = await this.getGenericStreamURL(track);
+            }
+            else if (track.source === AudioMediaSource.SOUNDCLOUD) {
+                return;
+            }
+        }
+
+        this.state.streamURL = input;
+
+        // FFMPEG
+        const stream = this.createFFmpegStream(input);
+
+        const resource = createAudioResource(stream, {
+            inlineVolume: true,
+            metadata: track
+        });
+
+        this.audioPlayer?.play(resource);
+    }
+
+    private createFFmpegStream(stream: any, options?: { seek?: number }) {
         let seek = null;
 
         if (options) {
             if (options.seek) seek = options.seek;
         }
 
-        let FFMPEGArguments = [
+        let args = [
             "-reconnect", "1",
             "-reconnect_streamed", "1",
             "-reconnect_delay_max", "5",
@@ -435,15 +422,13 @@ class Player {
         ];
 
         if (seek) {
-            FFMPEGArguments.splice(FFMPEGArguments.findIndex(x => x === "-i"), 0,
-                "-ss", (seek / 1000).toString(),
-                "-accurate_seek"
-            );
+            args.splice(args.indexOf("-i"), 0, "-ss", (seek / 1000).toString(), "-accurate_seek");
+            this.state.seekDuration = seek;
 
-            this.state.addedPlaybackDuration = seek;
+            this.state.seekDuration = seek;
         }
 
-        const ffmpegStream = new FFmpeg({ args: FFMPEGArguments });
+        const ffmpegStream = new FFmpeg({ args: args });
 
         return ffmpegStream;
     }
@@ -477,65 +462,39 @@ class Player {
         return dataJSON.url;
     }
 
-    async createPlayerMessage(): Promise<void> {
+    async createMessage(): Promise<void> {
+        if (this.state.message) await this.closeMessage(true);
+
         const embed = createPlayerEmbed(this);
         const actionRows = createPlayerActionRows(this);
 
-        if (this.state.playerMessage) {
-            if (this.textChannel.id !== this.state.playerMessage.channel.id) {
-                this.destroyPlayerMessage();
+        const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
 
-                const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-                this.state.playerMessage = message;
-            }
-            else this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
-        }
-        else {
-            const message = await this.textChannel.send({ embeds: [embed], components: actionRows });
-            this.state.playerMessage = message;
-        }
-
-        if (this.state.playerMessageUpdateInterval) {
-            this.state.playerMessageUpdateInterval.close();
-            this.state.playerMessageUpdateInterval = null;
-        }
-
-        const updateInterval = setInterval(async () => {
+        const updater = setInterval(async () => {
             const embed = createPlayerEmbed(this);
             const actionRows = createPlayerActionRows(this);
 
-            if (this.state.playerMessage) {
-                this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
-            }
+            this.state.message!.message.edit({ embeds: [embed], components: actionRows });
         }, 1000);
 
-        this.state.playerMessageUpdateInterval = updateInterval;
+        this.state.message = {
+            message: message,
+            updater: updater
+        }
     }
 
-    async updatePlayerMessage(): Promise<void> {
-        if (!this.state.playerMessage) return;
+    private async closeMessage(_delete: boolean): Promise<void> {
+        if (!this.state.message) return;
 
         const embed = createPlayerEmbed(this);
         const actionRows = createPlayerActionRows(this);
 
-        await this.state.playerMessage.edit({ embeds: [embed], components: actionRows });
-    }
+        await this.state.message.message.edit({ embeds: [embed], components: actionRows });
 
-    closePlayerMessage(save: boolean) {
-        this.updatePlayerMessage();
+        if (_delete) await this.state.message.message.delete();
+        clearInterval(this.state.message.updater);
 
-        if (!save) this.state.playerMessage = null;
-
-        if (this.state.playerMessageUpdateInterval !== null) {
-            this.state.playerMessageUpdateInterval.close();
-            this.state.playerMessageUpdateInterval = null;
-        }
-    }
-
-    destroyPlayerMessage(): void {
-        if (this.state.playerMessage !== null) this.state.playerMessage.delete();
-
-        this.closePlayerMessage(false);
+        this.state.message = null;
     }
 }
 
