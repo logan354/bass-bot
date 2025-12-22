@@ -1,10 +1,8 @@
 import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
+import { createQueueEmptyMessage, createRemovedEmbed } from "../../../utils/components";
 import { emojis } from "../../../../config.json";
-import { createQueueEmptyMessage } from "../../../utils/components";
-import { QueueableAudioMediaType } from "../../../utils/constants";
-import Track from "../../../structures/models/Track";
 
 export default {
     name: "remove",
@@ -49,15 +47,10 @@ export default {
 
         const positionOption = interaction.options.getNumber("position")!;
 
-        let title;
-
-        if (player.queue.items[positionOption].type === QueueableAudioMediaType.TRACK) {
-            const track = player.queue.items[positionOption] as Track;
-
-            title = track.title;
-        }
+        const embed = createRemovedEmbed(player.queue.items[0]);
 
         player.queue.remove(positionOption);
-        await interaction.reply(emojis.error + " **Removed `" + title + "`");
+
+        await interaction.reply({ embeds: [embed] });
     }
 } as Command;

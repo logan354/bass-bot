@@ -399,12 +399,23 @@ export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
             iconURL: undefined
         })
         .setDescription("__**Now Playing**__\n" + nowPlayingString + "\n\n__**Up Next**__\n" + upNextString)
-        .setFields(
-            {
-                name: "Items",
-                value: "`" + items.length.toString() + "`",
-                inline: true
-            }
-        );
+        .setTimestamp();
 }
 
+export function createRemovedEmbed(item: QueueableAudioMedia) {    
+    const color = getAudioMediaSourceEmbedColor(item.source);
+    const iconURL = getAudioMediaSourceIconURL(item.source);
+
+    const embedBuilder = new EmbedBuilder()
+    .setColor(color)
+    .setAuthor({
+        name: "Removed",
+        iconURL: iconURL
+    })
+    .setTimestamp();
+
+    if (item.type === QueueableAudioMediaType.LIVE_STREAM) embedBuilder.setDescription(createLiveStreamString(item as LiveStream, true));
+    else if (item.type === QueueableAudioMediaType.TRACK) embedBuilder.setDescription(createTrackString(item as Track, true, true));
+
+    return embedBuilder;
+}
