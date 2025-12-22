@@ -69,7 +69,7 @@ export default {
                 return;
             }
 
-            await player.playTrack(track, { seek: playbackDuration + milliseconds });
+            player.seek(playbackDuration + milliseconds);
             await interaction.reply(emojis.fast_forward + " **Fast-Forwarded to** `" + formatTimestamp(playbackDuration + milliseconds) + "`");
         }
         else if (interaction.commandName === "rewind") {
@@ -78,7 +78,7 @@ export default {
                 return;
             }
 
-            await player.playTrack(track, { seek: playbackDuration - milliseconds });
+            player.seek(playbackDuration - milliseconds);
             await interaction.reply(emojis.rewind + " **Rewinded to** `" + formatTimestamp(playbackDuration - milliseconds) + "`");
         }
         else {
@@ -95,7 +95,7 @@ export default {
                 seekEmoji = emojis.rewind;
             }
 
-            await player.seek(milliseconds);
+            player.seek(milliseconds);
             await interaction.reply(seekEmoji + " **Seeked to** `" + formatTimestamp(milliseconds) + "`");
         }
     }
