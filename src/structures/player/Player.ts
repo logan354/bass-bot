@@ -93,9 +93,9 @@ class Player {
                         try {
                             // Probably moved voice channel
                             await entersState(voiceConnection, VoiceConnectionStatus.Connecting, 3_000);
-                        } catch {
+                        }
+                        catch {
                             // Probably removed from voice channel
-
                             voiceConnection.destroy();
                         }
                     }

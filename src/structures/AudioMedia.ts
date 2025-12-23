@@ -11,7 +11,6 @@ export abstract class AudioMedia {
 
     isQueueable: boolean;
 
-
     constructor(type: AudioMediaType, source: AudioMediaSource, requester: User | null, isQueueable: boolean, ) {
         this.type = type;
         this.source = source;
