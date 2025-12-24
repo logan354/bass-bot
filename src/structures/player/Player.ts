@@ -131,6 +131,10 @@ class Player {
                      */
                     try {
                         await entersState(voiceConnection, VoiceConnectionStatus.Ready, 10_000);
+
+                        // Prevent use of voiceStateUpdate
+                        const voiceChannel = this.playerManager.bot.channels.cache.get(voiceConnection.joinConfig.channelId!) as VoiceBasedChannel;
+                        this.voiceChannel = voiceChannel;
                     }
                     catch {
                         if (voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) voiceConnection.destroy();
