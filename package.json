@@ -1,6 +1,6 @@
 {
   "name": "bass-bot",
-  "version": "4.0.0-beta.3",
+  "version": "4.0.0-beta.4",
   "description": "Turn up the music with Bass! Supports YouTube, Youtube Music, Spotify, and Soundcloud.",
   "main": "dist/src/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "sodium-native": "^5.0.10",
     "spotify-uri": "^4.1.0",
     "spotify-url-info": "^3.2.18",
-    "youtube-dl-exec": "^3.0.27",
+    "youtube-dl-exec": "^3.0.28",
     "youtube-sr": "^4.3.12"
   },
   "devDependencies": {
