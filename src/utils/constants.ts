@@ -65,7 +65,12 @@ export const YOUTUBE_REGEX = {
     PLAYLIST: YouTube.Regex.PLAYLIST_URL
 } as const;
 
-export const BASE_YOUTUBE_MUSIC_REGEX = /^(https?:\/\/)?(music\.)?(youtube\.com|youtu\.?be)\/.+$/;
+export const BASE_YOUTUBE_MUSIC_REGEX = /^https?:\/\/(www\.)?music\.youtube\.com\/?.*$/;
+export const YOUTUBE_MUSIC_REGEX = {
+    SONG: /^https?:\/\/(www\.)?music\.youtube\.com\/watch\?v=[\w-]{11}$/,
+    ALBUM: /^https?:\/\/(www\.)?music\.youtube\.com\/browse\/[A-Z0-9_-]+$/,
+    PLAYLIST: /^https?:\/\/(www\.)?music\.youtube\.com\/playlist\?list=[\w-]+$/
+} as const;
 
 export const BASE_SPOTIFY_REGEX = /https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/).+$/;
 export const SPOTIFY_REGEX = {

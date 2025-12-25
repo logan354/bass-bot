@@ -4,27 +4,17 @@ import SearchResult from "./SearchResult";
 import { searchSpotifyURL } from "./extractors/spotify";
 import { searchSoundCloud, searchSoundCloudURL } from "./extractors/soundcloud";
 import { searchYouTube, searchYouTubeURL } from "./extractors/youtube";
-import { AudioMediaSource, AudioMediaType, BASE_SOUNDCLOUD_REGEX, BASE_SPOTIFY_REGEX, BASE_YOUTUBE_REGEX, DEFAULT_SEARCH_COUNT, SearchResultType } from "../../utils/constants";
+import { AudioMediaSource, AudioMediaType, BASE_SOUNDCLOUD_REGEX, BASE_SPOTIFY_REGEX, BASE_YOUTUBE_MUSIC_REGEX, BASE_YOUTUBE_REGEX, DEFAULT_SEARCH_COUNT, SearchResultType } from "../../utils/constants";
+import { searchYouTubeMusicURL } from "./extractors/youtubeMusic";
 
 export const URLType = {
     YOUTUBE: "YOUTUBE",
+    YOUTUBE_MUSIC: "YOUTUBE_MUSIC",
     SPOTIFY: "SPOTIFY",
     SOUNDCLOUD: "SOUNDCLOUD"
 } as const;
 
 export type URLType = keyof typeof URLType;
-
-/**
- * Resolves the url type, if one exists
- * @param url 
- * @returns 
- */
-export function resolveURLType(url: string): URLType | undefined {
-    if (url.match(BASE_YOUTUBE_REGEX)) return URLType.YOUTUBE;
-    else if (url.match(BASE_SPOTIFY_REGEX)) return URLType.SPOTIFY;
-    //else if (url.match(BASE_SOUNDCLOUD_REGEX)) return URLType.SOUNDCLOUD;
-    else return undefined;
-}
 
 /**
  * Searches a query.
@@ -71,15 +61,10 @@ export async function searchURL(url: string, options?: { requester?: User | null
     const urlType = resolveURLType(url);
 
     switch (urlType) {
-        case URLType.YOUTUBE: {
-            return await searchYouTubeURL(url, options);
-        }
-        case URLType.SPOTIFY: {
-            return await searchSpotifyURL(url, options);
-        }
-        case URLType.SOUNDCLOUD: {
-            return await searchSoundCloudURL(url, options);
-        }
+        case URLType.YOUTUBE: return await searchYouTubeURL(url, options);
+        case URLType.YOUTUBE_MUSIC: return await searchYouTubeMusicURL(url, options);
+        case URLType.SPOTIFY: return await searchSpotifyURL(url, options);
+        case URLType.SOUNDCLOUD: return await searchSoundCloudURL(url, options);
         default: {
             return {
                 type: SearchResultType.NOT_FOUND,
@@ -88,4 +73,17 @@ export async function searchURL(url: string, options?: { requester?: User | null
             } as SearchResult;
         }
     }
+}
+
+/**
+ * Resolves the url type, if one exists
+ * @param url 
+ * @returns 
+ */
+export function resolveURLType(url: string): URLType | undefined {
+    if (url.match(BASE_YOUTUBE_REGEX)) return URLType.YOUTUBE;
+    else if (url.match(BASE_YOUTUBE_MUSIC_REGEX)) return URLType.YOUTUBE_MUSIC
+    else if (url.match(BASE_SPOTIFY_REGEX)) return URLType.SPOTIFY;
+    else if (url.match(BASE_SOUNDCLOUD_REGEX)) return URLType.SOUNDCLOUD;
+    else return undefined;
 }
