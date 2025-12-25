@@ -1,197 +1,194 @@
 import { User } from "discord.js";
 import YouTube, { Video, Playlist as _Playlist } from "youtube-sr";
 
-import { AudioMedia } from "../../AudioMedia";
 import SearchResult from "../SearchResult";
+import LiveStream from "../../models/LiveStream";
 import Playlist from "../../models/Playlist";
 import Track from "../../models/Track";
-import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, SearchResultType, YOUTUBE_ICON_URL, YOUTUBE_REGEX, YOUTUBE_URL } from "../../../utils/constants";
-import LiveStream from "../../models/LiveStream";
+import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, SearchResultType, YOUTUBE_REGEX } from "../../../utils/constants";
 
 /**
  * Searches a query on YouTube.
  * Defaults type: null, count: 5, requester: null.
  * @param query 
  * @param options 
+ * @async
  * @returns
  */
 export async function searchYouTube(
     query: string,
     options?: { type?: AudioMediaType | null, count?: number, requester?: User | null }
 ): Promise<SearchResult> {
-    let type = null;
-    let count = DEFAULT_SEARCH_COUNT;
-    let requester = null;
+    const type = options?.type ?? null;
+    const count = options?.count ?? DEFAULT_SEARCH_COUNT;
+    const requester = options?.requester ?? null;
 
-    if (options) {
-        if (options.type) type = options.type;
-        if (options.count) count = options.count;
-        if (options.requester) requester = options.requester;
-    }
+    let items = [];
 
-    const items: AudioMedia[] = [];
+    try {
 
-    if (!type) {
-        const data = await YouTube.search(query, { type: "all", limit: count });
+        if (!type) {
+            const data = await YouTube.search(query, { type: "all", limit: count });
 
-        if (!data.length) {
-            return {
-                type: SearchResultType.NO_RESULTS,
-                source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
-        }
-
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].type === "video") {
-                const video = data[i] as Video;
-
-                if (video.live || video.duration === 0) {
-                    const liveStream = createLiveStream(requester, video);
-                    items.push(liveStream);
-                }
-                else {
-                    const track = createTrack(requester, video);
-                    items.push(track);
+            if (!data.length) {
+                return {
+                    type: SearchResultType.NO_RESULTS,
+                    source: AudioMediaSource.YOUTUBE,
+                    requester: requester,
+                    items: []
                 }
             }
-            else if (data[i].type === "playlist") {
-                const playlist = createPlaylist(requester, data[i] as _Playlist);
-                items.push(playlist);
-            }
-            else continue;
-        }
-    }
-    else if (type === AudioMediaType.LIVE_STREAM || type === AudioMediaType.TRACK) {
-        const data = await YouTube.search(query, { type: "video", limit: count });
 
-        if (!data.length) {
-            return {
-                type: SearchResultType.NO_RESULTS,
-                source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
-        }
-
-        if (type === AudioMediaType.LIVE_STREAM) {
             for (let i = 0; i < data.length; i++) {
-                const liveStream = createLiveStream(requester, data[i])
-                items.push(liveStream);
+                if (data[i].type === "video") {
+                    const video = data[i] as Video;
+
+                    if (video.live || video.duration === 0) items.push(createLiveStream(video, requester));
+                    else items.push(createTrack(video, requester));
+                }
+                else if (data[i].type === "playlist") items.push(createPlaylist(data[i] as _Playlist, requester));
+                else continue;
+            }
+        }
+        else if (type === AudioMediaType.LIVE_STREAM || type === AudioMediaType.TRACK) {
+            const data = await YouTube.search(query, { type: "video", limit: count });
+
+            if (!data.length) {
+                return {
+                    type: SearchResultType.NO_RESULTS,
+                    source: AudioMediaSource.YOUTUBE,
+                    requester: requester,
+                    items: []
+                }
+            }
+
+            if (type === AudioMediaType.LIVE_STREAM) {
+                for (let i = 0; i < data.length; i++) {
+                    items.push(createLiveStream(data[i], requester));
+                }
+            }
+            else {
+                for (let i = 0; i < data.length; i++) {
+                    items.push(createTrack(data[i], requester));
+                }
+            }
+        }
+        else if (type === AudioMediaType.PLAYLIST) {
+            const data = await YouTube.search(query, { type: "playlist", limit: count });
+
+            if (!data.length) {
+                return {
+                    type: SearchResultType.NO_RESULTS,
+                    source: AudioMediaSource.YOUTUBE,
+                    requester: requester,
+                    items: []
+                }
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                items.push(createPlaylist(data[i], requester));
             }
         }
         else {
-            for (let i = 0; i < data.length; i++) {
-                const track = createTrack(requester, data[i])
-                items.push(track);
-            }
-        }
-    }
-    else if (type === AudioMediaType.PLAYLIST) {
-        const data = await YouTube.search(query, { type: "playlist", limit: count });
-
-        if (!data.length) {
             return {
                 type: SearchResultType.NO_RESULTS,
                 source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
-        }
-
-        for (let i = 0; i < data.length; i++) {
-            const playlist = createPlaylist(requester, data[i]);
-            items.push(playlist);
+                requester: requester,
+                items: []
+            };
         }
     }
-    else {
+    catch (e) {
+        console.error(e);
+
         return {
-            type: SearchResultType.NO_RESULTS,
+            type: SearchResultType.ERROR,
             source: AudioMediaSource.YOUTUBE,
-            items: [],
-            requester: requester
-        } as SearchResult;
+            requester: requester,
+            items: []
+        };
     }
 
     return {
         type: SearchResultType.RESULTS,
         source: AudioMediaSource.YOUTUBE,
-        items: items,
-        requester: requester
-    } as SearchResult;
+        requester: requester,
+        items: items
+    }
 }
 
 /**
- * Searches a YouTube URL
- * Defaults requester: null
+ * Searches a YouTube url.
+ * Defaults requester: null.
  * @param url 
  * @param options
+ * @async
  * @returns
  */
 export async function searchYouTubeURL(url: string, options?: { requester?: User | null }): Promise<SearchResult> {
-    let requester = null;
+    const requester = options?.requester ?? null;
 
-    if (options) {
-        if (options.requester) requester = options.requester;
-    }
+    let item;
 
-    if (url.match(YOUTUBE_REGEX.PLAYLIST)) {
-        const data = await YouTube.getPlaylist(url);
+    try {
+        if (url.match(YOUTUBE_REGEX.PLAYLIST)) {
+            const data = await YouTube.getPlaylist(url);
 
-        if (!data) {
+            if (!data) {
+                return {
+                    type: SearchResultType.NOT_FOUND,
+                    source: AudioMediaSource.YOUTUBE,
+                    requester: requester,
+                    items: []
+                }
+            }
+
+            item = createPlaylist(data, requester);
+        }
+        else if (url.match(YOUTUBE_REGEX.VIDEO)) {
+            const data = await YouTube.getVideo(url);
+
+            if (!data) {
+                return {
+                    type: SearchResultType.NOT_FOUND,
+                    source: AudioMediaSource.YOUTUBE,
+                    requester: requester,
+                    items: []
+                }
+            }
+
+            if (data.live || data.duration === 0) item = createLiveStream(data, requester);
+            else item = createTrack(data, requester);
+        }
+        else {
             return {
                 type: SearchResultType.NOT_FOUND,
                 source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
+                requester: requester,
+                items: []
+            }
         }
-
-        const playlist = createPlaylist(requester, data);
+    }
+    catch (e) {
+        console.error(e);
 
         return {
-            type: SearchResultType.FOUND,
+            type: SearchResultType.ERROR,
             source: AudioMediaSource.YOUTUBE,
-            items: [playlist],
-            requester: requester
-        } as SearchResult;
-    }
-    else if (url.match(YOUTUBE_REGEX.VIDEO)) {
-        const data = await YouTube.getVideo(url);
-
-        if (!data) {
-            return {
-                type: SearchResultType.NOT_FOUND,
-                source: AudioMediaSource.YOUTUBE,
-                items: [],
-                requester: requester
-            } as SearchResult;
+            requester: requester,
+            items: []
         }
-
-        let item;
-
-        if (data.live || data.duration === 0) item = createLiveStream(requester, data);
-        else item = createTrack(requester, data);
-
-        return {
-            type: SearchResultType.FOUND,
-            source: AudioMediaSource.YOUTUBE,
-            items: [item],
-            requester: requester
-        } as SearchResult;
     }
-    else {
-        return {
-            type: SearchResultType.NOT_FOUND,
-            source: AudioMediaSource.YOUTUBE,
-            items: [],
-            requester: requester
-        } as SearchResult;
+
+    return {
+        type: SearchResultType.FOUND,
+        source: AudioMediaSource.YOUTUBE,
+        requester: requester,
+        items: [item]
     }
 }
 
-function createLiveStream(requester: User | null, data: Video): LiveStream {
+function createLiveStream(data: Video, requester: User | null): LiveStream {
     return new LiveStream(
         AudioMediaSource.YOUTUBE,
         requester,
@@ -208,11 +205,11 @@ function createLiveStream(requester: User | null, data: Video): LiveStream {
     )
 }
 
-function createPlaylist(requester: User | null, data: _Playlist): Playlist {
+function createPlaylist(data: _Playlist, requester: User | null): Playlist {
     const tracks: Track[] = [];
 
     for (let i = 0; i < data.videos.length; i++) {
-        const track = createTrack(requester, data.videos[i]);
+        const track = createTrack(data.videos[i], requester);
         tracks.push(track);
     }
 
@@ -231,7 +228,7 @@ function createPlaylist(requester: User | null, data: _Playlist): Playlist {
     );
 }
 
-function createTrack(requester: User | null, data: Video): Track {
+function createTrack(data: Video, requester: User | null): Track {
     return new Track(
         AudioMediaSource.YOUTUBE,
         requester,

@@ -51,10 +51,11 @@ export const RepeatMode = {
 export type RepeatMode = keyof typeof RepeatMode;
 
 export const SearchResultType = {
+    ERROR: "ERROR",
     FOUND: "FOUND",
-    RESULTS: "RESULTS",
     NOT_FOUND: "NOT_FOUND",
-    NO_RESULTS: "NO_RESULTS"
+    NO_RESULTS: "NO_RESULTS",
+    RESULTS: "RESULTS"
 } as const;
 
 export type SearchResultType = keyof typeof SearchResultType;
