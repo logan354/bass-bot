@@ -6,7 +6,7 @@ import { createProgressBar, formatTimestamp, getAudioMediaSourceIconURL, getAudi
 import Album from "../structures/models/Album";
 import Playlist from "../structures/models/Playlist";
 import { AudioMedia, QueueableAudioMedia } from "../structures/AudioMedia";
-import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, QueueableAudioMediaType, RepeatMode } from "./constants";
+import { AudioMediaSource, AudioMediaType, QueueableAudioMediaType, RepeatMode } from "./constants";
 import Player from "../structures/player/Player";
 import Queue from "../structures/queue/Queue";
 import Bot from "../structures/Bot";

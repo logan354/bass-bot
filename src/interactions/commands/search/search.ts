@@ -1,15 +1,14 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, Colors, ComponentType, EmbedBuilder, MessageFlags, PermissionsBitField, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags, PermissionsBitField, SlashCommandBuilder, StringSelectMenuBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { emojis } from "../../../../config.json";
-import { resolveURLType, search, searchURL } from "../../../structures/search/search";
-import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, DEFAULT_SEARCH_RESULT_TIMEOUT, QueueableAudioMediaType, SearchResultType, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "../../../utils/constants";
-import Track from "../../../structures/models/Track";
-import { formatTimestamp } from "../../../utils/util";
 import Album from "../../../structures/models/Album";
-import Playlist from "../../../structures/models/Playlist";
-import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu, createLiveStreamQueuedEmbed } from "../../../utils/components";
 import LiveStream from "../../../structures/models/LiveStream";
+import Playlist from "../../../structures/models/Playlist";
+import Track from "../../../structures/models/Track";
+import { search, searchURL } from "../../../structures/search/search";
+import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEmbed, createAlbumQueuedEmbed, createSearchResultStringSelectMenu, createLiveStreamQueuedEmbed } from "../../../utils/components";
+import { AudioMediaSource, AudioMediaType, SearchResultType } from "../../../utils/constants";
+import { emojis } from "../../../../config.json";
 
 const sourceChoices = [
     {
@@ -21,7 +20,6 @@ const sourceChoices = [
         value: AudioMediaSource.SOUNDCLOUD
     }
 ];
-
 
 export default {
     name: "search",
@@ -71,34 +69,23 @@ export default {
             return;
         }
 
-        let query = interaction.options.getString("query");
-        let source = interaction.options.getString("source") as AudioMediaSource;
+        const queryOption = interaction.options.getString("query")!;
+        const sourceOption = interaction.options.getString("source") as AudioMediaSource;
 
-        if (!query) {
-            await interaction.reply({ content: "An error occured while executing this command", flags: MessageFlags.Ephemeral });
-            return;
-        }
-
-
-
-        await interaction.reply({ content: emojis.searching + " **Searching...** `" + query + "`", flags: MessageFlags.Ephemeral });
+        await interaction.reply({ content: emojis.searching + " **Searching...** `" + queryOption + "`", flags: MessageFlags.Ephemeral });
 
         let searchResult = null;
 
-        if (source) {
-            searchResult = await search(query, source, { requester: interaction.user });
-        }
+        if (sourceOption) searchResult = await search(queryOption, sourceOption, { count: 5, requester: interaction.user });
         else {
-            searchResult = await searchURL(query, { requester: interaction.user });
+            searchResult = await searchURL(queryOption, { requester: interaction.user });
 
             // Default to YouTube search
-            if (searchResult.type === SearchResultType.NOT_FOUND) {
-                searchResult = await search(query, AudioMediaSource.YOUTUBE, { requester: interaction.user, type: "TRACK" });
-            }
+            if (searchResult.type === SearchResultType.NOT_FOUND) searchResult = await search(queryOption, AudioMediaSource.YOUTUBE, { count: 5, requester: interaction.user });
         }
 
         if (searchResult.type === SearchResultType.FOUND) {
-            let embed;
+            let embed = null;
 
             if (searchResult.items[0].type === AudioMediaType.ALBUM) {
                 const album = searchResult.items[0] as Album;
@@ -184,7 +171,7 @@ export default {
             const messageComponentCollector = message.createMessageComponentCollector(
                 {
                     filter: (x) => x.customId.includes(id) && x.user.id === interaction.user.id,
-                    time: DEFAULT_SEARCH_RESULT_TIMEOUT,
+                    time: 60000,
                 }
             );
 
@@ -260,11 +247,9 @@ export default {
                 }
             });
         }
-        else if (searchResult.type === SearchResultType.NOT_FOUND) {
-            await interaction.editReply(emojis.error + " **Not Found.**");
-        }
-        else if (searchResult.type === SearchResultType.NO_RESULTS) {
-            await interaction.editReply(emojis.error + " **No Results Found.**");
-        }
+        else if (searchResult.type === SearchResultType.NOT_FOUND) await interaction.editReply(emojis.error + " **Not Found.**");
+        else if (searchResult.type === SearchResultType.NO_RESULTS) await interaction.editReply(emojis.error + " **No Results Found.**");
+        else if (searchResult.type === SearchResultType.ERROR) await interaction.editReply(emojis.error + " **Error.**");
+        else return;
     }
 } as Command;

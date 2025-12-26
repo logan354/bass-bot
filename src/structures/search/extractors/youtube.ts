@@ -5,11 +5,11 @@ import SearchResult from "../SearchResult";
 import LiveStream from "../../models/LiveStream";
 import Playlist from "../../models/Playlist";
 import Track from "../../models/Track";
-import { AudioMediaSource, AudioMediaType, DEFAULT_SEARCH_COUNT, SearchResultType, YOUTUBE_REGEX } from "../../../utils/constants";
+import { AudioMediaSource, AudioMediaType, SearchResultType, YOUTUBE_REGEX } from "../../../utils/constants";
 
 /**
  * Searches a query on YouTube.
- * Defaults type: null, count: 5, requester: null.
+ * Defaults type: null, count: 1, requester: null.
  * @param query 
  * @param options 
  * @async
@@ -20,7 +20,7 @@ export async function searchYouTube(
     options?: { type?: AudioMediaType | null, count?: number, requester?: User | null }
 ): Promise<SearchResult> {
     const type = options?.type ?? null;
-    const count = options?.count ?? DEFAULT_SEARCH_COUNT;
+    const count = options?.count ?? 1;
     const requester = options?.requester ?? null;
 
     let items = [];

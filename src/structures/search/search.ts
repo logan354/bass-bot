@@ -5,7 +5,7 @@ import { searchSoundCloud, searchSoundCloudURL } from "./extractors/soundcloud";
 import { searchSpotifyURL } from "./extractors/spotify";
 import { searchYouTube, searchYouTubeURL } from "./extractors/youtube";
 import { searchYouTubeMusicURL } from "./extractors/youtubeMusic";
-import { AudioMediaSource, AudioMediaType, BASE_SOUNDCLOUD_REGEX, BASE_SPOTIFY_REGEX, BASE_YOUTUBE_MUSIC_REGEX, BASE_YOUTUBE_REGEX, DEFAULT_SEARCH_COUNT, SearchResultType } from "../../utils/constants";
+import { AudioMediaSource, AudioMediaType, BASE_SOUNDCLOUD_REGEX, BASE_SPOTIFY_REGEX, BASE_YOUTUBE_MUSIC_REGEX, BASE_YOUTUBE_REGEX, SearchResultType } from "../../utils/constants";
 
 export const URLType = {
     YOUTUBE: "YOUTUBE",
@@ -18,7 +18,7 @@ export type URLType = keyof typeof URLType;
 
 /**
  * Searches a query.
- * Defaults type: track, count: 5, requester: null.
+ * Defaults type: track, count: 1, requester: null.
  * @param query 
  * @param source 
  * @async
@@ -26,7 +26,7 @@ export type URLType = keyof typeof URLType;
  */
 export async function search(query: string, source: AudioMediaSource, options?: { type?: AudioMediaType, count?: number, requester?: User | null }): Promise<SearchResult> {
     const type = options?.type ?? null;
-    const count = options?.count ?? DEFAULT_SEARCH_COUNT;
+    const count = options?.count ?? 1;
     const requester = options?.requester ?? null;
 
     if (source === AudioMediaSource.YOUTUBE) return await searchYouTube(query, options);

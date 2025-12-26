@@ -1,5 +1,3 @@
-import YouTube from "youtube-sr";
-
 export const AudioMediaType = {
     ALBUM: "ALBUM",
     LIVE_STREAM: "LIVE_STREAM",
@@ -8,15 +6,6 @@ export const AudioMediaType = {
 } as const;
 
 export type AudioMediaType = keyof typeof AudioMediaType;
-
-export const SearchAudioMediaType = {
-    ALBUM: "ALBUM",
-    ALL: "ALL",
-    PLAYLIST: "PLAYLIST",
-    TRACK: "TRACK",
-} as const;
-
-export type SearchAudioMediaType = keyof typeof SearchAudioMediaType;
 
 export const QueueableAudioMediaType = {
     LIVE_STREAM: "LIVE_STREAM",
@@ -33,22 +22,13 @@ export const UnQueueableAudioMediaType = {
 export type UnQueueableAudioMediaType = keyof typeof UnQueueableAudioMediaType;
 
 export const AudioMediaSource = {
+    SOUNDCLOUD: "SOUNDCLOUD",
+    SPOTIFY: "SPOTIFY",
     YOUTUBE: "YOUTUBE",
     YOUTUBE_MUSIC: "YOUTUBE_MUSIC",
-    SPOTIFY: "SPOTIFY",
-    SOUNDCLOUD: "SOUNDCLOUD",
-    GENERIC: "GENERIC"
 } as const;
 
 export type AudioMediaSource = keyof typeof AudioMediaSource;
-
-export const RepeatMode = {
-    OFF: "OFF",
-    ONE: "ONE",
-    ALL: "ALL"
-} as const;
-
-export type RepeatMode = keyof typeof RepeatMode;
 
 export const SearchResultType = {
     ERROR: "ERROR",
@@ -60,17 +40,24 @@ export const SearchResultType = {
 
 export type SearchResultType = keyof typeof SearchResultType;
 
+export const RepeatMode = {
+    OFF: "OFF",
+    ONE: "ONE",
+    ALL: "ALL"
+} as const;
+
+export type RepeatMode = keyof typeof RepeatMode;
+
 export const BASE_YOUTUBE_REGEX = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/;
 export const YOUTUBE_REGEX = {
-    VIDEO: YouTube.Regex.VIDEO_URL,
-    PLAYLIST: YouTube.Regex.PLAYLIST_URL
+    PLAYLIST: /^https?:\/\/(www.)?youtube.com\/playlist\?list=((PL|FL|UU|LL|RD|OL)[a-zA-Z0-9-_]{16,41})$/,
+    VIDEO: /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
 } as const;
 
 export const BASE_YOUTUBE_MUSIC_REGEX = /^https?:\/\/(www\.)?music\.youtube\.com\/?.*$/;
 export const YOUTUBE_MUSIC_REGEX = {
-    SONG: /^https?:\/\/(www\.)?music\.youtube\.com\/watch\?v=[\w-]{11}$/,
-    ALBUM: /^https?:\/\/(www\.)?music\.youtube\.com\/browse\/[A-Z0-9_-]+$/,
-    PLAYLIST: /^https?:\/\/(www\.)?music\.youtube\.com\/playlist\?list=[\w-]+$/
+    PLAYLIST: /^https?:\/\/(www\.)?music\.youtube\.com\/playlist\?list=[\w-]+$/,
+    SONG: /^https?:\/\/(www\.)?music\.youtube\.com\/watch\?v=[\w-]{11}$/
 } as const;
 
 export const BASE_SPOTIFY_REGEX = /https?:\/\/(?:embed\.|open\.)(?:spotify\.com\/).+$/;
@@ -87,18 +74,7 @@ export const SOUNDCLOUD_REGEX = {
     PLAYLIST: /^https?:\/\/(soundcloud\.com|snd\.sc)\/([A-Za-z0-9_-]+)\/sets\/([A-Za-z0-9_-]+)\/?$/
 }
 
-export const YOUTUBE_URL = "https://www.youtube.com";
 export const YOUTUBE_ICON_URL = "https://www.youtube.com/s/desktop/75053a37/img/favicon_32x32.png";
-
-export const YOUTUBE_MUSIC_URL = "https://music.youtube.com";
-export const YOUTUBE_MUSIC_ICON_URL = "https://music.youtube.com/img/cairo/favicon_32S.png";
-
-export const SPOTIFY_URL = "https://open.spotify.com";
+export const YOUTUBE_MUSIC_ICON_URL = "https://music.youtube.com/img/favicon_32.png";
 export const SPOTIFY_ICON_URL = "https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png";
-
-export const SOUNDCLOUD_URL = "";
 export const SOUNDCLOUD_ICON_URL = "";
-
-export const DEFAULT_SEARCH_COUNT = 5;
-
-export const DEFAULT_SEARCH_RESULT_TIMEOUT = 60000;
