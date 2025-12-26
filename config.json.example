@@ -1,13 +1,13 @@
 {
-    "application_id": "INSERT_APPLICATION_ID_HERE",
+    "application_id": "INSERT_APPLICATION_ID",
     "emojis": {
         "clear": "🆑",
-        "error": "❌",
+        "error": "INSERT_EMOJI",
         "fast_forward": "⏩",
         "move": "↕️",
         "next": "⏭️",
         "pause": "⏸️",
-        "pending": "➖",
+        "pending": "INSERT_EMOJI",
         "permission_error": "⛔",
         "ping": "📶",
         "player_now_playing": "📕",
@@ -22,12 +22,16 @@
         "rewind": "⏪",
         "searching": "🔍",
         "shuffle": "🔀",
+        "soundcloud": "INSERT_EMOJI",
+        "spotify": "INSERT_EMOJI",
         "stop": "⏹️",
-        "success": "✅",
+        "success": "INSERT_EMOJI",
         "vote": "📥",
         "volume_high": "🔊",
         "volume_low": "🔈",
         "volume_medium": "🔉",
-        "volume_muted": "🔇"
+        "volume_muted": "🔇",
+        "youtube": "INSERT_EMOJI",
+        "youtube_music": "INSERT_EMOJI"
     }
 }

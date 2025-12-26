@@ -1,5 +1,7 @@
 import { ColorResolvable, Colors } from "discord.js";
-import { AudioMediaSource, SOUNDCLOUD_ICON_URL, SPOTIFY_ICON_URL, YOUTUBE_ICON_URL, YOUTUBE_MUSIC_ICON_URL } from "./constants";
+
+import { AudioMediaSource, DISCORD_EMOJI_BASE_URL } from "./constants";
+import { emojis } from "../../config.json";
 
 /**
  * Formats timestamp from milliseconds.
@@ -96,34 +98,20 @@ export function createProgressBar(currentDuration: number, totalDuration: number
 
 export function getAudioMediaSourceEmbedColor(source: AudioMediaSource): ColorResolvable {
     switch (source) {
-        case AudioMediaSource.YOUTUBE:
-            return Colors.Red;
-        case AudioMediaSource.YOUTUBE_MUSIC:
-            return Colors.Red;
-        case AudioMediaSource.SPOTIFY:
-            return Colors.Green;
-        case AudioMediaSource.SOUNDCLOUD:
-            return Colors.Orange;
-        default:
-            return Colors.Default;
+        case AudioMediaSource.YOUTUBE: return Colors.Red;
+        case AudioMediaSource.YOUTUBE_MUSIC: return Colors.Red;
+        case AudioMediaSource.SPOTIFY: return Colors.Green;
+        case AudioMediaSource.SOUNDCLOUD: return Colors.Orange;
+        default: return Colors.Default;
     }
 }
 
 export function getAudioMediaSourceIconURL(source: AudioMediaSource): string | undefined {
     switch (source) {
-        case AudioMediaSource.YOUTUBE:
-            return YOUTUBE_ICON_URL;
-        case AudioMediaSource.YOUTUBE_MUSIC:
-            return YOUTUBE_MUSIC_ICON_URL;
-        case AudioMediaSource.SPOTIFY:
-            return SPOTIFY_ICON_URL;
-        case AudioMediaSource.SOUNDCLOUD:
-            return SOUNDCLOUD_ICON_URL;
-        default:
-            return undefined;
+        case AudioMediaSource.YOUTUBE: return DISCORD_EMOJI_BASE_URL + "/" + emojis.youtube.split(":")[1].replace(">", "");
+        case AudioMediaSource.YOUTUBE_MUSIC: return DISCORD_EMOJI_BASE_URL + "/" + emojis.youtube_music.split(":")[1].replace(">", "");
+        case AudioMediaSource.SPOTIFY: return DISCORD_EMOJI_BASE_URL + "/" + emojis.spotify.split(":")[1].replace(">", "");
+        case AudioMediaSource.SOUNDCLOUD: return DISCORD_EMOJI_BASE_URL + "/" + emojis.soundcloud.split(":")[1].replace(">", "");
+        default: return undefined;
     }
-}
-
-export function formatTitleCase(str: string): string {
-    return str.toLowerCase().split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 }

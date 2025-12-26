@@ -74,7 +74,4 @@ export const SOUNDCLOUD_REGEX = {
     PLAYLIST: /^https?:\/\/(soundcloud\.com|snd\.sc)\/([A-Za-z0-9_-]+)\/sets\/([A-Za-z0-9_-]+)\/?$/
 }
 
-export const YOUTUBE_ICON_URL = "https://www.youtube.com/s/desktop/75053a37/img/favicon_32x32.png";
-export const YOUTUBE_MUSIC_ICON_URL = "https://music.youtube.com/img/favicon_32.png";
-export const SPOTIFY_ICON_URL = "https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png";
-export const SOUNDCLOUD_ICON_URL = "";
+export const DISCORD_EMOJI_BASE_URL = "https://cdn.discordapp.com/emojis";
