@@ -1,20 +1,14 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, MessageFlags, PermissionsBitField } from "discord.js";
 
-import Bot from "../structures/Bot";
-import { emojis } from "../../config.json";
-import { getAudioMediaSourceEmbedColor, getAudioMediaSourceIconURL } from "./util";
-import { QueueableAudioMediaType, RepeatMode } from "./constants";
-import Track from "../structures/models/Track";
 import { createLiveStreamString, createQueueEmbed, createQueueEmptyMessage, createTrackString } from "./components";
+import { QueueableAudioMediaType, RepeatMode } from "./constants";
+import { getAudioMediaSourceEmbedColor, getAudioMediaSourceIconURL } from "./util";
+import Bot from "../structures/Bot";
 import LiveStream from "../structures/models/LiveStream";
+import Track from "../structures/models/Track";
+import { emojis } from "../../config.json";
 
-export async function nextCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, options?: { force: boolean }): Promise<void> {
-    let force = false;
-
-    if (options) {
-        if (options.force) force = options.force;
-    }
-
+export async function nextCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, force: boolean): Promise<void> {
     const player = bot.playerManager.getPlayer(interaction.guild.id);
 
     if (!interaction.member.voice.channel) {
@@ -72,13 +66,7 @@ export async function nextCommand(bot: Bot, interaction: ChatInputCommandInterac
     }
 }
 
-export async function previousCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, options?: { force: boolean }) {
-    let force = false;
-
-    if (options) {
-        if (options.force) force = options.force;
-    }
-
+export async function previousCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, force: boolean) {
     const player = bot.playerManager.getPlayer(interaction.guild.id);
 
     if (!interaction.member.voice.channel) {
@@ -271,13 +259,7 @@ export async function queueCommand(bot: Bot, interaction: ChatInputCommandIntera
     await interaction.reply({ embeds: [createQueueEmbed(player.queue.items)] });
 }
 
-export async function repeatCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, options?: { mode: RepeatMode }) {
-    let mode: RepeatMode = RepeatMode.OFF;
-
-    if (options) {
-        if (options.mode) mode = options.mode;
-    }
-
+export async function repeatCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, mode: RepeatMode) {
     const player = bot.playerManager.getPlayer(interaction.guild.id);
 
     if (!interaction.member.voice.channel) {
@@ -336,13 +318,7 @@ export async function shuffleCommand(bot: Bot, interaction: ChatInputCommandInte
     await interaction.reply(emojis.shuffle + " **Shuffled**");
 }
 
-export async function volumeCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, options?: { level: number }) {
-    let level = 100;
-
-    if (options) {
-        if (options.level) level = options.level;
-    }
-
+export async function volumeCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">, level: number) {
     const player = bot.playerManager.getPlayer(interaction.guild.id);
 
     if (!interaction.member.voice.channel) {

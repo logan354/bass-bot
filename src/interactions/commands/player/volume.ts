@@ -17,9 +17,7 @@ export default {
                 .setMaxValue(200)
         ),
     async execute(bot, interaction) {
-        const levelOption = interaction.options.getNumber("level")!;
-
-        volumeCommand(bot, interaction, { level: levelOption });
+        volumeCommand(bot, interaction, interaction.options.getNumber("level")!);
     }
 } as Command;
 

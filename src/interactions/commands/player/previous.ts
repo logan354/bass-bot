@@ -15,8 +15,6 @@ export default {
                 .setRequired(false)
         ),
     async execute(bot, interaction) {
-        const forceOption = interaction.options.getBoolean("force") ?? false;
-
-        previousCommand(bot, interaction, { force: forceOption });
+        previousCommand(bot, interaction, interaction.options.getBoolean("force") ?? false);
     }
 } as Command;

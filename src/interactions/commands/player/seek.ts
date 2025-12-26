@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { emojis } from "../../../../config.json";
-import { QueueableAudioMediaType } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
+import { QueueableAudioMediaType } from "../../../utils/constants";
 import { convertTimestamp, formatTimestamp } from "../../../utils/util";
+import { emojis } from "../../../../config.json";
 
 export default {
     name: "seek",

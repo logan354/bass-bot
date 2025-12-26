@@ -4,9 +4,9 @@ import fs from "node:fs";
 import { join } from "node:path";
 
 import Command from "./Command";
+import Interaction from "./Interaction";
 import PlayerManager from "./player/PlayerManager";
 import config from "../../config.json";
-import Interaction from "./Interaction";
 
 export default class Bot extends Client<true> {
     public commands: Collection<string, Command> = new Collection();
@@ -109,8 +109,12 @@ export default class Bot extends Client<true> {
         }
     }
 
+    public async getApplicationCommands(): Promise<Collection<string, ApplicationCommand>> {
+        return await this.application.commands.fetch();
+    }
+
     public async getApplicationCommand(name: string): Promise<ApplicationCommand | undefined> {
-        const applicationCommands = await this.application.commands.fetch();
+        const applicationCommands = await this.getApplicationCommands();
         return applicationCommands.find((x) => x.name === name);
     }
 }

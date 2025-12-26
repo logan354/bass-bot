@@ -1,17 +1,15 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ColorResolvable, Colors, EmbedBuilder, MessageFlags, PermissionsBitField, StringSelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
 
-import { emojis } from "../../config.json";
-import Track from "../structures/models/Track";
-import { createProgressBar, formatTimestamp, getAudioMediaSourceIconURL, getAudioMediaSourceEmbedColor } from "./util";
-import Album from "../structures/models/Album";
-import Playlist from "../structures/models/Playlist";
-import { AudioMedia, QueueableAudioMedia } from "../structures/AudioMedia";
 import { AudioMediaSource, AudioMediaType, QueueableAudioMediaType, RepeatMode } from "./constants";
-import Player from "../structures/player/Player";
-import Queue from "../structures/queue/Queue";
+import { createProgressBar, formatTimestamp, getAudioMediaSourceIconURL, getAudioMediaSourceEmbedColor } from "./util";
+import { AudioMedia, QueueableAudioMedia } from "../structures/AudioMedia";
 import Bot from "../structures/Bot";
-import { AudioPlayerPlayingState } from "@discordjs/voice";
+import Album from "../structures/models/Album";
 import LiveStream from "../structures/models/LiveStream";
+import Playlist from "../structures/models/Playlist";
+import Track from "../structures/models/Track";
+import Player from "../structures/player/Player";
+import { emojis } from "../../config.json";
 
 export function createAlbumString(album: Album, hasTrackTotal: boolean, hasDuration: boolean, hasRequester: boolean): string {
     let totalDuration = 0;

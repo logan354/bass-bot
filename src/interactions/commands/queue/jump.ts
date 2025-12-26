@@ -48,6 +48,6 @@ export default {
         const positionOption = interaction.options.getNumber("position")!;
 
         player.skipToNext(positionOption);
-        await interaction.reply(`${emojis.next} Jumped to ${positionOption}`)
+        await interaction.reply(`${emojis.next} **Jumped to \`${positionOption}\`**`)
     }
 } as Command;

@@ -43,6 +43,6 @@ export default {
         player.stop();
         player.queue.clear();
 
-        await interaction.reply(emojis.stop + " Stopped");
+        await interaction.reply(emojis.stop + " **Stopped**");
     }
 } as Command;

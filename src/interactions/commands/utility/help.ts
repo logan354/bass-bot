@@ -21,7 +21,7 @@ export default {
 
         await interaction.deferReply();
 
-        const applicationCommands = await bot.application.commands.fetch();
+        const applicationCommands = await bot.getApplicationCommands();
 
         let commandList = "";
         let category = "";

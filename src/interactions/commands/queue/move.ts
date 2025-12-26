@@ -1,9 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
 
 import Command from "../../../structures/Command";
-import { emojis } from "../../../../config.json";
-import { QueueableAudioMediaType } from "../../../utils/constants";
 import Track from "../../../structures/models/Track";
+import { QueueableAudioMediaType } from "../../../utils/constants";
+import { emojis } from "../../../../config.json";
+
 
 export default {
     name: "move",
@@ -57,6 +58,6 @@ export default {
         }
 
         player.queue.move(indexOption, positionOption);
-        await interaction.reply(`${emojis.move} Moved ${itemTitle} from ${indexOption} to ${positionOption}`);
+        await interaction.reply(`${emojis.move} **Moved \`${itemTitle}\` from \`${indexOption}\` to \`${positionOption}\`**`);
     }
 } as Command;

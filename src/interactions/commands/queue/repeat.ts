@@ -4,7 +4,7 @@ import Command from "../../../structures/Command";
 import { RepeatMode } from "../../../utils/constants";
 import { repeatCommand } from "../../../utils/commands";
 
-const  modeChoices = [
+const modeChoices = [
     {
         name: "Off",
         value: RepeatMode.OFF
@@ -32,8 +32,6 @@ export default {
                 .setRequired(true)
         ),
     async execute(bot, interaction) {
-        const modeOption = interaction.options.getString("mode")! as RepeatMode;
-
-        repeatCommand(bot, interaction, { mode: modeOption });
+        repeatCommand(bot, interaction, interaction.options.getString("mode")! as RepeatMode);
     }
 } as Command;

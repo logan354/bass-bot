@@ -7,11 +7,11 @@ export default {
     async execute(bot, interaction) {
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
-        if (!player) repeatCommand(bot, interaction);
+        if (!player) repeatCommand(bot, interaction, RepeatMode.OFF);
         else {
-            if (player.queue.repeatMode === RepeatMode.OFF) repeatCommand(bot, interaction, { mode: RepeatMode.ALL });
-            else if (player.queue.repeatMode === RepeatMode.ALL) repeatCommand(bot, interaction, { mode: RepeatMode.ONE });
-            else repeatCommand(bot, interaction, { mode: RepeatMode.OFF });
+            if (player.queue.repeatMode === RepeatMode.OFF) repeatCommand(bot, interaction, RepeatMode.ALL);
+            else if (player.queue.repeatMode === RepeatMode.ALL) repeatCommand(bot, interaction, RepeatMode.ONE );
+            else repeatCommand(bot, interaction, RepeatMode.OFF);
         }
     }
 } as Button;
