@@ -8,7 +8,7 @@
 A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube Music, Spotify, and Soundcloud.
 
 ### Features
-- Supports YouTube, Youtube Music, Spotify, and Soundcloud.
+- Supports YouTube/Youtube Music, Spotify, and Soundcloud.
 - Supports discord.js v14
 
 ## Setup

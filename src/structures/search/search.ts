@@ -34,9 +34,9 @@ export async function search(query: string, source: AudioMediaSource, options?: 
     else {
         return {
             type: SearchResultType.NO_RESULTS,
+            requester: requester,
             items: [],
-            requester: requester
-        } as SearchResult;
+        }
     }
 }
 

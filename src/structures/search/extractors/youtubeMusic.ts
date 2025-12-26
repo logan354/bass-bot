@@ -1,5 +1,6 @@
 import { User } from "discord.js";
 
+import { searchYouTubeURL } from "./youtube";
 import SearchResult from "../SearchResult";
 
 /**
@@ -11,5 +12,6 @@ import SearchResult from "../SearchResult";
  * @returns 
  */
 export async function searchYouTubeMusicURL(url: string, options?: { requester?: User | null }): Promise<SearchResult> {
-    throw new Error("Not Currently Supported");
+    // Convert to standard youtube until proper extractor support
+    return await searchYouTubeURL(url.replace("music.youtube.com", "www.youtube.com"), options);
 }
