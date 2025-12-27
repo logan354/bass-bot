@@ -30,8 +30,6 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
     try {
         const data = await spotify.getData(url);
 
-        console.log(data)
-
         if (url.match(SPOTIFY_REGEX.TRACK)) items.push(createTrack(data, requester));
         else if (url.match(SPOTIFY_REGEX.PLAYLIST)) items.push(createPlaylist(data, requester));
         else if (url.match(SPOTIFY_REGEX.ALBUM)) items.push(createAlbum(data, requester));
