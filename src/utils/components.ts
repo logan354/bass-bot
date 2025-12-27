@@ -22,7 +22,7 @@ export function createAlbumString(album: Album, hasTrackTotal: boolean, hasDurat
     let duration = formatTimestamp(totalDuration);
     let requester = album.requester ? `[<@${album.requester.id}>]` : "";
 
-    return title + "\n" + type + " " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
+    return title + "\n" + type + " **|** " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
 }
 
 export function createLiveStreamString(liveStream: LiveStream, hasRequester: boolean): string {
@@ -31,7 +31,7 @@ export function createLiveStreamString(liveStream: LiveStream, hasRequester: boo
     let artists = liveStream.artists.map((x) => x.name).join(", ");
     let requester = liveStream.requester ? `[<@${liveStream.requester.id}>]` : "";
 
-    return title + "\n" + type + " " + artists + (hasRequester ? " " + requester : "");
+    return title + "\n" + type + " **|** " + artists + (hasRequester ? " " + requester : "");
 }
 
 export function createPlaylistString(playlist: Playlist, hasTrackTotal: boolean, hasDuration: boolean, hasRequester: boolean): string {
@@ -45,7 +45,7 @@ export function createPlaylistString(playlist: Playlist, hasTrackTotal: boolean,
     let duration = formatTimestamp(totalDuration);
     let requester = playlist.requester ? `[<@${playlist.requester?.id}>]` : "";
 
-    return title + "\n" + type + " " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
+    return title + "\n" + type + " **|** " + artists + (hasTrackTotal ? " **|** " + trackTotal : "") + (hasDuration ? " **|** `" + duration + "`" : "") + (hasRequester ? " " + requester : "");
 }
 
 export function createTrackString(track: Track, hasDuration: boolean, hasRequester: boolean): string {
