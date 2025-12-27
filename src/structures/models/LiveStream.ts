@@ -4,8 +4,8 @@ import { QueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, QueueableAudioMediaType } from "../../utils/constants";
 
 export interface Artist {
-    name: string;
     url?: string;
+    name: string;
     imageURL?: string;
 }
 

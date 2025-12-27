@@ -9,7 +9,7 @@ import SearchResult from "../SearchResult";
 import { AudioMedia } from "../../AudioMedia";
 import Album from "../../models/Album";
 import Playlist from "../../models/Playlist";
-import Track, { Album as TrackAlbum } from "../../models/Track";
+import Track from "../../models/Track";
 import { AudioMediaSource, SearchResultType, SPOTIFY_REGEX } from "../../../utils/constants";
 
 const spotify = spotifyUrlInfo(fetch);
@@ -29,6 +29,8 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
 
     try {
         const data = await spotify.getData(url);
+
+        console.log(data)
 
         if (url.match(SPOTIFY_REGEX.TRACK)) items.push(createTrack(data, requester));
         else if (url.match(SPOTIFY_REGEX.PLAYLIST)) items.push(createPlaylist(data, requester));
@@ -62,12 +64,6 @@ export async function searchSpotifyURL(url: string, options?: { requester?: User
 }
 
 function createAlbum(data: any, requester: User | null): Album {
-    const trackAlbum: TrackAlbum = {
-        title: data.title,
-        url: parse(data.uri).toOpenURL(),
-        coverArtURL: data.visualIdentity.image[0].url
-    }
-
     const tracks = [];
 
     for (let i = 0; i < data.trackList.length; i++) {
@@ -78,12 +74,16 @@ function createAlbum(data: any, requester: User | null): Album {
             data.trackList[i].title,
             data.trackList[i].subtitle.split(", ").map((x: any) => {
                 return {
-                    name: x,
                     url: null,
+                    name: x,
                     imageURL: null
                 }
             }),
-            trackAlbum,
+            {
+                url: parse(data.uri).toOpenURL(),
+                title: data.title,
+                coverArtURL: data.visualIdentity.image[0].url
+            },
             null,
             data.trackList[i].duration
         );
@@ -98,8 +98,8 @@ function createAlbum(data: any, requester: User | null): Album {
         data.title,
         data.subtitle.split(", ").map((x: any) => {
             return {
-                name: x,
                 url: null,
+                name: x,
                 imageURL: null
             }
         }),
@@ -119,8 +119,8 @@ function createPlaylist(data: any, requester: User | null): Playlist {
             data.trackList[i].title,
             data.trackList[i].subtitle.split(", ").map((x: any) => {
                 return {
-                    name: x,
                     url: null,
+                    name: x,
                     imageURL: null
                 }
             }),
@@ -157,8 +157,8 @@ function createTrack(data: any, requester: User | null): Track {
         data.title,
         data.artists.map((x: any) => {
             return {
-                name: x.name,
                 url: parse(x.uri).toOpenURL(),
+                name: x.name,
                 imageURL: null
             }
         }),

@@ -193,15 +193,15 @@ function createLiveStream(data: Video, requester: User | null): LiveStream {
         AudioMediaSource.YOUTUBE,
         requester,
         data.url,
-        data.title ?? "undefined",
+        data.title!,
         [
             {
-                name: data.channel?.name!,
-                url: data.channel!.url,
+                url: data.channel?.url,
+                name: data.channel?.name ?? "undefined",
                 imageURL: data.channel?.icon.url
             }
         ],
-        data.thumbnail!.url ?? null,
+        data.thumbnail?.url ?? null,
     )
 }
 
@@ -209,8 +209,7 @@ function createPlaylist(data: _Playlist, requester: User | null): Playlist {
     const tracks: Track[] = [];
 
     for (let i = 0; i < data.videos.length; i++) {
-        const track = createTrack(data.videos[i], requester);
-        tracks.push(track);
+        tracks.push(createTrack(data.videos[i], requester));
     }
 
     return new Playlist(
@@ -219,11 +218,11 @@ function createPlaylist(data: _Playlist, requester: User | null): Playlist {
         data.url!,
         data.title!,
         {
-            name: data.channel!.name!,
-            url: data.channel!.url,
-            imageURL: data.channel!.icon.url
+            url: data.channel?.url,
+            name: data.channel?.name ?? "undefined",
+            imageURL: data.channel?.icon.url
         },
-        data.thumbnail!.url ?? null,
+        data.thumbnail?.url ?? null,
         tracks
     );
 }
@@ -233,11 +232,11 @@ function createTrack(data: Video, requester: User | null): Track {
         AudioMediaSource.YOUTUBE,
         requester,
         data.url,
-        data.title ?? "undefined",
+        data.title!,
         [
             {
-                name: data.channel?.name!,
-                url: data.channel!.url,
+                url: data.channel?.url,
+                name: data.channel?.name ?? "undefined",
                 imageURL: data.channel?.icon.url
             }
         ],

@@ -5,8 +5,8 @@ import { UnQueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, UnQueueableAudioMediaType } from "../../utils/constants";
 
 export interface Owner {
-    name: string;
     url?: string;
+    name: string;
     imageURL?: string;
 }
 
