@@ -160,11 +160,16 @@ class Player {
                      * The queue is then processed to start playing the next track, if one is available.
                      */
                     // State
-                    if (this.queue.repeatMode !== RepeatMode.ONE) this.closeMessage(false);
+                    if (this.queue.repeatMode !== RepeatMode.ONE) {
+                        this.closeMessage(false);
+                        this.state.streamURL = null;
+                    }
+
                     this.state.seekDuration = 0;
 
                     // Queue
                     if (this.queue.lock) this.queue.next();
+                    else this.queue.lock = true;
 
                     // Player
                     this.play();
@@ -401,9 +406,7 @@ class Player {
         let input = null;
 
         // Downloader
-        if (this.queue.repeatMode === RepeatMode.ONE) {
-            input = this.state.streamURL;
-        }
+        if (this.state.streamURL) input = this.state.streamURL;
         else {
             if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
                 input = await this.getGenericStreamURL(track);

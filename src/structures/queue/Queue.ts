@@ -103,6 +103,8 @@ export default class Queue {
             this.items.unshift(previousItem);
             this.previousItems.shift();
         }
+
+        this.lock = false;
     }
 
     /**

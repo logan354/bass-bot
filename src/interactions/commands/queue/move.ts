@@ -58,6 +58,7 @@ export default {
         }
 
         player.queue.move(indexOption, positionOption);
+        
         await interaction.reply(`${emojis.move} **Moved \`${itemTitle}\` from \`${indexOption}\` to \`${positionOption}\`**`);
     }
 } as Command;
