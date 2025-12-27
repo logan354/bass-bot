@@ -17,7 +17,13 @@ A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube 
 - FFMPEG
 
 ### Installation
-1. Create Discord App
+1. Create Discord Application
+    - Installation
+      - Guild Scopes: `application.commands`, `bot`
+      - Permissions: `View Channels`, `Send Messages`, `Embed Links`, `Connect`, `Speak`
+    - Emojis
+      - Upload `assets/emojis` folder 
+
 2. Configuration Files<br>
     Complete the following files: (remove ".example")
     - .env
