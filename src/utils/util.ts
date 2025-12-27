@@ -108,10 +108,10 @@ export function getAudioMediaSourceEmbedColor(source: AudioMediaSource): ColorRe
 
 export function getAudioMediaSourceIconURL(source: AudioMediaSource): string | undefined {
     switch (source) {
-        case AudioMediaSource.YOUTUBE: return DISCORD_EMOJI_BASE_URL + "/" + emojis.youtube.split(":")[1].replace(">", "");
-        case AudioMediaSource.YOUTUBE_MUSIC: return DISCORD_EMOJI_BASE_URL + "/" + emojis.youtube_music.split(":")[1].replace(">", "");
-        case AudioMediaSource.SPOTIFY: return DISCORD_EMOJI_BASE_URL + "/" + emojis.spotify.split(":")[1].replace(">", "");
-        case AudioMediaSource.SOUNDCLOUD: return DISCORD_EMOJI_BASE_URL + "/" + emojis.soundcloud.split(":")[1].replace(">", "");
+        case AudioMediaSource.YOUTUBE: return `${DISCORD_EMOJI_BASE_URL}/${emojis.youtube.split(":")[2].replace(">", "")}`;
+        case AudioMediaSource.YOUTUBE_MUSIC: return `${DISCORD_EMOJI_BASE_URL}/${emojis.youtube_music.split(":")[2].replace(">", "")}`;
+        case AudioMediaSource.SPOTIFY: return `${DISCORD_EMOJI_BASE_URL}/${emojis.spotify.split(":")[2].replace(">", "")}`;
+        case AudioMediaSource.SOUNDCLOUD: return `${DISCORD_EMOJI_BASE_URL}/${emojis.soundcloud.split(":")[2].replace(">", "")}`;
         default: return undefined;
     }
 }
