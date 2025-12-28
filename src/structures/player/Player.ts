@@ -168,7 +168,10 @@ class Player {
                     this.state.seekDuration = 0;
 
                     // Queue
-                    if (this.queue.lock) this.queue.next();
+                    if (this.queue.lock) {
+                        this.queue.next();
+                        this.queue.lock = true;
+                    }
                     else this.queue.lock = true;
 
                     // Player
