@@ -70,8 +70,7 @@ export const SPOTIFY_REGEX = {
 export const BASE_SOUNDCLOUD_REGEX = /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
 export const SOUNDCLOUD_REGEX = {
     TRACK: /^https?:\/\/(soundcloud\.com)\/(.*)$/gi,
-    ALBUM: /^/,
-    PLAYLIST: /^https?:\/\/(soundcloud\.com|snd\.sc)\/([A-Za-z0-9_-]+)\/sets\/([A-Za-z0-9_-]+)\/?$/
+    SET: /^https?:\/\/(soundcloud\.com|snd\.sc)\/([A-Za-z0-9_-]+)\/sets\/([A-Za-z0-9_-]+)\/?$/
 }
 
 export const DISCORD_EMOJI_BASE_URL = "https://cdn.discordapp.com/emojis";

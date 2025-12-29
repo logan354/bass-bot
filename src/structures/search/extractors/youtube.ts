@@ -85,7 +85,7 @@ export async function searchYouTube(
         }
     }
     catch (e: any) {
-        if (e.stderr.includes("404")) {
+        if (e.stderr?.includes("404")) {
             return {
                 type: SearchResultType.NOT_FOUND,
                 source: AudioMediaSource.YOUTUBE,
@@ -165,7 +165,7 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
         }
     }
     catch (e: any) {
-        if (e.stderr.includes("404")) {
+        if (e.stderr?.includes("404")) {
             return {
                 type: SearchResultType.NOT_FOUND,
                 source: AudioMediaSource.YOUTUBE,
