@@ -124,14 +124,6 @@ export async function previousCommand(bot: Bot, interaction: ChatInputCommandInt
 }
 
 export async function nowPlayingCommand(bot: Bot, interaction: ChatInputCommandInteraction<"cached"> | ButtonInteraction<"cached">) {
-    if (!interaction.channel || !interaction.guild.members.me) throw new Error();
-
-    const botPermissionsFor = interaction.channel.permissionsFor(interaction.guild.members.me);
-    if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) {
-        await interaction.reply(emojis.permission_error + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
-        return;
-    }
-
     const player = bot.playerManager.getPlayer(interaction.guild.id);
 
     if (!player || !player.voiceChannel) {

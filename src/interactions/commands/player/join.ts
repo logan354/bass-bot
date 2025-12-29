@@ -25,6 +25,11 @@ export default {
             return;
         }
 
+        if (!permissionsForVoice.has(PermissionsBitField.Flags.Speak)) {
+            await interaction.reply(emojis.error + " **I do not have permission to 'Speak' in <#" + interaction.id + ">.**");
+            return;
+        }
+
         let player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!player) player = bot.playerManager.createPlayer(interaction.guild.id, interaction.channel);

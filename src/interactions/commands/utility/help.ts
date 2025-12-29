@@ -11,14 +11,6 @@ export default {
         .setName("help")
         .setDescription("The command guide."),
     async execute(bot, interaction) {
-        if (!interaction.channel || !interaction.guild.members.me) throw new Error();
-
-        const botPermissionsFor = interaction.channel.permissionsFor(interaction.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) {
-            interaction.reply(emojis.permission_error + " **I do not have permission to Embed Links in** <#" + interaction.channel.id + ">");
-            return;
-        }
-
         await interaction.deferReply();
 
         const applicationCommands = await bot.getApplicationCommands();

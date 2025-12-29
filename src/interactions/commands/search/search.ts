@@ -50,7 +50,10 @@ export default {
         if (!textChannel || !interaction.guild.members.me) throw new ReferenceError();
 
         const botPermissionsFor = textChannel.permissionsFor(interaction.guild.members.me);
-        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply(emojis.permission_error + " **I do not have permission to Use Embed Links in** <#" + textChannel.id + ">");
+        if (!botPermissionsFor.has(PermissionsBitField.Flags.EmbedLinks)) {
+            await interaction.reply(emojis.permission_error + " **I do not have permission to Use Embed Links in** <#" + textChannel.id + ">");
+            return;
+        }
 
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
