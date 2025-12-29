@@ -206,7 +206,7 @@ function createLiveStream(data: any, requester: User | null): LiveStream {
                 imageURL: undefined
             }
         ],
-        data.thumbnails[0].url,
+        data.thumbnails[data.thumbnails.length - 1].url,
     )
 }
 
@@ -227,7 +227,7 @@ function createPlaylist(data: any, requester: User | null): Playlist {
             name: data.channel,
             imageURL: undefined
         },
-        data.thumbnails[0].url,
+        data.thumbnails[data.thumbnails.length - 1].url,
         tracks
     );
 }
@@ -246,7 +246,7 @@ function createTrack(data: any, requester: User | null): Track {
             }
         ],
         null,
-        data.thumbnails[0].url,
+        data.thumbnails[data.thumbnails.length - 1].url,
         data.duration * 1000
     );
 }

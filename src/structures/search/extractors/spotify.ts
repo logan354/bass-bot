@@ -101,7 +101,7 @@ function createAlbum(data: any, requester: User | null): Album {
                 imageURL: null
             }
         }),
-        data.visualIdentity.image[0].url,
+        data.visualIdentity.image[data.visualIdentity.image - 1].url,
         tracks
     );
 }
@@ -142,7 +142,7 @@ function createPlaylist(data: any, requester: User | null): Playlist {
                 imageURL: null
             }
         }),
-        data.visualIdentity.image[0].url,
+        data.visualIdentity.image[data.visualIdentity.image - 1].url,
         tracks
     );
 }
@@ -161,7 +161,7 @@ function createTrack(data: any, requester: User | null): Track {
             }
         }),
         null,
-        data.visualIdentity.image[0].url,
+        data.visualIdentity.image[data.visualIdentity.image - 1].url,
         data.duration
     );
 }
