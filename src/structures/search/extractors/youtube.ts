@@ -1,5 +1,5 @@
 import { User } from "discord.js";
-import YouTube, { Video, Playlist as _Playlist } from "youtube-sr";
+import ytdl from "youtube-dl-exec";
 
 import SearchResult from "../SearchResult";
 import LiveStream from "../../models/LiveStream";
@@ -9,7 +9,7 @@ import { AudioMediaSource, AudioMediaType, SearchResultType, YOUTUBE_REGEX } fro
 
 /**
  * Searches a query on YouTube.
- * Defaults type: null, count: 1, requester: null.
+ * Defaults type: TRACK, count: 1, requester: null.
  * @param query 
  * @param options 
  * @async
@@ -17,76 +17,62 @@ import { AudioMediaSource, AudioMediaType, SearchResultType, YOUTUBE_REGEX } fro
  */
 export async function searchYouTube(
     query: string,
-    options?: { type?: AudioMediaType | null, count?: number, requester?: User | null }
+    options?: { type?: AudioMediaType, count?: number, requester?: User | null }
 ): Promise<SearchResult> {
-    const type = options?.type ?? null;
+    const type = options?.type ?? AudioMediaType.TRACK;
     const count = options?.count ?? 1;
     const requester = options?.requester ?? null;
 
     let items = [];
 
     try {
-
-        if (!type) {
-            const data = await YouTube.search(query, { type: "all", limit: count });
-
-            if (!data.length) {
-                return {
-                    type: SearchResultType.NO_RESULTS,
-                    source: AudioMediaSource.YOUTUBE,
-                    requester: requester,
-                    items: []
+        if (type === AudioMediaType.LIVE_STREAM) {
+            const data = await ytdl.exec(
+                "https://www.youtube.com/results?search_query=" + query + "&sp=EgJAAQ%253D%253D",
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    playlistEnd: count,
                 }
-            }
+            );
 
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].type === "video") {
-                    const video = data[i] as Video;
+            const dataJSON = JSON.parse(data.stdout);
 
-                    if (video.live || video.duration === 0) items.push(createLiveStream(video, requester));
-                    else items.push(createTrack(video, requester));
-                }
-                else if (data[i].type === "playlist") items.push(createPlaylist(data[i] as _Playlist, requester));
-                else continue;
-            }
-        }
-        else if (type === AudioMediaType.LIVE_STREAM || type === AudioMediaType.TRACK) {
-            const data = await YouTube.search(query, { type: "video", limit: count });
-
-            if (!data.length) {
-                return {
-                    type: SearchResultType.NO_RESULTS,
-                    source: AudioMediaSource.YOUTUBE,
-                    requester: requester,
-                    items: []
-                }
-            }
-
-            if (type === AudioMediaType.LIVE_STREAM) {
-                for (let i = 0; i < data.length; i++) {
-                    items.push(createLiveStream(data[i], requester));
-                }
-            }
-            else {
-                for (let i = 0; i < data.length; i++) {
-                    items.push(createTrack(data[i], requester));
-                }
+            for (let i = 0; i < dataJSON.entries.length; i++) {
+                items.push(createLiveStream(dataJSON.entries[i], requester));
             }
         }
         else if (type === AudioMediaType.PLAYLIST) {
-            const data = await YouTube.search(query, { type: "playlist", limit: count });
-
-            if (!data.length) {
-                return {
-                    type: SearchResultType.NO_RESULTS,
-                    source: AudioMediaSource.YOUTUBE,
-                    requester: requester,
-                    items: []
+            const data = await ytdl.exec(
+                "https://www.youtube.com/results?search_query=" + query + "&sp=EgIQAw%253D%253D",
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    playlistEnd: count,
                 }
-            }
+            );
 
-            for (let i = 0; i < data.length; i++) {
-                items.push(createPlaylist(data[i], requester));
+            const dataJSON = JSON.parse(data.stdout);
+
+            for (let i = 0; i < dataJSON.entries.length; i++) {
+                const result = await searchYouTubeURL(dataJSON.entries[i].url);
+                items.push(result.items[0]);
+            }
+        }
+        else if (type === AudioMediaType.TRACK) {
+            const data = await ytdl.exec(
+                "https://www.youtube.com/results?search_query=" + query + "&sp=EgIQAQ%253D%253D",
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    playlistEnd: count,
+                }
+            );
+
+            const dataJSON = JSON.parse(data.stdout);
+
+            for (let i = 0; i < dataJSON.entries.length; i++) {
+                items.push(createTrack(dataJSON.entries[i], requester));
             }
         }
         else {
@@ -98,15 +84,25 @@ export async function searchYouTube(
             };
         }
     }
-    catch (e) {
-        console.error(e);
+    catch (e: any) {
+        if (e.stderr.includes("404")) {
+            return {
+                type: SearchResultType.NOT_FOUND,
+                source: AudioMediaSource.YOUTUBE,
+                requester: requester,
+                items: []
+            }
+        }
+        else {
+            console.error(e);
 
-        return {
-            type: SearchResultType.ERROR,
-            source: AudioMediaSource.YOUTUBE,
-            requester: requester,
-            items: []
-        };
+            return {
+                type: SearchResultType.ERROR,
+                source: AudioMediaSource.YOUTUBE,
+                requester: requester,
+                items: []
+            }
+        }
     }
 
     return {
@@ -132,33 +128,32 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
 
     try {
         if (url.match(YOUTUBE_REGEX.PLAYLIST)) {
-            const data = await YouTube.getPlaylist(url);
-
-            if (!data) {
-                return {
-                    type: SearchResultType.NOT_FOUND,
-                    source: AudioMediaSource.YOUTUBE,
-                    requester: requester,
-                    items: []
+            const data = await ytdl.exec(
+                url,
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true
                 }
-            }
+            );
 
-            item = createPlaylist(data, requester);
+            const dataJSON = JSON.parse(data.stdout);
+
+            item = createPlaylist(dataJSON, requester);
         }
         else if (url.match(YOUTUBE_REGEX.VIDEO)) {
-            const data = await YouTube.getVideo(url);
-
-            if (!data) {
-                return {
-                    type: SearchResultType.NOT_FOUND,
-                    source: AudioMediaSource.YOUTUBE,
-                    requester: requester,
-                    items: []
+            const data = await ytdl.exec(
+                "https://www.youtube.com/results?search_query=" + url,
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    playlistEnd: 1
                 }
-            }
+            );
 
-            if (data.live || data.duration === 0) item = createLiveStream(data, requester);
-            else item = createTrack(data, requester);
+            const dataJSON = JSON.parse(data.stdout);
+
+            if (dataJSON.live_status === "is_live") item = createLiveStream(dataJSON.entries[0], requester);
+            else item = createTrack(dataJSON.entries[0], requester);
         }
         else {
             return {
@@ -169,14 +164,24 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
             }
         }
     }
-    catch (e) {
-        console.error(e);
+    catch (e: any) {
+        if (e.stderr.includes("404")) {
+            return {
+                type: SearchResultType.NOT_FOUND,
+                source: AudioMediaSource.YOUTUBE,
+                requester: requester,
+                items: []
+            }
+        }
+        else {
+            console.error(e);
 
-        return {
-            type: SearchResultType.ERROR,
-            source: AudioMediaSource.YOUTUBE,
-            requester: requester,
-            items: []
+            return {
+                type: SearchResultType.ERROR,
+                source: AudioMediaSource.YOUTUBE,
+                requester: requester,
+                items: []
+            }
         }
     }
 
@@ -188,60 +193,60 @@ export async function searchYouTubeURL(url: string, options?: { requester?: User
     }
 }
 
-function createLiveStream(data: Video, requester: User | null): LiveStream {
+function createLiveStream(data: any, requester: User | null): LiveStream {
     return new LiveStream(
         AudioMediaSource.YOUTUBE,
         requester,
         data.url,
-        data.title!,
+        data.title,
         [
             {
-                url: data.channel?.url,
-                name: data.channel?.name ?? "undefined",
-                imageURL: data.channel?.icon.url
+                url: data.channel_url,
+                name: data.channel,
+                imageURL: undefined
             }
         ],
-        data.thumbnail?.url ?? null,
+        data.thumbnails[0].url,
     )
 }
 
-function createPlaylist(data: _Playlist, requester: User | null): Playlist {
-    const tracks: Track[] = [];
+function createPlaylist(data: any, requester: User | null): Playlist {
+    const tracks = [];
 
-    for (let i = 0; i < data.videos.length; i++) {
-        tracks.push(createTrack(data.videos[i], requester));
+    for (let i = 0; i < data.entries.length; i++) {
+        tracks.push(createTrack(data.entries[i], requester));
     }
 
     return new Playlist(
         AudioMediaSource.YOUTUBE,
         requester,
-        data.url!,
-        data.title!,
+        data.webpage_url,
+        data.title,
         {
-            url: data.channel?.url,
-            name: data.channel?.name ?? "undefined",
-            imageURL: data.channel?.icon.url
+            url: data.channel_url,
+            name: data.channel,
+            imageURL: undefined
         },
-        data.thumbnail?.url ?? null,
+        data.thumbnails[0].url,
         tracks
     );
 }
 
-function createTrack(data: Video, requester: User | null): Track {
+function createTrack(data: any, requester: User | null): Track {
     return new Track(
         AudioMediaSource.YOUTUBE,
         requester,
         data.url,
-        data.title!,
+        data.title,
         [
             {
-                url: data.channel?.url,
-                name: data.channel?.name ?? "undefined",
-                imageURL: data.channel?.icon.url
+                url: data.channel_url ?? undefined,
+                name: data.channel ?? "undefined",
+                imageURL: undefined
             }
         ],
         null,
-        data.thumbnail!.url ?? null,
-        data.duration
+        data.thumbnails[0].url,
+        data.duration * 1000
     );
 }

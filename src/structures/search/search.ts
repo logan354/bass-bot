@@ -4,7 +4,7 @@ import SearchResult from "./SearchResult";
 import { searchSoundCloud, searchSoundCloudURL } from "./extractors/soundcloud";
 import { searchSpotifyURL } from "./extractors/spotify";
 import { searchYouTube, searchYouTubeURL } from "./extractors/youtube";
-import { searchYouTubeMusicURL } from "./extractors/youtubeMusic";
+import { searchYouTubeMusic, searchYouTubeMusicURL } from "./extractors/youtubeMusic";
 import { AudioMediaSource, AudioMediaType, BASE_SOUNDCLOUD_REGEX, BASE_SPOTIFY_REGEX, BASE_YOUTUBE_MUSIC_REGEX, BASE_YOUTUBE_REGEX, SearchResultType } from "../../utils/constants";
 
 export const URLType = {
@@ -30,6 +30,7 @@ export async function search(query: string, source: AudioMediaSource, options?: 
     const requester = options?.requester ?? null;
 
     if (source === AudioMediaSource.YOUTUBE) return await searchYouTube(query, options);
+    else if (source === AudioMediaSource.YOUTUBE_MUSIC) return await searchYouTubeMusic(query, options);
     else if (source === AudioMediaSource.SOUNDCLOUD) return await searchSoundCloud(query, options);
     else {
         return {
