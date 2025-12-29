@@ -2,7 +2,7 @@ import { Message, SendableChannels, Snowflake, VoiceBasedChannel } from "discord
 import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerState, AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel, NoSubscriberBehavior, VoiceConnection, VoiceConnectionDisconnectReason, VoiceConnectionState, VoiceConnectionStatus } from "@discordjs/voice";
 import { promisify } from "node:util";
 import { FFmpeg } from "prism-media";
-import youtubeDl from "youtube-dl-exec";
+import ytdl from "youtube-dl-exec";
 
 import PlayerManager from "./PlayerManager";
 import Queue from "../queue/Queue";
@@ -17,8 +17,7 @@ const wait = promisify(setTimeout);
 
 const defaultPlayerState = (): PlayerState => ({
     message: null,
-    seekDuration: 0,
-    streamURL: null
+    seekDuration: 0
 });
 
 interface PlayerState {
@@ -28,8 +27,6 @@ interface PlayerState {
     } | null;
 
     seekDuration: number;
-
-    streamURL: string | null;
 }
 
 class Player {
@@ -160,18 +157,12 @@ class Player {
                      * The queue is then processed to start playing the next track, if one is available.
                      */
                     // State
-                    if (this.queue.repeatMode !== RepeatMode.ONE) {
-                        this.closeMessage(false);
-                        this.state.streamURL = null;
-                    }
+                    if (this.queue.repeatMode !== RepeatMode.ONE) this.closeMessage(false);
 
                     this.state.seekDuration = 0;
 
                     // Queue
-                    if (this.queue.lock) {
-                        this.queue.next();
-                        this.queue.lock = true;
-                    }
+                    if (this.queue.lock) this.queue.next(true);
                     else this.queue.lock = true;
 
                     // Player
@@ -203,31 +194,73 @@ class Player {
     /**
      * Plays the queue, or a queueable audio media item.
      * Defaults item: first queue item.
-     * @param options
+     * @param item
      * @async
      * @returns
      */
-    async play(options?: { item: QueueableAudioMedia }): Promise<void> {
-        let item = this.queue.items[0];
+    async play(item?: QueueableAudioMedia): Promise<void> {
+        if (!this.audioPlayer) return;
 
-        if (options) {
-            if (options.item) item = options.item;
-        }
-
-        if (this.queue.isEmpty()) {
-            this.textChannel.send(await createQueueEmptyMessage(this.playerManager.bot));
+        if (item) {
+            this.queue.remove(0);
+            this.queue.add(item, 0);
         }
         else {
-            if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
-                const liveStream = item as LiveStream;
-                await this.playLiveStream(liveStream);
+            if (this.queue.isEmpty()) {
+                this.textChannel.send(await createQueueEmptyMessage(this.playerManager.bot));
+                return;
             }
-            else if (item.type === QueueableAudioMediaType.TRACK) {
-                const track = item as Track;
-                await this.playTrack(track);
-            }
-            else return;
+
+            item = this.queue.items[0];
         }
+
+        let streamURL = null;
+
+        if (item.streamURL) streamURL = item.streamURL;
+        else {
+            // Convert Spotify to YouTube
+            if (item.source === AudioMediaSource.SPOTIFY) {
+                if (item.type === QueueableAudioMediaType.TRACK) {
+                    const track = item as Track;
+
+                    this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
+
+                    const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
+                        type: track.type,
+                        count: 1,
+                        requester: track.requester
+                    });
+
+                    item = result.items[0] as QueueableAudioMedia;
+                }
+                else {
+                    // Skipped
+                    return;
+                }
+            }
+
+            // Downloader
+            if (item.source === AudioMediaSource.YOUTUBE || item.source === AudioMediaSource.YOUTUBE_MUSIC || item.source === AudioMediaSource.SOUNDCLOUD) {
+                streamURL = await this.getStreamURL(item);
+                item.streamURL = streamURL!;
+            }
+            else {                
+                this.queue.next(true);
+                this.play();
+
+                // Skipped Embed
+                return;
+            }
+        }
+
+        const stream = this.createFFmpegStream(streamURL);
+
+        const resource = createAudioResource(stream, {
+            inlineVolume: true,
+            metadata: item
+        });
+
+        this.audioPlayer.play(resource);
     }
 
     /**
@@ -267,7 +300,7 @@ class Player {
     skipToNext(position?: number) {
         if (!this.audioPlayer) return;
 
-        this.queue.next(position);
+        this.queue.next(false, position);
         this.stop();
     }
 
@@ -277,7 +310,7 @@ class Player {
     skipToPrevious() {
         if (!this.audioPlayer) return;
 
-        this.queue.previous();
+        this.queue.previous(false);
         this.stop();
     }
 
@@ -293,7 +326,7 @@ class Player {
 
         if (item.type === QueueableAudioMediaType.LIVE_STREAM) return;
         else if (item.type === QueueableAudioMediaType.TRACK) {
-            const stream = this.createFFmpegStream(this.state.streamURL, { seek: milliseconds });
+            const stream = this.createFFmpegStream(item.streamURL, milliseconds);
 
             const resource = createAudioResource(stream, {
                 inlineVolume: true,
@@ -362,88 +395,38 @@ class Player {
         return this.audioPlayer.state.status === AudioPlayerStatus.Paused;
     }
 
-    private async playLiveStream(liveStream: LiveStream): Promise<void> {
-        let streamURL;
+    async getStreamURL(item: QueueableAudioMedia): Promise<string | undefined> {
+        let url;
 
-        if (liveStream.source === AudioMediaSource.YOUTUBE || liveStream.source === AudioMediaSource.YOUTUBE_MUSIC) {
-            streamURL = await this.getGenericStreamURL(liveStream);
+        if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
+            const liveStream = item as LiveStream;
+            url = liveStream.url;
         }
-        else return;
+        else if (item.type === QueueableAudioMediaType.TRACK) {
+            const track = item as Track;
+            url = track.url;
+        }
+        else return undefined;
 
-        const stream = this.createFFmpegStream(streamURL);
+        const data = await ytdl.exec(
+            url,
+            {
+                dumpSingleJson: true,
+                extractAudio: true
+            }
+        );
 
-        const resource = createAudioResource(stream, {
-            inlineVolume: true,
-            metadata: liveStream
-        });
+        const dataJSON = JSON.parse(data.stdout);
 
-        this.audioPlayer?.play(resource);
+        return dataJSON.url;
     }
 
-    /**
-     * Plays a track.
-     * Defaults seek: 0.
-     * @param track
-     * @param options
-     * @async
-     * @returns
-     */
-    private async playTrack(track: Track): Promise<void> {
-        // Converter
-        if (track.source === AudioMediaSource.SPOTIFY) {
-            // Converting message
-            this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
-
-            const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
-                type: track.type,
-                count: 1,
-                requester: track.requester
-            });
-
-            track = result.items[0] as Track;
-
-            this.queue.remove(0);
-            this.queue.add(track, 0);
-        }
-
-        let input = null;
-
-        // Downloader
-        if (this.state.streamURL) input = this.state.streamURL;
-        else {
-            if (track.source === AudioMediaSource.YOUTUBE || track.source === AudioMediaSource.YOUTUBE_MUSIC) {
-                input = await this.getGenericStreamURL(track);
-            }
-            else if (track.source === AudioMediaSource.SOUNDCLOUD) {
-                return;
-            }
-        }
-
-        this.state.streamURL = input;
-
-        // FFMPEG
-        const stream = this.createFFmpegStream(input);
-
-        const resource = createAudioResource(stream, {
-            inlineVolume: true,
-            metadata: track
-        });
-
-        this.audioPlayer?.play(resource);
-    }
-
-    private createFFmpegStream(stream: any, options?: { seek?: number }) {
-        let seek = null;
-
-        if (options) {
-            if (options.seek) seek = options.seek;
-        }
-
+    private createFFmpegStream(streamURL: any, seek?: number) {
         let args = [
             "-reconnect", "1",
             "-reconnect_streamed", "1",
             "-reconnect_delay_max", "5",
-            "-i", stream,
+            "-i", streamURL,
             "-analyzeduration", "0",
             "-loglevel", "0",
             "-f", "opus",
@@ -458,38 +441,9 @@ class Player {
             this.state.seekDuration = seek;
         }
 
-        const ffmpegStream = new FFmpeg({ args: args });
+        const stream = new FFmpeg({ args: args });
 
-        return ffmpegStream;
-    }
-
-    async getGenericStreamURL(item: QueueableAudioMedia): Promise<string> {
-        let url;
-
-        if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
-            const liveStream = item as LiveStream;
-            url = liveStream.url;
-        }
-        else {
-            const track = item as Track;
-            url = track.url;
-        }
-
-        const data = await youtubeDl.exec(
-            url,
-            {
-                dumpSingleJson: true,
-                noCheckCertificates: true,
-                noWarnings: true,
-                preferFreeFormats: true,
-                skipDownload: true,
-                extractAudio: true,
-            }
-        );
-
-        const dataJSON = JSON.parse(data.stdout);
-
-        return dataJSON.url;
+        return stream;
     }
 
     async createMessage(): Promise<void> {

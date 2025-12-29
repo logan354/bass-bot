@@ -48,7 +48,7 @@ export default class Queue {
      * @param position
      * @returns 
      */
-    next(position?: number) {
+    next(lock: boolean, position?: number) {
         if (this.isEmpty()) return;
 
         if (position && position < 1) return;
@@ -82,14 +82,14 @@ export default class Queue {
             this.previousItems.unshift(currentItem);
         }
 
-        this.lock = false;
+        this.lock = lock;
     }
 
     /**
      * Move to the next item in the previous queue
      * @returns 
      */
-    previous() {
+    previous(lock: boolean) {
         if (this.isEmpty() || this.isPreviousEmpty()) return;
 
         const currentItem = this.items[0];
@@ -104,7 +104,7 @@ export default class Queue {
             this.previousItems.shift();
         }
 
-        this.lock = false;
+        this.lock = lock;
     }
 
     /**

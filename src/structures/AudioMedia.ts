@@ -22,6 +22,8 @@ export abstract class AudioMedia {
 export abstract class QueueableAudioMedia extends AudioMedia {
     override type: QueueableAudioMediaType;
 
+    streamURL: string | null;
+
     constructor(type: QueueableAudioMediaType, source: AudioMediaSource, requester: User | null) {
         super(
             type,
@@ -31,6 +33,7 @@ export abstract class QueueableAudioMedia extends AudioMedia {
         )
 
         this.type = type;
+        this.streamURL = null;
     }
 }
 
