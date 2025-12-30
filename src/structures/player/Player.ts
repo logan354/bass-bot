@@ -237,6 +237,9 @@ class Player {
                     // Skipped
                     return;
                 }
+
+                this.queue.remove(0);
+                this.queue.add(item, 0);
             }
 
             // Downloader
@@ -244,7 +247,7 @@ class Player {
                 streamURL = await this.getStreamURL(item);
                 item.streamURL = streamURL!;
             }
-            else {                
+            else {
                 this.queue.next(true);
                 this.play();
 
