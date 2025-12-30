@@ -148,7 +148,6 @@ function createPlaylist(data: any, requester: User | null): Playlist {
 }
 
 function createTrack(data: any, requester: User | null): Track {
-    console.log(data.visualIdentity.image)
     return new Track(
         AudioMediaSource.SPOTIFY,
         requester,
