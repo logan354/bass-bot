@@ -8,6 +8,7 @@ import { AudioMediaSource, AudioMediaType, SearchResultType, SOUNDCLOUD_REGEX } 
 /**
  * Searches a query on SoundCloud.
  * Defaults type: TRACK, count: 1, requester: null.
+ * Limited due to lack of support from yt-dlp
  * @param query 
  * @param options 
  * @async
@@ -80,6 +81,7 @@ export async function searchSoundCloud(
 /**
  * Searches a SoundCloud URL.
  * Defaults requester: null
+ * Limited due to lack of support from yt-dlp
  * @param url 
  * @param type 
  * @async
