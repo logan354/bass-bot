@@ -2,8 +2,8 @@ import { User } from "discord.js";
 import ytdl from "youtube-dl-exec";
 
 import SearchResult from "../SearchResult";
-import { AudioMediaSource, AudioMediaType, SearchResultType, SOUNDCLOUD_REGEX } from "../../../utils/constants";
 import Track from "../../models/Track";
+import { AudioMediaSource, AudioMediaType, SearchResultType, SOUNDCLOUD_REGEX } from "../../../utils/constants";
 
 /**
  * Searches a query on SoundCloud.
