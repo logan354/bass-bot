@@ -10,7 +10,7 @@ import { QueueableAudioMedia } from "../AudioMedia";
 import { AudioMediaSource, QueueableAudioMediaType, RepeatMode } from "../../utils/constants";
 import { searchYouTube } from "../search/extractors/youtube";
 import Track from "../models/Track";
-import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createTrackConvertingEmbed } from "../../utils/components";
+import { createPlayerActionRows, createPlayerEmbed, createQueueEmptyMessage, createConvertingEmbed } from "../../utils/components";
 import LiveStream from "../models/LiveStream";
 
 const wait = promisify(setTimeout);
@@ -223,7 +223,7 @@ class Player {
                 if (item.type === QueueableAudioMediaType.TRACK) {
                     const track = item as Track;
 
-                    this.textChannel.send({ embeds: [createTrackConvertingEmbed(track)] });
+                    this.textChannel.send({ embeds: [createConvertingEmbed(track)] });
 
                     const result = await searchYouTube(`${track.title} - ${track.artists[0].name}`, {
                         type: track.type,

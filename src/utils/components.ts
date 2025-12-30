@@ -333,19 +333,33 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
     return actionRowBuilders;
 }
 
-export function createTrackConvertingEmbed(track: Track): EmbedBuilder {
-    const color = getAudioMediaSourceEmbedColor(track.source);
-    const iconURL = getAudioMediaSourceIconURL(track.source);
+export function createConvertingEmbed(item: QueueableAudioMedia): EmbedBuilder {
+    const color = getAudioMediaSourceEmbedColor(item.source);
+    const iconURL = getAudioMediaSourceIconURL(item.source);
 
-    return new EmbedBuilder()
+    const embed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({
             name: "Converting",
             iconURL: iconURL
         })
-        .setDescription(createTrackString(track, true, true))
-        .setThumbnail(track.imageURL)
         .setTimestamp();
+
+    if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
+        const liveStream = item as LiveStream;
+
+        embed.setDescription(createLiveStreamString(liveStream, true))
+        embed.setThumbnail(liveStream.imageURL)
+
+    }
+    else if (item.type === QueueableAudioMediaType.TRACK) {
+        const track = item as Track;
+
+        embed.setDescription(createTrackString(track, true, true))
+        embed.setThumbnail(track.imageURL)
+    }
+
+    return embed;
 }
 
 export async function createQueueEmptyMessage(bot: Bot): Promise<string> {
@@ -400,17 +414,17 @@ export function createQueueEmbed(items: QueueableAudioMedia[]): EmbedBuilder {
         .setTimestamp();
 }
 
-export function createRemovedEmbed(item: QueueableAudioMedia) {    
+export function createRemovedEmbed(item: QueueableAudioMedia) {
     const color = getAudioMediaSourceEmbedColor(item.source);
     const iconURL = getAudioMediaSourceIconURL(item.source);
 
     const embedBuilder = new EmbedBuilder()
-    .setColor(color)
-    .setAuthor({
-        name: "Removed",
-        iconURL: iconURL
-    })
-    .setTimestamp();
+        .setColor(color)
+        .setAuthor({
+            name: "Removed",
+            iconURL: iconURL
+        })
+        .setTimestamp();
 
     if (item.type === QueueableAudioMediaType.LIVE_STREAM) embedBuilder.setDescription(createLiveStreamString(item as LiveStream, true));
     else if (item.type === QueueableAudioMediaType.TRACK) embedBuilder.setDescription(createTrackString(item as Track, true, true));
