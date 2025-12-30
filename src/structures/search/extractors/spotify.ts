@@ -101,7 +101,7 @@ function createAlbum(data: any, requester: User | null): Album {
                 imageURL: null
             }
         }),
-        data.visualIdentity.image[data.visualIdentity.image - 1].url,
+        data.visualIdentity.image[data.visualIdentity.image.length - 1].url,
         tracks
     );
 }
@@ -142,12 +142,13 @@ function createPlaylist(data: any, requester: User | null): Playlist {
                 imageURL: null
             }
         }),
-        data.visualIdentity.image[data.visualIdentity.image - 1].url,
+        data.visualIdentity.image[data.visualIdentity.image.length - 1].url,
         tracks
     );
 }
 
 function createTrack(data: any, requester: User | null): Track {
+    console.log(data.visualIdentity.image)
     return new Track(
         AudioMediaSource.SPOTIFY,
         requester,
@@ -161,7 +162,7 @@ function createTrack(data: any, requester: User | null): Track {
             }
         }),
         null,
-        data.visualIdentity.image[data.visualIdentity.image - 1].url,
+        data.visualIdentity.image[data.visualIdentity.image.length - 1].url,
         data.duration
     );
 }
