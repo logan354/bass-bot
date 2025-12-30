@@ -94,7 +94,6 @@ export default {
                 const album = searchResult.items[0] as Album;
 
                 album.tracks.forEach((x) => player.queue.add(x));
-
                 embed = createAlbumQueuedEmbed(album);
             }
             else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
@@ -107,14 +106,12 @@ export default {
                 const playlist = searchResult.items[0] as Playlist;
 
                 playlist.tracks.forEach((x) => player.queue.add(x));
-
                 embed = createPlaylistQueuedEmbed(playlist);
             }
             else if (searchResult.items[0].type === AudioMediaType.TRACK) {
                 const track = searchResult.items[0] as Track;
 
                 player.queue.add(track);
-
                 embed = createTrackQueuedEmbed(track);
             }
 
@@ -157,10 +154,6 @@ export default {
                         .setEmoji("⬅️")
                         .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
-                        .setCustomId("search-result-clear-button" + ".id" + id)
-                        .setEmoji("❌")
-                        .setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder()
                         .setCustomId("search-result-next-button" + ".id" + id)
                         .setEmoji("➡️")
                         .setStyle(ButtonStyle.Primary)
@@ -188,7 +181,6 @@ export default {
                         const album = searchResult.items[Number(x.values[0])] as Album;
 
                         album.tracks.forEach((x) => player.queue.add(x));
-
                         embed = createAlbumQueuedEmbed(album);
                     }
                     else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
@@ -201,14 +193,12 @@ export default {
                         const playlist = searchResult.items[Number(x.values[0])] as Playlist;
 
                         playlist.tracks.forEach((x) => player.queue.add(x));
-
                         embed = createPlaylistQueuedEmbed(playlist);
                     }
                     else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.TRACK) {
                         const track = searchResult.items[Number(x.values[0])] as Track;
 
                         player.queue.add(track);
-
                         embed = createTrackQueuedEmbed(track);
                     }
 
@@ -226,11 +216,6 @@ export default {
 
                         await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2] });
                     }
-                    else if (x.customId.startsWith("search-result-clear-button")) {
-                        messageComponentCollector.stop();
-
-                        await x.update({ content: emojis.pending + " Cleared", embeds: [], components: [] });
-                    }
                     else if (x.customId.startsWith("search-result-next-button")) {
                         currentItems++;
 
@@ -245,9 +230,7 @@ export default {
             });
 
             messageComponentCollector.on("end", async (collected, reason) => {
-                if (reason === "time") {
-                    await interaction.editReply({ content: emojis.error + " Confirmation not received within 1 minute, cancelling", components: [], embeds: [] });
-                }
+                if (reason === "time") await interaction.editReply({ content: emojis.error + " **Confirmation not received within 1 minute, cancelling**", components: [], embeds: [] });
             });
         }
         else if (searchResult.type === SearchResultType.NOT_FOUND) await interaction.editReply(emojis.error + " **Not Found.**");
