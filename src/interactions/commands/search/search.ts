@@ -160,7 +160,7 @@ export default {
                 );
 
             actionRow2.components[0].setDisabled(true);
-            if (embedBuilders.length <= 1) actionRow2.components[2].setDisabled(true);
+            if (embedBuilders.length <= 1) actionRow2.components[1].setDisabled(true);
 
             const message = await interaction.editReply({ content: null, embeds: [embedBuilders[currentItems]], components: [actionRowBuilders[currentItems], actionRow2] });
 
@@ -212,7 +212,7 @@ export default {
                         currentItems--;
 
                         if (currentItems <= 0) actionRow2.components[0].setDisabled(true);
-                        actionRow2.components[2].setDisabled(false);
+                        actionRow2.components[1].setDisabled(false);
 
                         await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2] });
                     }
@@ -220,7 +220,7 @@ export default {
                         currentItems++;
 
                         actionRow2.components[0].setDisabled(false);
-                        if (currentItems >= embedBuilders.length - 1) actionRow2.components[2].setDisabled(true);
+                        if (currentItems >= embedBuilders.length - 1) actionRow2.components[1].setDisabled(true);
 
                         await x.update({ embeds: [embedBuilders[currentItems]], components: [actionRow2] });
                     }
