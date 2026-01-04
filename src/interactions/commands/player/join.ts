@@ -33,6 +33,7 @@ export default {
         let player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!player) player = bot.playerManager.createPlayer(interaction.guild.id, interaction.channel);
+        else player.setTextChannel(interaction.channel);
 
         await interaction.reply(emojis.pending + " **Connecting...**");
 
