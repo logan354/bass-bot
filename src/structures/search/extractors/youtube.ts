@@ -19,14 +19,35 @@ export async function searchYouTube(
     query: string,
     options?: { type?: AudioMediaType, count?: number, requester?: User | null }
 ): Promise<SearchResult> {
-    const type = options?.type ?? AudioMediaType.TRACK;
+    const type = options?.type;
     const count = options?.count ?? 1;
     const requester = options?.requester ?? null;
 
     let items = [];
 
     try {
-        if (type === AudioMediaType.LIVE_STREAM) {
+        if (!type) {
+            const data = await ytdl.exec(
+                "https://www.youtube.com/results?search_query=" + query,
+                {
+                    dumpSingleJson: true,
+                    flatPlaylist: true,
+                    playlistEnd: count,
+                }
+            );
+
+            const dataJSON = JSON.parse(data.stdout);
+
+            for (let i = 0; i < dataJSON.entries.length; i++) {
+                if (String(dataJSON.entries[i].url).match(YOUTUBE_REGEX.PLAYLIST)) items.push(createPlaylist(dataJSON.entries[i], requester));
+                else if (String(dataJSON.entries[i].url).match(YOUTUBE_REGEX.VIDEO)) {
+                    if (dataJSON.entries[i].live_status === "is_live") items.push(createLiveStream(dataJSON.entries[i], requester));
+                    else items.push(createTrack(dataJSON.entries[i], requester));
+                }
+                else continue;
+            }
+        }
+        else if (type === AudioMediaType.LIVE_STREAM) {
             const data = await ytdl.exec(
                 "https://www.youtube.com/results?search_query=" + query + "&sp=EgJAAQ%253D%253D",
                 {
