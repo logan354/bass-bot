@@ -199,68 +199,55 @@ export function createTrackQueuedEmbed(track: Track): EmbedBuilder {
 }
 
 export function createPlayerEmbed(player: Player): EmbedBuilder {
-    if (player.queue.isEmpty()) {
-        return new EmbedBuilder()
-            .setColor(Colors.Default)
-            .setAuthor({
-                name: "Not Playing",
-                iconURL: player.playerManager.bot.user.avatarURL() ?? undefined
-            })
-            .setTimestamp();
-    }
-    else {
-        const currentlyPlayingItem = player.queue.get(0);
+    const item = player.queue.get(0);
 
-        const color = getAudioMediaSourceEmbedColor(currentlyPlayingItem.source);
-        const iconURL = getAudioMediaSourceIconURL(currentlyPlayingItem.source);
+    const color = getAudioMediaSourceEmbedColor(item.source);
+    const iconURL = getAudioMediaSourceIconURL(item.source);
 
-        const playerStatus = player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played";
+    const embedBuilder = new EmbedBuilder()
+        .setColor(color)
+        .setAuthor({
+            name: player.isPlaying() ? player.isPaused() ? "Paused" : "Playing" : "Played",
+            iconURL: iconURL
+        })
+        .setTimestamp();
 
-        const embedBuilder = new EmbedBuilder()
-            .setColor(color)
-            .setAuthor({
-                name: playerStatus,
-                iconURL: iconURL
-            })
-            .setTimestamp();
+    if (item.type === QueueableAudioMediaType.LIVE_STREAM) {
+        const liveStream = item as LiveStream;
 
-        if (currentlyPlayingItem.type === QueueableAudioMediaType.LIVE_STREAM) {
-            const liveStream = currentlyPlayingItem as LiveStream;
+        embedBuilder.setThumbnail(liveStream.imageURL);
+        embedBuilder.setDescription(createLiveStreamString(liveStream, true));
 
-            embedBuilder.setThumbnail(liveStream.imageURL);
-            embedBuilder.setDescription(createLiveStreamString(liveStream, true));
+        if (player.isPlaying()) {
+            const playbackDuration = player.playbackDuration()!;
 
-            if (player.isPlaying()) {
-                const playbackDuration = player.playbackDuration()!;
-
-                embedBuilder.addFields(
-                    {
-                        name: createProgressBar(playbackDuration, playbackDuration, false),
-                        value: "`" + formatTimestamp(playbackDuration) + "` **/** `LIVE`",
-                    }
-                )
-            }
+            embedBuilder.addFields(
+                {
+                    name: createProgressBar(playbackDuration, playbackDuration, false),
+                    value: "`" + formatTimestamp(playbackDuration) + "` **/** `LIVE`",
+                }
+            )
         }
-        else if (currentlyPlayingItem.type === QueueableAudioMediaType.TRACK) {
-            const track = currentlyPlayingItem as Track;
-
-            embedBuilder.setThumbnail(track.imageURL);
-            embedBuilder.setDescription(createTrackString(track, true, true));
-
-            if (player.isPlaying()) {
-                const playbackDuration = player.playbackDuration()!;
-
-                embedBuilder.addFields(
-                    {
-                        name: createProgressBar(playbackDuration, track.duration, false),
-                        value: "`" + formatTimestamp(playbackDuration) + "` **/** `" + formatTimestamp(track.duration) + "`",
-                    }
-                )
-            }
-        }
-
-        return embedBuilder;
     }
+    else if (item.type === QueueableAudioMediaType.TRACK) {
+        const track = item as Track;
+
+        embedBuilder.setThumbnail(track.imageURL);
+        embedBuilder.setDescription(createTrackString(track, true, true));
+
+        if (player.isPlaying()) {
+            const playbackDuration = player.playbackDuration()!;
+
+            embedBuilder.addFields(
+                {
+                    name: createProgressBar(playbackDuration, track.duration, false),
+                    value: "`" + formatTimestamp(playbackDuration) + "` **/** `" + formatTimestamp(track.duration) + "`",
+                }
+            )
+        }
+    }
+
+    return embedBuilder;
 }
 
 export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonBuilder>[] {
