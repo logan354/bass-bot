@@ -66,19 +66,16 @@ export function createSearchResultEmbed(items: AudioMedia[], source: AudioMediaS
 
     for (let i = 0; i < items.length; i++) {
         if (items[i].type === AudioMediaType.ALBUM) {
-            const album = items[i] as Album;
-
-            strings.push("`" + (i + 1) + ".` " + createAlbumString(album, false, false, false));
+            strings.push("`" + (i + 1) + ".` " + createAlbumString(items[i] as Album, false, false, false));
+        }
+        else if (items[i].type === AudioMediaType.LIVE_STREAM) {
+            strings.push("`" + (i + 1) + ".` " + createLiveStreamString(items[i] as LiveStream, false));
         }
         else if (items[i].type === AudioMediaType.PLAYLIST) {
-            const playlist = items[i] as Playlist;
-
-            strings.push("`" + (i + 1) + ".` " + createPlaylistString(playlist, false, false, false));
+            strings.push("`" + (i + 1) + ".` " + createPlaylistString(items[i] as Playlist, false, false, false));
         }
         else if (items[i].type === AudioMediaType.TRACK) {
-            const track = items[i] as Track;
-
-            strings.push("`" + (i + 1) + ".` " + createTrackString(track, true, false));
+            strings.push("`" + (i + 1) + ".` " + createTrackString(items[i] as Track, true, false));
         }
     }
 
@@ -104,6 +101,15 @@ export function createSearchResultStringSelectMenu(items: AudioMedia[], id: stri
                     return {
                         label: album.title,
                         description: album.artists.map((x) => x.name).join(", "),
+                        value: i.toString()
+                    }
+                }
+                else if (items[i].type === AudioMediaType.LIVE_STREAM) {
+                    const liveStream = items[i] as LiveStream;
+
+                    return {
+                        label: liveStream.title,
+                        description: liveStream.artists.map((x) => x.name).join(", "),
                         value: i.toString()
                     }
                 }
