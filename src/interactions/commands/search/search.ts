@@ -10,7 +10,7 @@ import { createSearchResultEmbed, createTrackQueuedEmbed, createPlaylistQueuedEm
 import { AudioMediaSource, AudioMediaType, SearchResultType } from "../../../utils/constants";
 import { emojis } from "../../../../config.json";
 
-const sourceChoices = [
+export const sourceChoices = [
     {
         name: "YouTube",
         value: AudioMediaSource.YOUTUBE
@@ -21,26 +21,51 @@ const sourceChoices = [
     }
 ];
 
+export const typeChoices = [
+    {
+        name: "Album",
+        value: AudioMediaType.ALBUM
+    },
+    {
+        name: "Live Stream",
+        value: AudioMediaType.LIVE_STREAM
+    },
+    {
+        name: "Playlist",
+        value: AudioMediaType.PLAYLIST
+    },
+    {
+        name: "Track",
+        value: AudioMediaType.TRACK
+    }
+]
+
 export default {
     name: "search",
     category: "Search",
     data: new SlashCommandBuilder()
         .setName("search")
         .setDescription("Searches for an item, and adds it to the queue.")
-        .addStringOption(option =>
+        .addStringOption((option) =>
             option.setName("query")
                 .setDescription("Enter a query or link.")
                 .setRequired(true)
         )
-        .addStringOption(option =>
+        .addStringOption((option) =>
             option.setName("source")
-                .setDescription("Enter a source to search from.")
+                .setDescription("Enter a source to search from. Defaults to 'Youtube'")
                 .addChoices(sourceChoices)
                 .setRequired(false)
         )
-        .addBooleanOption(option =>
+        .addStringOption((option) =>
+            option.setName("type")
+                .setDescription("Enter a type to search for. Defaults to 'Track'")
+                .addChoices(typeChoices)
+                .setRequired(false)
+        )
+        .addBooleanOption((option) =>
             option.setName("play-now")
-                .setDescription("Whether to play the item now.")
+                .setDescription("Whether to play the item now. Defaults to 'false'")
                 .setRequired(false)
         ),
     async execute(bot, interaction) {
@@ -72,19 +97,32 @@ export default {
             return;
         }
 
-        const queryOption = interaction.options.getString("query")!;
+        const queryOption = interaction.options.getString("query", true);
         const sourceOption = interaction.options.getString("source") as AudioMediaSource;
+        const typeOption = interaction.options.getString("type") as AudioMediaType ?? AudioMediaType.TRACK;
+        const playNowOption = interaction.options.getBoolean("play-now") ?? false;
 
         await interaction.reply({ content: emojis.searching + " **Searching...** `" + queryOption + "`", flags: MessageFlags.Ephemeral });
 
         let searchResult = null;
 
-        if (sourceOption) searchResult = await search(queryOption, sourceOption, { count: 5, requester: interaction.user });
+        if (sourceOption) {
+            searchResult = await search(
+                queryOption,
+                sourceOption,
+                { type: typeOption, count: 5, requester: interaction.user }
+            );
+        }
         else {
             searchResult = await searchURL(queryOption, { requester: interaction.user });
 
-            // Default to YouTube search
-            if (searchResult.type === SearchResultType.NOT_FOUND) searchResult = await search(queryOption, AudioMediaSource.YOUTUBE, { count: 5, requester: interaction.user });
+            if (searchResult.type === SearchResultType.NOT_FOUND) {
+                searchResult = await search(
+                    queryOption,
+                    AudioMediaSource.YOUTUBE,
+                    { type: typeOption, count: 5, requester: interaction.user }
+                );
+            }
         }
 
         if (searchResult.type === SearchResultType.FOUND) {
@@ -175,7 +213,7 @@ export default {
                 if (x.isStringSelectMenu() && x.customId.startsWith("search-result-select-string-menu")) {
                     messageComponentCollector.stop()
 
-                    let embed;
+                    let embed = null;
 
                     if (searchResult.items[Number(x.values[0])].type === AudioMediaType.ALBUM) {
                         const album = searchResult.items[Number(x.values[0])] as Album;
@@ -183,7 +221,7 @@ export default {
                         album.tracks.forEach((x) => player.queue.add(x));
                         embed = createAlbumQueuedEmbed(album);
                     }
-                    else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
+                    else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.LIVE_STREAM) {
                         const liveStream = searchResult.items[0] as LiveStream
 
                         player.queue.add(liveStream);
