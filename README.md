@@ -74,8 +74,8 @@ A music bot for Discord. Turn up the music with Bass! Supports YouTube, Youtube 
 - **shuffle**
 
 #### Search
-- **play** `[query]` `[source]` `[playnow]`
-- **search** `<query>` `[source]` `[playnow]`
+- **search** `<query>` `[source]` `type` `[playnow]`
+    - **play**
 
 #### Utility
 - **help** `[command]`
