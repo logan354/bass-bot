@@ -131,45 +131,25 @@ export default {
             if (searchResult.items[0].type === AudioMediaType.ALBUM) {
                 const album = searchResult.items[0] as Album;
 
-                if (playNowOption) {
-                    player.queue.add(album.tracks, 1);
-                    player.skipToNext();
-                }
-                else player.queue.add(album.tracks);
-
+                album.tracks.forEach((x) => player.queue.add(x));
                 embed = createAlbumQueuedEmbed(album);
             }
             else if (searchResult.items[0].type === AudioMediaType.LIVE_STREAM) {
                 const liveStream = searchResult.items[0] as LiveStream
 
-                if (playNowOption) {
-                    player.queue.add(liveStream, 1);
-                    player.skipToNext();
-                }
-                else player.queue.add(liveStream);
-
+                player.queue.add(liveStream);
                 embed = createLiveStreamQueuedEmbed(liveStream);
             }
             else if (searchResult.items[0].type === AudioMediaType.PLAYLIST) {
                 const playlist = searchResult.items[0] as Playlist;
 
-                if (playNowOption) {
-                    player.queue.add(playlist.tracks, 1);
-                    player.skipToNext();
-                }
-                else player.queue.add(playlist.tracks);
-
+                playlist.tracks.forEach((x) => player.queue.add(x));
                 embed = createPlaylistQueuedEmbed(playlist);
             }
             else if (searchResult.items[0].type === AudioMediaType.TRACK) {
                 const track = searchResult.items[0] as Track;
 
-                if (playNowOption) {
-                    player.queue.add(track, 1);
-                    player.skipToNext();
-                }
-                else player.queue.add(track);
-
+                player.queue.add(track);
                 embed = createTrackQueuedEmbed(track);
             }
 
@@ -238,45 +218,25 @@ export default {
                     if (searchResult.items[Number(x.values[0])].type === AudioMediaType.ALBUM) {
                         const album = searchResult.items[Number(x.values[0])] as Album;
 
-                        if (playNowOption) {
-                            player.queue.add(album.tracks, 1);
-                            player.skipToNext();
-                        }
-                        else player.queue.add(album.tracks);
-
+                        album.tracks.forEach((x) => player.queue.add(x));
                         embed = createAlbumQueuedEmbed(album);
                     }
                     else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.LIVE_STREAM) {
                         const liveStream = searchResult.items[0] as LiveStream
 
-                        if (playNowOption) {
-                            player.queue.add(liveStream, 1);
-                            player.skipToNext();
-                        }
-                        else player.queue.add(liveStream);
-
+                        player.queue.add(liveStream);
                         embed = createLiveStreamQueuedEmbed(liveStream);
                     }
                     else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.PLAYLIST) {
                         const playlist = searchResult.items[Number(x.values[0])] as Playlist;
 
-                        if (playNowOption) {
-                            player.queue.add(playlist.tracks, 1);
-                            player.skipToNext();
-                        }
-                        else player.queue.add(playlist.tracks);
-
+                        playlist.tracks.forEach((x) => player.queue.add(x));
                         embed = createPlaylistQueuedEmbed(playlist);
                     }
                     else if (searchResult.items[Number(x.values[0])].type === AudioMediaType.TRACK) {
                         const track = searchResult.items[Number(x.values[0])] as Track;
 
-                        if (playNowOption) {
-                            player.queue.add(track, 1);
-                            player.skipToNext();
-                        }
-                        else player.queue.add(track);
-
+                        player.queue.add(track);
                         embed = createTrackQueuedEmbed(track);
                     }
 
