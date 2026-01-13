@@ -21,9 +21,11 @@ export default class Queue {
      * @param item 
      * @param position 
      */
-    add(item: QueueableAudioMedia, position?: number) {
-        if (position !== undefined) this.items.splice(position, 0, item);
-        else this.items.push(item);
+    add(item: QueueableAudioMedia | QueueableAudioMedia[], position?: number) {
+        const items = Array.isArray(item) ? item : [item];
+
+        if (position !== undefined) this.items.splice(position, 0, ...items);
+        else this.items.push(...items);
     }
 
     /**
