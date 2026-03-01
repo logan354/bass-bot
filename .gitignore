@@ -4,6 +4,6 @@ dist/
 # Node
 node_modules/
 
-# Folders/Files
+# Files
 .env
 config.json

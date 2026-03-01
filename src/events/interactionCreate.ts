@@ -7,24 +7,32 @@ export default {
     name: Events.InteractionCreate,
     once: false,
     async execute(bot: Bot, interaction: Interaction) {
-        if (interaction.user.bot) return;
-
         if (interaction.isChatInputCommand()) {
             const command = bot.commands.get(interaction.commandName);
 
             if (command) {
                 try {
                     if (!interaction.inCachedGuild()) {
-                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
-                        else await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                        if (interaction.replied || interaction.deferred) {
+                            await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                        }
+                        else {
+                            await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                        }
                     }
-                    else await command.execute(bot, interaction);
+                    else {
+                        await command.execute(bot, interaction);
+                    }
                 }
                 catch (e) {
                     console.error(e);
 
-                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
-                    else await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                    }
+                    else {
+                        await interaction.reply({ content: "An error while executing this command", flags: MessageFlags.Ephemeral });
+                    }
                 }
             }
         }
@@ -34,16 +42,26 @@ export default {
             if (component) {
                 try {
                     if (!interaction.inCachedGuild()) {
-                        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
-                        else await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                        if (interaction.replied || interaction.deferred) {
+                            await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                        }
+                        else {
+                            await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                        }
                     }
-                    else await component.execute(bot, interaction);
+                    else {
+                        await component.execute(bot, interaction);
+                    }
                 }
                 catch (e) {
                     console.error(e);
 
-                    if (interaction.replied || interaction.deferred) await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
-                    else await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                    }
+                    else {
+                        await interaction.reply({ content: "An error while executing this component", flags: MessageFlags.Ephemeral });
+                    }
                 }
             }
         }
