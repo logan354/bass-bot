@@ -7,6 +7,6 @@ export default {
         const player = bot.playerManager.getPlayer(interaction.guild.id);
 
         if (!player) volumeCommand(bot, interaction, 100);
-        else volumeCommand(bot, interaction, player.volume - 10);
+        else volumeCommand(bot, interaction, player.getVolume() - 10);
     }
 } as Button;

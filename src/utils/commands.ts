@@ -335,5 +335,5 @@ export async function volumeCommand(bot: Bot, interaction: ChatInputCommandInter
     else volumeEmoji = emojis.volume_high;
 
     player.setVolume(level);
-    await interaction.reply(volumeEmoji + " **Volume level is now set to " + player.volume + "%**");
+    await interaction.reply(volumeEmoji + " **Volume level is now set to " + level + "%**");
 }
