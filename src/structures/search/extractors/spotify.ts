@@ -1,9 +1,5 @@
 import { User } from "discord.js";
-import fetch from "isomorphic-unfetch";
 import { parse } from "spotify-uri";
-
-// @ts-ignore
-import spotifyUrlInfo from "spotify-url-info";
 
 import SearchResult from "../SearchResult";
 import { AudioMedia } from "../../AudioMedia";
@@ -12,6 +8,7 @@ import Playlist from "../../models/Playlist";
 import Track from "../../models/Track";
 import { AudioMediaSource, SearchResultType, SPOTIFY_REGEX } from "../../../utils/constants";
 
+const spotifyUrlInfo = require("spotify-url-info");
 const spotify = spotifyUrlInfo(fetch);
 
 /**
