@@ -44,14 +44,14 @@ class Player {
 
     readonly queue: Queue = new Queue();
 
-    private volume: number = 100;
+    volume: number = 100;
 
     state: PlayerState = defaultPlayerState();
 
     constructor(playerManager: PlayerManager, guildId: Snowflake, textChannel: SendableChannels) {
         this.playerManager = playerManager;
         this.guildId = guildId;
-        this.textChannel = textChannel;
+        this.textChannel = textChannel
     }
 
     /**
@@ -338,19 +338,6 @@ class Player {
 
             this.audioPlayer!.play(resource);
         }
-    }
-
-    /**
-     * Gets the player volume
-     * @returns 
-     */
-    getVolume(): number {
-        if (this.audioPlayer && this.isPlaying()) {
-            const state = this.audioPlayer.state as AudioPlayerPlayingState;
-            this.volume = state.resource.volume!.volume; // Audio resource will have a VolumeTransformer
-        }
-
-        return this.volume;
     }
 
     /**

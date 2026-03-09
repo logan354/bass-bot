@@ -308,12 +308,12 @@ export function createPlayerActionRows(player: Player): ActionRowBuilder<ButtonB
                 .setCustomId("player-volume-down")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_down)
-                .setDisabled(player.getVolume() === 0 ? true : disable),
+                .setDisabled(player.volume === 0 ? true : disable),
             new ButtonBuilder()
                 .setCustomId("player-volume-up")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji(emojis.player_volume_up)
-                .setDisabled(player.getVolume() === 200 ? true : disable),
+                .setDisabled(player.volume === 200 ? true : disable),
             new ButtonBuilder()
                 .setCustomId("block")
                 .setStyle(ButtonStyle.Secondary)
